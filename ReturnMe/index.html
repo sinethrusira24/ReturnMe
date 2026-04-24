@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus Lost & Found</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fa-solid fa-building-columns"></i> CampusLocator
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="search-listings.html">Search Items</a></li>
+                <li><a href="report-lost.html">Report Lost</a></li>
+                <li><a href="report-found.html">Report Found</a></li>
+            </ul>
+            <div class="nav-profile">
+                <a href="my-profile.html" class="btn-outline">My Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Find What You Lost, <span class="highlight">Return What You Found.</span></h1>
+            <p>The centralized smart platform for our university community to securely report and claim lost items.</p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="window.location.href='report-lost.html'">
+                    <i class="fa-solid fa-magnifying-glass"></i> I Lost Something
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='report-found.html'">
+                    <i class="fa-solid fa-box-open"></i> I Found Something
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="section-header">
+            <h2>Recently Reported</h2>
+            <a href="search-listings.html" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="item-grid">
+            <div class="item-card lost">
+                <div class="card-badge">Lost</div>
+                <div class="card-image placeholder-img"><i class="fa-solid fa-id-card"></i></div>
+                <div class="card-body">
+                    <h3>Student ID Card</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Main Library, 2nd Floor</p>
+                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 24, 2026</p>
+                    <a href="item-detail.html" class="btn-block" style="display: block; text-align: center; text-decoration: none;">View Details</a>
+                </div>
+            </div>
+
+            <div class="item-card found">
+                <div class="card-badge">Found</div>
+                <div class="card-image placeholder-img"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <div class="card-body">
+                    <h3>iPhone 13 - Black Case</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Engineering Faculty Cafe</p>
+                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 23, 2026</p>
+                    <a href="item-detail.html" class="btn-block claim-btn" style="display: block; text-align: center; text-decoration: none;">View/Claim Item</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>

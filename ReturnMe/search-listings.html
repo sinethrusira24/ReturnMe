@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Database - CampusLocator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo"><i class="fa-solid fa-building-columns"></i> CampusLocator</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html" class="active">Search Items</a></li>
+                <li><a href="report-lost.html">Report Lost</a></li>
+                <li><a href="report-found.html">Report Found</a></li>
+            </ul>
+            <div class="nav-profile">
+                <a href="profile.html" class="btn-outline">My Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="search-bar-container card-bg" style="padding: 1.5rem; margin-bottom: 2rem; border-radius: var(--radius); display: flex; gap: 1rem; box-shadow: var(--shadow);">
+            <input type="text" class="form-control" placeholder="Search by keyword..." style="flex: 2;">
+            <select class="form-control" style="flex: 1;">
+                <option value="all">All Statuses</option>
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+            </select>
+            <select class="form-control" style="flex: 1;">
+                <option value="all">All Categories</option>
+                <option value="electronics">Electronics</option>
+                <option value="ids">ID Cards</option>
+            </select>
+            <button class="btn-primary"><i class="fa-solid fa-search"></i> Search</button>
+        </div>
+
+        <div class="item-grid">
+            <div class="item-card found">
+                <div class="card-badge">Found</div>
+                <div class="card-image placeholder-img"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <div class="card-body">
+                    <h3>iPhone 13</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Student Union</p>
+                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 23, 2026</p>
+                    <a href="item-detail.html" class="btn-block" style="display: block; text-align: center; text-decoration: none;">View Details</a>
+                </div>
+            </div>
+             <div class="item-card lost">
+                <div class="card-badge">Lost</div>
+                <div class="card-image placeholder-img"><i class="fa-solid fa-wallet"></i></div>
+                <div class="card-body">
+                    <h3>Brown Leather Wallet</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Gym Locker Room</p>
+                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 24, 2026</p>
+                    <a href="item-detail.html" class="btn-block" style="display: block; text-align: center; text-decoration: none;">View Details</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="toast-container"></div>
+</body>
+</html>
