@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Lost Item - CampusLocator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo"><i class="fa-solid fa-building-columns"></i> CampusLocator</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html">Search Items</a></li>
+                <li><a href="report-lost.html" class="active">Report Lost</a></li>
+                <li><a href="report-found.html">Report Found</a></li>
+            </ul>
+            <div class="nav-profile">
+                <a href="profile.html" class="btn-outline">My Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="form-wrapper card-bg" style="max-width: 800px; margin: 0 auto; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow);">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-magnifying-glass" style="color: var(--danger-color);"></i> Report a Lost Item</h2>
+            </div>
+            
+            <form id="reportLostForm" onsubmit="handleFormSubmit(event, 'Lost item reported successfully!')">
+                <div class="form-group">
+                    <label for="itemName">Item Name</label>
+                    <input type="text" id="itemName" class="form-control" placeholder="e.g., Blue Hydro Flask" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" class="form-control" required>
+                        <option value="" disabled selected>Select category...</option>
+                        <option value="electronics">Electronics & Phones</option>
+                        <option value="ids">ID Cards & Wallets</option>
+                        <option value="books">Books & Notebooks</option>
+                        <option value="keys">Keys</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Detailed Description</label>
+                    <textarea id="description" class="form-control" rows="4" placeholder="Describe the item (color, brand, distinguishing marks...)" required></textarea>
+                </div>
+
+                <div class="form-row" style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="location">Location Lost (Approximate)</label>
+                        <input type="text" id="location" class="form-control" placeholder="e.g., Main Library, 2nd Floor" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="dateLost">Date Lost</label>
+                        <input type="date" id="dateLost" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemImage">Upload Image (Optional but recommended)</label>
+                    <input type="file" id="itemImage" class="form-control" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: 1rem;">Submit Lost Report</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>

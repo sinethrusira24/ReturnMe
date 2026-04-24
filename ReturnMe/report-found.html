@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Found Item - CampusLocator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo"><i class="fa-solid fa-building-columns"></i> CampusLocator</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html">Search Items</a></li>
+                <li><a href="report-lost.html">Report Lost</a></li>
+                <li><a href="report-found.html" class="active">Report Found</a></li>
+            </ul>
+            <div class="nav-profile">
+                <a href="profile.html" class="btn-outline">My Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="form-wrapper card-bg" style="max-width: 800px; margin: 0 auto; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow);">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-box-open" style="color: var(--success-color);"></i> Report a Found Item</h2>
+            </div>
+            
+            <form id="reportFoundForm" onsubmit="handleFormSubmit(event, 'Found item logged successfully!')">
+                <div class="form-group">
+                    <label for="foundItemName">Item Name</label>
+                    <input type="text" id="foundItemName" class="form-control" placeholder="e.g., Graphing Calculator" required>
+                </div>
+
+                <div class="form-row" style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="foundLocation">Where did you find it?</label>
+                        <input type="text" id="foundLocation" class="form-control" placeholder="e.g., Science Lab 304" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="currentLocation">Where is the item now?</label>
+                        <select id="currentLocation" class="form-control" required>
+                            <option value="security">Turned in to Campus Security</option>
+                            <option value="admin">Turned in to Faculty Admin Office</option>
+                            <option value="with_me">I still have it</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="foundImage">Upload Image (Crucial for verification)</label>
+                    <input type="file" id="foundImage" class="form-control" accept="image/*" required>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: 1rem; background-color: var(--success-color);">Submit Found Report</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
