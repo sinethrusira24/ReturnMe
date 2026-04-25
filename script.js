@@ -40,7 +40,13 @@ function triggerAlert(message, type = 'info') {
         }, 400);
     }, 3000);
 }
-
+// Active navbar link highlight (UI only, no logic change)
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', function () {
+        document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
 // Example: Add smooth scrolling for anchor links if you add them later
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
