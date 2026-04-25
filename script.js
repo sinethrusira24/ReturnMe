@@ -1,44 +1,49 @@
+// --- Modern Toast Notification System ---
 /**
- * Modern Toast Notification System
- * Replaces standard alert() with smooth, sliding UI notifications.
- * * @param {string} message - The text to display
- * @param {string} type - 'success', 'info', or 'error'
+ * Modern Vibrant Toast Notification
+ * Displays a colorful, non-blocking notification at the bottom-right.
+ * @param {string} message - The text to display.
+ * @param {string} type - 'v-info', 'v-success', or 'v-error'.
  */
-function triggerAlert(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    
+function triggerVibrantAlert(message, type = 'v-info') {
+    const container = document.getElementById('vibrant-toast-container');
+    if (!container) {
+        console.error("Toast container ('vibrant-toast-container') not found.");
+        return;
+    }
+
     // Create toast element
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
+    toast.className = `modern-toast ${type}`;
     
-    // Assign correct icon based on type
-    let iconClass = 'fa-circle-info'; // Default info
-    if (type === 'success') iconClass = 'fa-circle-check';
-    if (type === 'error') iconClass = 'fa-circle-xmark';
+    // Assign correct modern icon based on type
+    let iconClass = 'fa-circle-info'; // Default: Info
+    if (type === 'v-success') iconClass = 'fa-circle-check';
+    if (type === 'v-error') iconClass = 'fa-circle-xmark';
 
     toast.innerHTML = `
-        <i class="fa-solid ${iconClass}" style="color: var(--${type === 'info' ? 'primary' : type}-color);"></i>
+        <i class="fa-solid ${iconClass}"></i>
         <span>${message}</span>
     `;
 
     // Append to container
     container.appendChild(toast);
 
-    // Trigger animation (slight delay to allow DOM insertion)
+    // Trigger animation (slight delay for DOM insertion)
     setTimeout(() => {
         toast.classList.add('show');
     }, 10);
 
-    // Remove toast after 3 seconds
+    // Automaticaly remove after 3.5 seconds
     setTimeout(() => {
         toast.classList.remove('show');
-        // Wait for CSS transition to finish before removing from DOM
+        // Wait for animation to finish before removal
         setTimeout(() => {
             if (container.contains(toast)) {
                 container.removeChild(toast);
             }
-        }, 400);
-    }, 3000);
+        }, 400); // Matches CSS transition time
+    }, 3500);
 }
 // Active navbar link highlight (UI only, no logic change)
 document.querySelectorAll('.nav-links a').forEach(link => {
@@ -54,75 +59,27 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         document.querySelector(this.getAttribute('href')).scrollIntoView({
             behavior: 'smooth'
         });
+    }
+
+    // --- Wire up demo interactions ---
+    // Make the direct 'View Details' buttons on cards link to item-detail.html
+    const viewDetailBtns = document.querySelectorAll('.modern-view-btn, .modern-action-btn');
+    viewDetailBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Let the regular link function continue (or link manually if it's not an <a> tag)
+            if (!e.target.closest('a')) {
+                window.location.href = 'item-detail.html';
+            }
+        });
     });
+
+    // Make the login button trigger alert first for demo
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.onsubmit = (e) => {
+            e.preventDefault();
+            triggerVibrantAlert("Logging you in... Redirecting to dashboard.", "v-success");
+            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+        };
+    }
 });
-
-// --- Form Handling & Validation ---
-
-function handleLogin(event) {
-    event.preventDefault(); // Prevent default form submission
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    // Basic frontend validation simulation
-    if (email === "" || password === "") {
-        triggerAlert("Please fill in all fields.", "error");
-        return;
-    }
-
-    if (!email.includes("@")) {
-        triggerAlert("Please enter a valid campus email address.", "error");
-        return;
-    }
-
-    // Simulate successful login
-    triggerAlert("Logging you in...", "success");
-    
-    // In a real app, you would verify with your backend here. 
-    // For now, we redirect to the dashboard after a short delay.
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 1500);
-}
-
-function handleRegister(event) {
-    event.preventDefault();
-
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    const role = document.getElementById('role').value;
-
-    if (role === "") {
-        triggerAlert("Please select your role (Student or Staff).", "error");
-        return;
-    }
-
-    if (password.length < 6) {
-        triggerAlert("Password must be at least 6 characters long.", "error");
-        return;
-    }
-
-    // Simulate successful registration
-    triggerAlert("Account created successfully! Redirecting...", "success");
-
-    setTimeout(() => {
-        window.location.href = "login.html";
-    }, 2000);
-}
-
-// Generic form handler for the new pages
-function handleFormSubmit(event, successMessage) {
-    event.preventDefault(); // Stop page reload
-    
-    // Show the custom alert
-    triggerAlert(successMessage, 'success');
-
-    // Reset the form inputs
-    event.target.reset();
-
-    // Optional: Redirect to dashboard after 2 seconds
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 2000);
-}
