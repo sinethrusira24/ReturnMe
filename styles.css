@@ -29,14 +29,33 @@ body {
 }
 
 /* --- Navigation --- */
+/* ===============================
+   FINAL NAVBAR (FIXED + ANIMATED)
+   =============================== */
+
+/* Navbar container */
 .navbar {
-    background-color: var(--card-bg);
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(10px); /* Safari fix */
+    backdrop-filter: blur(10px);
     box-shadow: var(--shadow);
     position: sticky;
-    top: 0;
+    top: 15px;
+    margin: 0 auto;
+    width: 90%;
+    border-radius: 50px;
     z-index: 100;
+    animation: floatNav 3s ease-in-out infinite;
 }
 
+/* Floating animation */
+@keyframes floatNav {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Navbar inner layout */
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -46,6 +65,7 @@ body {
     align-items: center;
 }
 
+/* Logo */
 .nav-logo {
     font-size: 1.5rem;
     font-weight: 700;
@@ -56,23 +76,55 @@ body {
     gap: 0.5rem;
 }
 
+/* Nav links container (IMPORTANT FIX) */
 .nav-links {
-    display: flex;
-    list-style: none;
+    display: flex;              /* FIX: keeps horizontal */
+    list-style: none;           /* remove bullets */
     gap: 2rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
+/* Nav links */
 .nav-links a {
     text-decoration: none;
     color: var(--text-light);
     font-weight: 500;
-    transition: var(--transition);
+    padding: 8px 14px;
+    border-radius: 20px;
+    transition: 0.3s;
 }
 
-.nav-links a:hover, .nav-links a.active {
-    color: var(--primary-color);
+/* Neon hover + active */
+.nav-links a:hover,
+.nav-links a.active {
+    color: #00aaff;
+    background: rgba(0, 170, 255, 0.1);
+    box-shadow:
+        0 0 5px #00aaff,
+        0 0 10px #00aaff,
+        0 0 20px rgba(0,170,255,0.6);
 }
 
+/* Glow animation */
+.nav-links a.active {
+    animation: neonPulse 1.5s infinite alternate;
+}
+
+@keyframes neonPulse {
+    from {
+        box-shadow:
+            0 0 5px #00aaff,
+            0 0 10px #00aaff;
+    }
+    to {
+        box-shadow:
+            0 0 10px #00aaff,
+            0 0 25px #00aaff,
+            0 0 40px rgba(0,170,255,0.8);
+    }
+}
 /* --- Buttons --- */
 button, .btn-outline {
     cursor: pointer;
