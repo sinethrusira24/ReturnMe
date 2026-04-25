@@ -1,40 +1,55 @@
-/* --- Variables & Reset --- */
+/* --- Modernized Color Variables & Reset --- */
 :root {
-    --primary-color: #0056b3;
-    --primary-hover: #004494;
-    --secondary-color: #f8f9fa;
-    --text-dark: #333333;
-    --text-light: #6c757d;
-    --danger-color: #dc3545;
-    --success-color: #28a745;
-    --background-color: #f4f7f6;
+    /* Modern Indigo Theme */
+    --primary-color: #6366f1; 
+    --primary-hover: #4f46e5;
+    --primary-light: #e0e7ff;
+    
+    /* Clean UI Colors */
+    --secondary-color: #f3f4f6;
+    --text-dark: #111827;
+    --text-light: #6b7280;
+    --background-color: #f8fafc;
     --card-bg: #ffffff;
-    --radius: 8px;
-    --transition: all 0.3s ease;
-    --shadow: 0 4px 6px rgba(0,0,0,0.05);
-    --shadow-hover: 0 10px 15px rgba(0,0,0,0.1);
+    
+    /* Vibrant Status Accents */
+    --danger-color: #f43f5e; /* Modern Rose/Red */
+    --success-color: #10b981; /* Modern Emerald/Green */
+    
+    /* Polished UI Elements */
+    --radius: 12px; /* Softer, rounder corners */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother animations */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 body {
     background-color: var(--background-color);
+    /* Subtle 'Tech Blueprint' dot grid */
+    background-image: radial-gradient(rgba(99, 102, 241, 0.15) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
     color: var(--text-dark);
     line-height: 1.6;
 }
 
-/* --- Navigation --- */
+/* --- Glassmorphism Navigation --- */
 .navbar {
-    background-color: var(--card-bg);
-    box-shadow: var(--shadow);
+    background-color: rgba(255, 255, 255, 0.85); /* Slightly transparent */
+    backdrop-filter: blur(12px); /* Blur effect */
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
     position: sticky;
     top: 0;
     z-index: 100;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 .nav-container {
@@ -54,6 +69,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    letter-spacing: -0.5px;
 }
 
 .nav-links {
@@ -73,8 +89,8 @@ body {
     color: var(--primary-color);
 }
 
-/* --- Buttons --- */
-button, .btn-outline {
+/* --- Modern Buttons --- */
+button, .btn-outline, .btn-block, .btn-primary, .btn-secondary {
     cursor: pointer;
     font-weight: 600;
     border-radius: var(--radius);
@@ -82,77 +98,103 @@ button, .btn-outline {
     border: none;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
     color: white;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-hover);
     transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
 }
 
 .btn-secondary {
     background-color: white;
     color: var(--primary-color);
-    border: 2px solid var(--primary-color);
+    border: 2px solid var(--primary-light);
 }
 
 .btn-secondary:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-light);
     transform: translateY(-2px);
 }
 
 .btn-outline {
     text-decoration: none;
-    border: 1px solid var(--primary-color);
+    border: 2px solid var(--primary-light);
     color: var(--primary-color);
     padding: 0.5rem 1rem;
 }
 
+.btn-outline:hover {
+    background-color: var(--primary-light);
+}
+
+/* Base style for card buttons */
 .btn-block {
     width: 100%;
-    background-color: var(--secondary-color);
-    color: var(--text-dark);
+    background-color: var(--primary-light);
+    color: var(--primary-hover);
     margin-top: 1rem;
+    text-decoration: none;
 }
 
 .btn-block:hover {
-    background-color: #e2e6ea;
+    background-color: #c7d2fe; /* Slightly darker indigo light */
 }
 
+/* Specific styling for the claim button */
 .claim-btn {
-    background-color: var(--success-color);
+    background: linear-gradient(135deg, var(--success-color), #059669);
     color: white;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
 }
 .claim-btn:hover {
-    background-color: #218838;
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
 }
 
-/* --- Hero Section --- */
+/* --- Hero Section with Gradient --- */
 .hero {
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-    padding: 4rem 2rem;
+    /* Premium glowing gradient meshes mixed with Indigo & Emerald */
+    background-color: var(--background-color);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 60%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 60%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.12) 0px, transparent 60%),
+        linear-gradient(180deg, transparent 0%, rgba(248, 250, 252, 0.8) 100%);
+    padding: 6rem 2rem;
     text-align: center;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    position: relative;
+    /* This ensures the dot grid from the body shows through subtly */
+    background-blend-mode: normal; 
 }
 
 .hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 2.8rem;
+    margin-bottom: 1.2rem;
+    letter-spacing: -1px;
 }
 
 .highlight {
-    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .hero-content p {
     color: var(--text-light);
     font-size: 1.1rem;
     max-width: 600px;
-    margin: 0 auto 2rem auto;
+    margin: 0 auto 2.5rem auto;
 }
 
 .hero-actions {
@@ -164,7 +206,7 @@ button, .btn-outline {
 /* --- Layout & Grid --- */
 .container {
     max-width: 1200px;
-    margin: 3rem auto;
+    margin: 4rem auto;
     padding: 0 2rem;
 }
 
@@ -179,51 +221,62 @@ button, .btn-outline {
     text-decoration: none;
     color: var(--primary-color);
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.view-all:hover {
+    color: var(--primary-hover);
 }
 
 .item-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
 }
 
-/* --- Cards --- */
+/* --- Modern Floating Cards --- */
 .item-card {
     background: var(--card-bg);
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-md);
     transition: var(--transition);
     position: relative;
+    border: 1px solid rgba(0,0,0,0.03);
 }
 
 .item-card:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-6px);
 }
 
 .card-badge {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.25rem 0.75rem;
+    top: 1.2rem;
+    right: 1.2rem;
+    padding: 0.3rem 0.8rem;
     border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .lost .card-badge { background-color: var(--danger-color); }
 .found .card-badge { background-color: var(--success-color); }
 
 .placeholder-img {
-    height: 200px;
-    background-color: #e9ecef;
+    height: 220px;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 4rem;
-    color: #adb5bd;
+    color: #94a3b8;
 }
 
 .card-body {
@@ -231,327 +284,21 @@ button, .btn-outline {
 }
 
 .card-body h3 {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
 }
 
 .card-body p {
     color: var(--text-light);
     font-size: 0.9rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.4rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-/* --- Toast Notifications System --- */
-#toast-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 9999;
-}
-
-.toast {
-    min-width: 250px;
-    background-color: white;
-    color: var(--text-dark);
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transform: translateX(120%);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.toast.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.toast.success { border-left: 4px solid var(--success-color); }
-.toast.info { border-left: 4px solid var(--primary-color); }
-.toast.error { border-left: 4px solid var(--danger-color); }
-
-/* --- Authentication Pages Specific Styles --- */
-.auth-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-}
-
-.auth-wrapper {
-    width: 100%;
-    max-width: 450px;
-    padding: 2rem;
-}
-
-.auth-card {
-    background-color: var(--card-bg);
-    padding: 2.5rem 2rem;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-hover);
-}
-
-.auth-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.auth-header h2 {
-    color: var(--text-dark);
-    margin-bottom: 0.5rem;
-}
-
-.auth-header p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-}
-
-/* --- Forms & Inputs --- */
-.form-group {
-    margin-bottom: 1.25rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-dark);
-    font-size: 0.9rem;
-}
-
-.form-group label i {
-    color: var(--text-light);
-    margin-right: 0.25rem;
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ced4da;
-    border-radius: var(--radius);
-    font-size: 1rem;
-    transition: var(--transition);
-    background-color: #fff;
-    color: var(--text-dark);
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
-}
-
-select.form-control {
-    appearance: none;
-    cursor: pointer;
-}
-
-.auth-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-}
-
-.forgot-link {
+.card-body p i {
     color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.forgot-link:hover {
-    text-decoration: underline;
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e9ecef;
-    font-size: 0.95rem;
-}
-
-.auth-footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.auth-footer a:hover {
-    text-decoration: underline;
-}
-
-
-/* =========================================
-   PAGE SPECIFIC LAYOUTS & RESPONSIVENESS
-   ========================================= */
-
-/* --- General Utilities --- */
-.card-bg {
-    background-color: var(--card-bg);
-    box-shadow: var(--shadow);
-    border-radius: var(--radius);
-}
-
-textarea.form-control {
-    resize: vertical;
-    font-family: inherit;
-}
-
-/* --- Report Forms (Lost / Found / Claim) --- */
-.form-wrapper {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.form-row {
-    display: flex;
-    gap: 1rem;
-}
-
-.form-row .form-group {
-    flex: 1;
-}
-
-/* --- Search Page --- */
-.search-bar-container {
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-/* --- Item Detail Page --- */
-.detail-container {
-    display: flex;
-    gap: 2rem;
-    padding: 2rem;
-    margin-top: 1rem;
-}
-
-.detail-image {
-    flex: 1;
-    height: 350px;
-    border-radius: var(--radius);
-}
-
-.detail-info {
-    flex: 1;
-}
-
-.detail-info h1 {
-    margin: 1rem 0;
-    color: var(--text-dark);
-}
-
-/* --- User Profile Page --- */
-.profile-layout {
-    display: flex;
-    gap: 2rem;
-}
-
-.profile-sidebar {
-    flex: 1;
-    padding: 2rem;
-    text-align: center;
-    align-self: flex-start;
-}
-
-.profile-avatar {
-    width: 100px;
-    height: 100px;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    margin: 0 auto 1rem;
-}
-
-.profile-main {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.profile-section {
-    padding: 2rem;
-}
-
-.profile-section hr {
-    border: 0;
-    border-top: 1px solid #eee;
-    margin: 1rem 0;
-}
-
-/* Claim Status Badges */
-.status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-.status-pending { color: #856404; background-color: #fff3cd; }
-.status-approved { color: #155724; background-color: #d4edda; }
-
-/* =========================================
-   MOBILE RESPONSIVENESS (Media Queries)
-   ========================================= */
-
-@media (max-width: 768px) {
-    /* Navbar */
-    .nav-links {
-        display: none; /* In a real app, you'd replace this with a hamburger menu */
-    }
-    
-    /* Hero Section */
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-    .hero-actions {
-        flex-direction: column;
-    }
-    
-    /* Forms */
-    .form-row {
-        flex-direction: column;
-        gap: 0;
-    }
-    
-    /* Search Bar */
-    .search-bar-container {
-        flex-direction: column;
-    }
-    .search-bar-container input, 
-    .search-bar-container select, 
-    .search-bar-container button {
-        width: 100%;
-    }
-    
-    /* Detail Page */
-    .detail-container {
-        flex-direction: column;
-    }
-    .detail-image {
-        height: 250px;
-    }
-    
-    /* Profile Page */
-    .profile-layout {
-        flex-direction: column;
-    }
+    opacity: 0.7;
+    width: 16px;
 }
