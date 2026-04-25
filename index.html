@@ -71,7 +71,7 @@
                     <h3>iPhone 13 - Black Case</h3>
                     <p class="location"><i class="fa-solid fa-location-dot"></i> Engineering Faculty Cafe</p>
                     <p class="date"><i class="fa-regular fa-calendar"></i> Oct 23, 2026</p>
-                    <a href="item-detail.html" class="btn-block claim-btn">Claim Item</a>
+                    <a href="item-detail.html" class="btn-block claim-btn">View/Claim Item</a>
                 </div>
             </div>
         </div>
@@ -79,5 +79,16 @@
 
     <div id="toast-container"></div>
     <script src="script.js"></script>
+
+    <!-- NEW: Active link highlight -->
+    <script>
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function () {
+                document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+
 </body>
 </html>

@@ -45,15 +45,19 @@ function triggerVibrantAlert(message, type = 'v-info') {
         }, 400); // Matches CSS transition time
     }, 3500);
 }
-
-// --- Dynamic Dashboard Interaction Logic (Placeholders) ---
-// We wire up the hero buttons and some card buttons to show notifications for demo purposes.
-document.addEventListener('DOMContentLoaded', () => {
-    // Examaple: Forgotten Password in Login triggers alert
-    const forgotLink = document.querySelector('.forgot-link');
-    if (forgotLink) {
-        forgotLink.addEventListener('click', () => {
-            triggerVibrantAlert("Password reset link sent to your email.", "v-info");
+// Active navbar link highlight (UI only, no logic change)
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', function () {
+        document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+// Example: Add smooth scrolling for anchor links if you add them later
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
         });
     }
 
