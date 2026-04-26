@@ -3,43 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Item - ReturnMe</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Claim Item - CampusLocator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
     <nav class="navbar">
-        </nav>
-
-    <main class="container">
-        <div class="form-wrapper card-bg" style="max-width: 600px; margin: 0 auto; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow);">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-shield-halved"></i> Secure Claim Process</h2>
-            </div>
-            <p style="margin-bottom: 1.5rem; color: var(--text-light);">You are initiating a claim for: <strong>iPhone 13 - Black Case</strong></p>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fa-solid fa-building-columns"></i> CampusLocator
+            </a>
             
-            <form id="claimForm" onsubmit="handleFormSubmit(event, 'Claim submitted! Security will review your proof.')">
-                <div class="form-group">
-                    <label for="proofDesc">Provide Proof of Ownership Details</label>
-                    <textarea id="proofDesc" class="form-control" rows="3" placeholder="e.g., The lock screen wallpaper is a picture of my dog, and the IMEI number is..." required></textarea>
+            <div class="mobile-menu-btn">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search-listings.html">Search Items</a></li>
+                <li><a href="report-lost.html">Report Lost</a></li>
+                <li><a href="report-found.html">Report Found</a></li>
+                <li class="mobile-only"><a href="my-profile.html">My Profile</a></li>
+            </ul>
+
+            <div class="nav-profile">
+                <a href="my-profile.html" class="btn-profile">My Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="form-page-container">
+        <div class="glass-form-wrapper">
+            
+            <div class="form-header">
+                <div class="header-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h1>Claim This Item</h1>
+                <p>Please provide details to verify your ownership of the <strong>iPhone 13 - Black Case</strong>.</p>
+            </div>
+
+            <form action="index.html" class="modern-form" id="claimForm">
+                
+                <div class="form-section">
+                    <h3><i class="fa-regular fa-address-card"></i> Your Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" placeholder="e.g. Hasira Perera" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentId">Student/Staff ID</label>
+                            <input type="text" id="studentId" placeholder="e.g. SE/2026/045" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="e.g. hasira@university.edu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="e.g. 071 123 4567" required>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="proofFile">Upload Proof (Receipt, Box with Serial Number, ID)</label>
-                    <input type="file" id="proofFile" class="form-control" required>
+                <div class="form-section">
+                    <h3><i class="fa-solid fa-key"></i> Proof of Ownership</h3>
+                    <p class="section-desc">To prevent fraud, please describe unique features or upload proof (like a receipt, lock screen photo, or serial number).</p>
+
+                    <div class="form-group">
+                        <label for="uniqueDetails">Unique Identifying Details</label>
+                        <textarea id="uniqueDetails" rows="4" placeholder="e.g. There is a small scratch on the bottom left corner, and the lock screen is a picture of a dog..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Supporting Evidence (Optional)</label>
+                        <div class="file-upload-box">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Drag and drop a file or <strong>browse</strong></span>
+                            <small>Supports JPG, PNG, PDF (Max 5MB)</small>
+                            <input type="file" id="evidenceFile" accept=".jpg,.jpeg,.png,.pdf" class="file-input">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="contactNo">Contact Number</label>
-                    <input type="tel" id="contactNo" class="form-control" placeholder="For campus security to reach you" required>
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit btn-found">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Claim
+                    </button>
+                    <a href="item-detail.html" class="btn-cancel">Cancel</a>
                 </div>
 
-                <button type="submit" class="btn-primary claim-btn" style="width: 100%; margin-top: 1rem;">Submit Claim for Review</button>
+                <div class="security-notice">
+                    <i class="fa-solid fa-lock"></i>
+                    Your information is secure. False claims are a violation of university policy.
+                </div>
             </form>
+
         </div>
     </main>
 
-    <div id="toast-container"></div>
+    <footer class="simple-footer">
+        <div class="footer-links">
+            <a href="mailto:support@campuslocator.edu">support@campuslocator.edu</a>
+            <a href="tel:+94716520890">+94 716 520 890</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <div class="footer-copyright">
+            &copy; 2026 CampusLocator. All rights reserved.
+        </div>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>

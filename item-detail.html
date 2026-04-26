@@ -3,39 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Item Detail - ReturnMe</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Item Details - CampusLocator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
     <nav class="navbar">
-        </nav>
-
-    <main class="container">
-        <a href="search-listings.html" style="text-decoration: none; color: var(--text-light); margin-bottom: 1rem; display: inline-block;">&larr; Back to Search</a>
-        
-        <div class="detail-container card-bg" style="display: flex; gap: 2rem; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow);">
-            <div class="detail-image placeholder-img" style="flex: 1; height: 350px; border-radius: var(--radius);">
-                <i class="fa-solid fa-mobile-screen-button" style="font-size: 8rem;"></i>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fa-solid fa-building-columns"></i> CampusLocator
+            </a>
+            
+            <div class="mobile-menu-btn">
+                <i class="fa-solid fa-bars"></i>
             </div>
-            <div class="detail-info" style="flex: 1;">
-                <span style="background-color: var(--success-color); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">Found</span>
-                <h1 style="margin: 1rem 0;">iPhone 13 - Black Case</h1>
-                
-                <div style="margin-bottom: 1.5rem; color: var(--text-light);">
-                    <p><strong><i class="fa-solid fa-location-dot"></i> Found Location:</strong> Student Union Cafeteria</p>
-                    <p><strong><i class="fa-regular fa-calendar"></i> Date Found:</strong> Oct 23, 2026</p>
-                    <p><strong><i class="fa-solid fa-box"></i> Current Status:</strong> Turned in to Campus Security</p>
-                </div>
 
-                <div style="margin-bottom: 2rem;">
-                    <h3>Description</h3>
-                    <p>Black iPhone 13 found on a table near the entrance. It has a cracked screen protector and a sticker of a cat on the back of the case. Locked with a passcode.</p>
-                </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search-listings.html">Search Items</a></li>
+                <li><a href="report-lost.html">Report Lost</a></li>
+                <li><a href="report-found.html">Report Found</a></li>
+                <li class="mobile-only"><a href="my-profile.html">My Profile</a></li>
+            </ul>
 
-                <a href="claim-item.html" class="btn-primary claim-btn" style="text-decoration: none; display: inline-block;"><i class="fa-solid fa-hand-holding-hand"></i> Claim This Item</a>
+            <div class="nav-profile">
+                <a href="my-profile.html" class="btn-profile">My Profile</a>
             </div>
         </div>
+    </nav>
+
+    <main class="item-detail-container">
+        <a href="search-listings.html" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Back to Search
+        </a>
+
+        <div class="item-detail-card">
+            
+            <div class="item-image-side">
+                <div class="card-badge badge-found">Found</div>
+                <i class="fa-solid fa-mobile-screen-button placeholder-icon"></i>
+            </div>
+
+            <div class="item-info-side">
+                <div class="item-header-info">
+                    <span class="item-reference">Ref ID: #FND-2026-084</span>
+                    <h1>iPhone 13 - Black Case</h1>
+                </div>
+
+                <div class="reporter-info">
+                    <h3>Reported By</h3>
+                    <div class="reporter-profile">
+                        <div class="reporter-avatar">NK</div>
+                        <div class="reporter-details">
+                            <span class="reporter-name">Nikini Silva</span>
+                            <a href="tel:+94711234567" class="reporter-contact"><i class="fa-solid fa-phone"></i> +94 71 123 4567</a>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="item-metadata">
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <strong>Location Found</strong>
+                            <span>Engineering Faculty Cafe, Table 4</span>
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fa-regular fa-calendar"></i>
+                        <div>
+                            <strong>Date & Time</strong>
+                            <span>Oct 23, 2026 at 2:15 PM</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="item-description">
+                    <h3>Description</h3>
+                    <p>Found a black iPhone 13 sitting on the corner table near the window in the Engineering Cafe. It has a matte black Spigen case and a slightly cracked screen protector on the top right edge.</p>
+                </div>
+
+                <div class="item-actions">
+                    <a href="claim-item.html" class="btn-action btn-found btn-full">
+                        <i class="fa-solid fa-shield-halved"></i> Claim This Item
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="discussion-section">
+            <div class="discussion-header">
+                <h2><i class="fa-regular fa-comments"></i> Discussion Board</h2>
+                <p>Ask questions to clarify details before submitting an official claim.</p>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-message received">
+                    <div class="chat-avatar user-av">HP</div>
+                    <div class="chat-bubble">
+                        <div class="chat-meta">
+                            <span class="chat-author">Hasira Perera</span>
+                            <span class="chat-time">Today at 10:45 AM</span>
+                        </div>
+                        <p>Hi Nikini, I lost my black iPhone 13 yesterday too. Before I claim it, can you tell me if the charging port has a tiny scratch next to it?</p>
+                    </div>
+                </div>
+
+                <div class="chat-message sent">
+                    <div class="chat-bubble">
+                        <div class="chat-meta">
+                            <span class="chat-author reporter-badge">Nikini Silva (Finder)</span>
+                            <span class="chat-time">Today at 11:02 AM</span>
+                        </div>
+                        <p>Let me check... Yes! It actually does have a small scratch right next to the port. You should go ahead and submit the claim form!</p>
+                    </div>
+                    <div class="chat-avatar reporter-av">NK</div>
+                </div>
+            </div>
+
+            <form class="chat-input-area" id="chatForm">
+                <input type="text" placeholder="Type your question here..." required>
+                <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
     </main>
+
+    <footer class="simple-footer">
+        <div class="footer-links">
+            <a href="mailto:support@campuslocator.edu">support@campuslocator.edu</a>
+            <a href="tel:+94716520890">+94 716 520 890</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <div class="footer-copyright">
+            &copy; 2026 CampusLocator. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
