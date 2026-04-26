@@ -32,9 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-});
-
-// --- Mobile Hamburger Menu Logic ---
+    // 3. Mobile Hamburger Menu Logic (MOVED INSIDE THE WRAPPER)
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navLinksContainer = document.querySelector('.nav-links');
     const mobileMenuIcon = document.querySelector('.mobile-menu-btn i');
@@ -54,3 +52,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+});
