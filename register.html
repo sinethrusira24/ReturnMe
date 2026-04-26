@@ -3,57 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Smart Campus Lost & Found</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Sign Up - CampusLocator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="auth-body">
+<body>
 
-    <div class="auth-wrapper">
-        <div class="auth-card">
-            <div class="auth-header">
-                <a href="index.html" class="nav-logo" style="justify-content: center; margin-bottom: 1rem;">
-                    <i class="fa-solid fa-building-columns"></i> ReturnMe
-                </a>
-                <h2>Create Account</h2>
-                <p>Register to report or claim items</p>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fa-solid fa-building-columns"></i> CampusLocator
+            </a>
+            
+            <div class="mobile-menu-btn">
+                <i class="fa-solid fa-bars"></i>
             </div>
 
-            <form id="registerForm" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label for="fullName"><i class="fa-regular fa-user"></i> Full Name</label>
-                    <input type="text" id="fullName" class="form-control" placeholder="John Doe" required>
-                </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search-listings.html">Search Items</a></li>
+                <li><a href="report-lost.html">Report Lost</a></li>
+                <li><a href="report-found.html">Report Found</a></li>
+            </ul>
 
-                <div class="form-group">
-                    <label for="regEmail"><i class="fa-regular fa-envelope"></i> Campus Email</label>
-                    <input type="email" id="regEmail" class="form-control" placeholder="student@campus.edu" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="role"><i class="fa-solid fa-id-badge"></i> Role</label>
-                    <select id="role" class="form-control" required>
-                        <option value="" disabled selected>Select your role</option>
-                        <option value="student">Student</option>
-                        <option value="staff">Staff Member</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="regPassword"><i class="fa-solid fa-lock"></i> Password</label>
-                    <input type="password" id="regPassword" class="form-control" placeholder="Create a secure password" required>
-                </div>
-
-                <button type="submit" class="btn-primary btn-block" style="margin-top: 1.5rem;">Register</button>
-            </form>
-
-            <div class="auth-footer">
-                <p>Already have an account? <a href="login.html">Log in here</a></p>
+            <div class="nav-profile">
+                <a href="login.html" class="btn-profile">Log In</a>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <div id="toast-container"></div>
+    <main class="auth-container">
+        <div class="glass-form-wrapper">
+            
+            <div class="form-header">
+                <div class="header-icon" style="background: rgba(0, 0, 0, 0.05); color: var(--text-dark);">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h1>Create an Account</h1>
+                <p>Join the secure campus network to report and claim items.</p>
+            </div>
+
+            <form action="login.html" class="modern-form" id="registerForm">
+                
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="e.g. Hasira Perera" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentId">Student/Staff ID Number</label>
+                    <input type="text" id="studentId" placeholder="e.g. SE/2026/045" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">University Email</label>
+                    <input type="email" id="email" placeholder="student@university.edu" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <div class="auth-options" style="margin-top: 0.5rem;">
+                    <label class="remember-me">
+                        <input type="checkbox" required> I agree to the <a href="#" style="color: var(--color-found);">Terms of Service</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit" style="background-color: var(--text-dark); justify-content: center; width: 100%;">
+                    Create Account
+                </button>
+
+                <div class="auth-footer">
+                    Already have an account? <a href="login.html">Log in here</a>
+                </div>
+            </form>
+
+        </div>
+    </main>
+
+    <footer class="simple-footer">
+        <div class="footer-links">
+            <a href="mailto:support@campuslocator.edu">support@campuslocator.edu</a>
+            <a href="tel:+94716520890">+94 716 520 890</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <div class="footer-copyright">
+            &copy; 2026 CampusLocator. All rights reserved.
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
