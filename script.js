@@ -33,3 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+// --- Mobile Hamburger Menu Logic ---
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinksContainer = document.querySelector('.nav-links');
+    const mobileMenuIcon = document.querySelector('.mobile-menu-btn i');
+
+    if (mobileMenuBtn && navLinksContainer) {
+        mobileMenuBtn.addEventListener('click', () => {
+            // Toggle the menu visibility
+            navLinksContainer.classList.toggle('mobile-active');
+            
+            // Swap the icon between hamburger (bars) and close (xmark)
+            if (navLinksContainer.classList.contains('mobile-active')) {
+                mobileMenuIcon.classList.remove('fa-bars');
+                mobileMenuIcon.classList.add('fa-xmark');
+            } else {
+                mobileMenuIcon.classList.remove('fa-xmark');
+                mobileMenuIcon.classList.add('fa-bars');
+            }
+        });
+    }
