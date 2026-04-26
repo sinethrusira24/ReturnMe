@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Campus Lost & Found</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>CampusLocator - Smart Campus Lost & Found</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -22,22 +22,23 @@
                 <li><a href="report-found.html">Report Found</a></li>
             </ul>
             <div class="nav-profile">
-                <a href="my-profile.html" class="btn-outline">My Profile</a>
+                <a href="my-profile.html" class="btn-profile">My Profile</a>
             </div>
         </div>
     </nav>
 
     <header class="hero">
         <div class="hero-content">
-            <h1>Find What You Lost, <span class="highlight">Return What You Found.</span></h1>
+            <h1>Find What You Lost, <span class="text-highlight">Return What You Found.</span></h1>
             <p>The centralized smart platform for our university community to securely report and claim lost items.</p>
+            
             <div class="hero-actions">
-                <button class="btn-primary" onclick="window.location.href='report-lost.html'">
+                <a href="report-lost.html" class="btn-action btn-lost">
                     <i class="fa-solid fa-magnifying-glass"></i> I Lost Something
-                </button>
-                <button class="btn-secondary" onclick="window.location.href='report-found.html'">
+                </a>
+                <a href="report-found.html" class="btn-action btn-found">
                     <i class="fa-solid fa-box-open"></i> I Found Something
-                </button>
+                </a>
             </div>
         </div>
     </header>
@@ -49,46 +50,45 @@
         </div>
         
         <div class="item-grid">
-            <div class="item-card lost">
-                <div class="card-badge">Lost</div>
-                <div class="card-image placeholder-img">
+            <div class="item-card">
+                <div class="card-badge badge-lost">Lost</div>
+                <div class="card-image">
                     <i class="fa-solid fa-id-card"></i>
                 </div>
                 <div class="card-body">
                     <h3>Student ID Card</h3>
                     <p class="location"><i class="fa-solid fa-location-dot"></i> Main Library, 2nd Floor</p>
                     <p class="date"><i class="fa-regular fa-calendar"></i> Oct 24, 2026</p>
-                    <a href="item-detail.html" class="btn-block">View Details</a>
+                    <a href="item-detail.html" class="btn-card">View Details</a>
                 </div>
             </div>
 
-            <div class="item-card found">
-                <div class="card-badge">Found</div>
-                <div class="card-image placeholder-img">
+            <div class="item-card">
+                <div class="card-badge badge-found">Found</div>
+                <div class="card-image">
                     <i class="fa-solid fa-mobile-screen-button"></i>
                 </div>
                 <div class="card-body">
                     <h3>iPhone 13 - Black Case</h3>
                     <p class="location"><i class="fa-solid fa-location-dot"></i> Engineering Faculty Cafe</p>
                     <p class="date"><i class="fa-regular fa-calendar"></i> Oct 23, 2026</p>
-                    <a href="item-detail.html" class="btn-block claim-btn">View/Claim Item</a>
+                    <a href="item-detail.html" class="btn-card card-btn-found">Claim Item</a>
                 </div>
             </div>
         </div>
     </main>
-
+    <footer class="simple-footer">
+            <div class="footer-links">
+                <a href="mailto:support@campuslocator.edu">support@campuslocator.edu</a>
+                <a href="tel:+94716520890">+94 716 520 890</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+            <div class="footer-copyright">
+                &copy; 2026 CampusLocator. All rights reserved.
+            </div>
+        </footer>
     <div id="toast-container"></div>
     <script src="script.js"></script>
-
-    <!-- NEW: Active link highlight -->
-    <script>
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', function () {
-                document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
-
 </body>
 </html>
