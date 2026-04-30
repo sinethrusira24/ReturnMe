@@ -3,18 +3,18 @@
    ========================================= */
 :root {
     /* Background Gradient */
-    --bg-peach: #FFF0E6;
-    --bg-green: #EEF9D4;
+    --bg-peach: #F8F6EE;
+    --bg-green: #E8F1E7;
     
     /* Theme Colors */
-    --color-lost: #D55749;       /* Soft Red */
-    --color-lost-hover: #C04A3D;
-    --color-found: #50B848;      /* Bright Green */
-    --color-found-hover: #429E3B;
+    --color-lost: #D14753;       /* Refined Red */
+    --color-lost-hover: #B53D45;
+    --color-found: #3F8E60;      /* Deep Green */
+    --color-found-hover: #32734c;
     
     /* Typography & UI */
-    --text-dark: #1F2937;
-    --text-muted: #6B7280;
+    --text-dark: #111827;
+    --text-muted: #4B5563;
     --white: #FFFFFF;
     
     /* Effects */
@@ -221,6 +221,65 @@ body {
 
 .section-header h2 { font-size: 1.5rem; color: var(--text-dark); }
 
+.section-subtitle { color: var(--text-muted); font-size: 1rem; margin-top: 0.4rem; max-width: 520px; }
+
+.search-home {
+    margin-bottom: 3rem;
+}
+
+.search-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-note {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 0.35rem;
+}
+
+.search-filter-box {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr auto;
+    gap: 1rem;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.search-filter-box .search-input-group {
+    width: 100%;
+}
+
+.search-filter-box .filter-select {
+    width: 100%;
+}
+
+.search-filter-box .btn-search {
+    width: 100%;
+    min-width: 140px;
+}
+
+.no-results {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
 .view-all {
     text-decoration: none;
     color: var(--text-dark);
@@ -234,9 +293,9 @@ body {
 
 .item-grid {
     display: grid;
-    /* This forces exactly 3 equal columns side-by-side */
-    grid-template-columns: repeat(3, 1fr); 
+    grid-template-columns: repeat(3, minmax(300px, 320px));
     gap: 2rem;
+    justify-content: start;
 }
 
 .item-card {
@@ -298,7 +357,7 @@ body {
     transition: var(--transition);
 }
 .btn-card:hover { background-color: rgba(0,0,0,0.1); }
-.card-btn-found { background-color: rgba(80, 184, 72, 0.1); color: var(--color-found); }
+.card-btn-found { background-color: rgba(63, 142, 96, 0.12); color: var(--color-found); }
 .card-btn-found:hover { background-color: var(--color-found); color: var(--white); }
 
 /* =========================================
@@ -426,7 +485,7 @@ body {
 .file-upload-box {
     border: 2px dashed rgba(0, 0, 0, 0.15); border-radius: 8px; padding: 2rem; text-align: center; background: rgba(0, 0, 0, 0.02); position: relative; transition: var(--transition); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
 }
-.file-upload-box:hover { border-color: var(--color-found); background: rgba(80, 184, 72, 0.05); }
+.file-upload-box:hover { border-color: var(--color-found); background: rgba(63, 142, 96, 0.08); }
 .file-upload-box i { font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem; }
 .file-upload-box span { color: var(--text-dark); font-weight: 500; }
 .file-upload-box small { color: var(--text-muted); }
