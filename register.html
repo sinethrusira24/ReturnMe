@@ -3,82 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - CampusLocator</title>
+    <meta name="description" content="Register for ReturnMe to report and claim lost and found items on campus.">
+    <title>Register | ReturnMe</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="login-page">
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">
-                <i class="fa-solid fa-building-columns"></i> CampusLocator
-            </a>
-            
-            <div class="mobile-menu-btn">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="search-listings.html">Search Items</a></li>
-                <li><a href="report-lost.html">Report Lost</a></li>
-                <li><a href="report-found.html">Report Found</a></li>
-            </ul>
-
-            <div class="nav-profile">
-                <a href="login.html" class="btn-profile">Log In</a>
-            </div>
-        </div>
-    </nav>
+    <div class="page-top-header">
+        <div class="top-logo"><i class="fa-solid fa-building-columns"></i></div>
+        <p class="top-topic">ReturnMe</p>
+    </div>
 
     <main class="auth-container">
         <div class="glass-form-wrapper">
             
             <div class="form-header">
-                <div class="header-icon" style="background: rgba(0, 0, 0, 0.05); color: var(--text-dark);">
-                    <i class="fa-solid fa-user-plus"></i>
-                </div>
-                <h1>Create an Account</h1>
-                <p>Join the secure campus network to report and claim items.</p>
+                <h1>Create Account</h1>
+                <p>Register with your university email.</p>
             </div>
 
-            <form action="login.html" class="modern-form" id="registerForm">
+            <form action="#" class="modern-form" id="registerForm" novalidate>
                 
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" placeholder="e.g. Hasira Perera" required>
+                    <input type="text" id="fullName" name="fullName" placeholder="e.g. Hasira Perera" autocomplete="name" required>
                 </div>
 
                 <div class="form-group">
                     <label for="studentId">Student/Staff ID Number</label>
-                    <input type="text" id="studentId" placeholder="e.g. SE/2026/045" required>
+                    <input type="text" id="studentId" name="studentId" placeholder="e.g. SE/2026/045" autocomplete="off" required>
                 </div>
 
                 <div class="form-group">
                     <label for="email">University Email</label>
-                    <input type="email" id="email" placeholder="student@university.edu" required>
+                    <input type="email" id="email" name="email" placeholder="student@university.edu" autocomplete="email" required aria-describedby="emailHelp">
+                    <div id="emailHelp" class="field-note">Use your campus email.</div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="••••••••" required>
+                <div class="form-group password-group">
+                    <label for="password">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="new-password" required aria-describedby="passwordHelp">
+                        <button type="button" class="toggle-password" aria-label="Show password">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                    <div id="passwordHelp" class="field-note">Minimum 8 characters.</div>
+                </div>
+
+                <div class="form-group password-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="password-field">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" autocomplete="new-password" required aria-describedby="confirmPasswordHelp">
+                        <button type="button" class="toggle-password" aria-label="Show password">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
                     </div>
+                    <div id="confirmPasswordHelp" class="field-note">Repeat your password.</div>
                 </div>
 
                 <div class="auth-options" style="margin-top: 0.5rem;">
-                    <label class="remember-me">
-                        <input type="checkbox" required> I agree to the <a href="#" style="color: var(--color-found);">Terms of Service</a>
+                    <label class="remember-me" for="terms">
+                        <input type="checkbox" id="terms" name="terms" required> I agree to the <a href="#">Terms of Service</a>
                     </label>
                 </div>
 
-                <button type="submit" class="btn-submit" style="background-color: var(--text-dark); justify-content: center; width: 100%;">
+                <button type="submit" class="btn-submit btn-found btn-full">
                     Create Account
                 </button>
 
@@ -92,13 +84,13 @@
 
     <footer class="simple-footer">
         <div class="footer-links">
-            <a href="mailto:support@campuslocator.edu">support@campuslocator.edu</a>
+            <a href="mailto:support@returnme.edu">support@returnme.edu</a>
             <a href="tel:+94716520890">+94 716 520 890</a>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
         </div>
         <div class="footer-copyright">
-            &copy; 2026 CampusLocator. All rights reserved.
+            &copy; 2026 ReturnMe. All rights reserved.
         </div>
     </footer>
 
