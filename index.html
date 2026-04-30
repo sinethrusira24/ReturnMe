@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReturnMe</title>
+    <meta name="description" content="ReturnMe helps university students and staff report, search, and claim lost and found items securely across campus.">
+    <meta name="theme-color" content="#1F2937">
+    <link rel="icon" href="favicon.ico">
+    <title>ReturnMe | Campus Lost & Found</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Primary navigation">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
                 <i class="fa-solid fa-building-columns"></i> ReturnMe
@@ -50,6 +53,26 @@
         </div>
     </header>
 
+    <section class="container search-home" aria-labelledby="home-search-heading">
+        <div class="section-header">
+            <h2 id="home-search-heading">Quick Search</h2>
+        </div>
+
+        <form id="homeSearchForm" class="search-filter-box">
+            <div class="search-input-group">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="homeSearchInput" type="search" placeholder="Search items, locations, or categories" aria-label="Search items">
+            </div>
+            <select id="homeSearchType" class="filter-select" aria-label="Filter by report type">
+                <option value="">All types</option>
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+            </select>
+            <button type="submit" class="btn-search">Search</button>
+        </form>
+        <div id="home-no-results" class="no-results">No items match your search.</div>
+    </section>
+
     <main class="container">
         <div class="section-header">
             <h2>Recently Reported</h2>
@@ -82,17 +105,43 @@
                     <a href="item-detail.html" class="btn-card card-btn-found">Claim Item</a>
                 </div>
             </div>
+
+            <div class="item-card">
+                <div class="card-badge badge-lost">Lost</div>
+                <div class="card-image">
+                    <i class="fa-solid fa-backpack"></i>
+                </div>
+                <div class="card-body">
+                    <h3>Blue Backpack</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Student Union Hall</p>
+                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 22, 2026</p>
+                    <a href="item-detail.html" class="btn-card">View Details</a>
+                </div>
+            </div>
+
+            <div class="item-card">
+                <div class="card-badge badge-found">Found</div>
+                <div class="card-image">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <div class="card-body">
+                    <h3>Keycard Holder</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> Parking Lot B</p>
+                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 21, 2026</p>
+                    <a href="item-detail.html" class="btn-card card-btn-found">Claim Item</a>
+                </div>
+            </div>
         </div>
     </main>
     <footer class="simple-footer">
             <div class="footer-links">
-                <a href="mailto:support@campuslocator.edu">support@returnme.edu</a>
+                <a href="mailto:support@returnme.edu">support@returnme.edu</a>
                 <a href="tel:+94716520890">+94 716 520 890</a>
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms of Service</a>
             </div>
             <div class="footer-copyright">
-                &copy; 2026 ReturnMe. All rights reserved.
+                &copy; <span id="current-year"></span> ReturnMe. All rights reserved.
             </div>
         </footer>
     <div id="toast-container"></div>
