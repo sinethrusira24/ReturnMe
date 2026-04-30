@@ -42,6 +42,91 @@ body {
     flex-direction: column;
 }
 
+body.login-page {
+    background: radial-gradient(circle at top, #F5FBF6 0%, #D2E9D7 32%, #B7DBC0 72%, #9AC9A6 100%);
+}
+
+body.login-page .glass-form-wrapper {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 30px 80px rgba(55, 113, 67, 0.14);
+}
+
+body.login-page .page-top-header {
+    max-width: 500px;
+    margin: 2rem auto 1rem;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+body.login-page .top-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 0.75rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: rgba(63, 142, 96, 0.16);
+    color: var(--color-found);
+    font-size: 1.5rem;
+}
+
+body.login-page .top-topic {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+body.login-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 20% 15%, rgba(255,255,255,0.55), transparent 18%),
+                radial-gradient(circle at 85% 80%, rgba(118, 175, 124, 0.18), transparent 24%);
+    opacity: 0.9;
+    mix-blend-mode: screen;
+}
+
+body.login-page .glass-form-wrapper {
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+body.login-page .glass-form-wrapper:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 40px 90px rgba(30, 80, 40, 0.18);
+}
+
+body.login-page .top-logo {
+    animation: pulseGlow 6s ease-in-out infinite;
+}
+
+body.login-page .form-header h1 {
+    letter-spacing: 0.04em;
+}
+
+body.login-page .btn-submit {
+    background-color: #111827;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+body.login-page .btn-submit:hover {
+    transform: translateY(-3px) scale(1.01);
+    background-color: #000000;
+}
+
+body.login-page .password-field input:focus {
+    box-shadow: 0 0 0 3px rgba(63, 142, 96, 0.22);
+}
+
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 0.95; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
 /* =========================================
    2. NAVIGATION BAR
    ========================================= */
@@ -517,9 +602,13 @@ body {
 /* =========================================
    7. AUTHENTICATION PAGES SPECIFICS
    ========================================= */
-.auth-container { max-width: 500px; margin: 4rem auto; padding: 0 2rem; }
+.page-top-header { max-width: 500px; margin: 2rem auto 1rem; padding: 0 2rem; text-align: center; }
+.top-logo { width: 64px; height: 64px; margin: 0 auto 0.75rem; display: inline-flex; justify-content: center; align-items: center; border-radius: 50%; background: rgba(63, 142, 96, 0.12); color: var(--color-found); font-size: 1.5rem; }
+.top-topic { margin: 0; font-size: 1.35rem; font-weight: 700; color: var(--text-dark); }
+.auth-container { max-width: 500px; margin: 0 auto 4rem; padding: 0 2rem; }
 
-.auth-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; font-size: 0.9rem; }
+.auth-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 0.9rem; }
+.password-group { margin-bottom: 1rem; }
 .remember-me { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); cursor: pointer; }
 .forgot-password { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
 .forgot-password:hover { color: var(--text-dark); text-decoration: underline; }
@@ -527,6 +616,16 @@ body {
 .auth-footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(0, 0, 0, 0.05); font-size: 0.95rem; color: var(--text-muted); }
 .auth-footer a { color: var(--color-found); font-weight: 600; text-decoration: none; transition: var(--transition); }
 .auth-footer a:hover { text-decoration: underline; }
+
+.field-note { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
+.form-alert { min-height: 1.2rem; margin-bottom: 1.25rem; font-size: 0.95rem; font-weight: 600; }
+.form-alert.error { color: #dc2626; }
+.form-alert.success { color: #166534; }
+.password-field { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: center; }
+.toggle-password { border: 1px solid #d1d5db; background: #fff; border-radius: 12px; width: 3rem; height: 3rem; color: var(--text-muted); display: inline-flex; justify-content: center; align-items: center; cursor: pointer; transition: var(--transition); }
+.toggle-password:hover { border-color: var(--color-found); color: var(--text-dark); }
+.form-note { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem; }
+.form-topic { text-align: center; color: var(--text-dark); font-size: 0.95rem; margin-top: 0.75rem; font-weight: 700; }
 
 /* =========================================
    8. ITEM DETAIL PAGE & CHAT UI
