@@ -638,12 +638,20 @@ body.login-page .password-field input:focus {
     display: grid; grid-template-columns: 1fr 1.2fr; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid rgba(255, 255, 255, 1); overflow: hidden;
 }
 
-.item-image-side { background-color: rgba(0, 0, 0, 0.03); display: flex; justify-content: center; align-items: center; position: relative; min-height: 400px; border-right: 1px solid rgba(0, 0, 0, 0.05); }
-.item-image-side .placeholder-icon { font-size: 8rem; color: #D1D5DB; }
+.item-image-side { background-color: rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; position: relative; border-right: 1px solid rgba(0, 0, 0, 0.05); }
+.main-image-container { flex: 1; display: flex; justify-content: center; align-items: center; min-height: 300px; }
+.main-image-container .placeholder-icon { font-size: 8rem; color: #D1D5DB; }
+.image-gallery { display: flex; gap: 0.8rem; padding: 1.5rem; background: rgba(0,0,0,0.02); justify-content: center; }
+.gallery-thumb { width: 60px; height: 60px; background: var(--white); border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 2px solid transparent; transition: var(--transition); color: #D1D5DB; font-size: 1.5rem; }
+.gallery-thumb:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.gallery-thumb.active { border-color: var(--color-found); color: var(--color-found); }
 
 .item-info-side { padding: 3rem 2.5rem; display: flex; flex-direction: column; }
 .item-header-info { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
-.item-reference { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: rgba(0, 0, 0, 0.05); padding: 0.3rem 0.8rem; border-radius: var(--radius-full); margin-bottom: 0.8rem; }
+.header-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+.item-reference { display: inline-block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: rgba(0, 0, 0, 0.05); padding: 0.3rem 0.8rem; border-radius: var(--radius-full); }
+.btn-share { background: transparent; border: 1px solid rgba(0,0,0,0.1); color: var(--text-dark); padding: 0.4rem 0.8rem; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Poppins', sans-serif; }
+.btn-share:hover { background: rgba(0,0,0,0.05); }
 .item-header-info h1 { font-size: 2.2rem; color: var(--text-dark); line-height: 1.2; }
 
 /* Reporter Profile Info */
@@ -717,12 +725,31 @@ body.login-page .password-field input:focus {
    10. MOBILE RESPONSIVENESS
    ========================================= */
 @media (max-width: 850px) {
-    /* Item Detail Layout */
+    /* Item Detail Layout - Tablet */
     .item-detail-card { grid-template-columns: 1fr; }
     .item-image-side { min-height: 250px; border-right: none; border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
     .item-image-side .placeholder-icon { font-size: 5rem; }
     .item-info-side { padding: 2rem 1.5rem; }
     .item-header-info h1 { font-size: 1.8rem; }
+}
+
+@media (max-width: 600px) {
+    /* Item Detail Layout - Mobile Phones */
+    .item-detail-container { margin: 1.5rem auto 3rem; padding: 0 1rem; }
+    .item-image-side { min-height: 200px; }
+    .item-image-side .placeholder-icon { font-size: 4rem; }
+    .item-info-side { padding: 1.5rem 1.2rem; }
+    .item-header-info { margin-bottom: 1.5rem; padding-bottom: 1rem; }
+    .item-header-info h1 { font-size: 1.5rem; }
+    .reporter-profile { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .item-metadata { gap: 1rem; }
+    .item-metadata li i { font-size: 1.1rem; }
+    .btn-full { padding: 0.8rem; font-size: 1rem; }
+    .discussion-section { padding: 1.2rem; margin-top: 2rem; }
+    .discussion-header h2 { font-size: 1.2rem; }
+    .chat-bubble { padding: 0.8rem 1rem; }
+    .chat-bubble p { font-size: 0.9rem; }
+    .chat-avatar { width: 35px; height: 35px; font-size: 0.8rem; }
 }
 
 @media (max-width: 768px) {

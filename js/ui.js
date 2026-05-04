@@ -49,4 +49,22 @@ export function initUI() {
     if (yearElement) {
         yearElement.textContent = new Date().getFullYear();
     }
+
+    // 5. Share Button Logic
+    const shareBtn = document.getElementById('shareBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                
+                // We'll dynamically import showToast to avoid circular dependencies 
+                // if ui.js is imported in many places
+                import('./toast.js').then(module => {
+                    module.showToast('Link copied to clipboard!', 'success');
+                });
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        });
+    }
 }
