@@ -1,17 +1,11 @@
+import { showToast } from './toast.js';
+
 export function initAuth() {
     const loginForm = document.getElementById('loginForm');
-    const loginFeedback = document.getElementById('loginFeedback');
     const passwordInput = document.getElementById('password');
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
     if (loginForm) {
-        const setFeedback = (message, type) => {
-            if (!loginFeedback) return;
-            loginFeedback.textContent = message;
-            loginFeedback.classList.toggle('error', type === 'error');
-            loginFeedback.classList.toggle('success', type === 'success');
-        };
-
         loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -20,7 +14,7 @@ export function initAuth() {
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (!email || !password) {
-                setFeedback('Please enter both email and password.', 'error');
+                showToast('Please enter both email and password.', 'error');
                 if (!email) {
                     document.getElementById('email').focus();
                 } else {
@@ -30,18 +24,18 @@ export function initAuth() {
             }
 
             if (!emailPattern.test(email)) {
-                setFeedback('Enter a valid university email address.', 'error');
+                showToast('Enter a valid university email address.', 'error');
                 document.getElementById('email').focus();
                 return;
             }
 
             if (password.length < 8) {
-                setFeedback('Password must be at least 8 characters.', 'error');
+                showToast('Password must be at least 8 characters.', 'error');
                 passwordInput?.focus();
                 return;
             }
 
-            setFeedback('Login successful. Redirecting...', 'success');
+            showToast('Login successful. Redirecting...', 'success');
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 800);
