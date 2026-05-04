@@ -813,3 +813,73 @@ body.login-page .password-field input:focus {
         grid-template-columns: 1fr; 
     }
 }
+
+/* =========================================
+   11. TOAST NOTIFICATIONS
+   ========================================= */
+#toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--white);
+    color: var(--text-dark);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 500;
+    min-width: 250px;
+    max-width: 350px;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease;
+    border-left: 5px solid;
+    pointer-events: auto;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast i {
+    font-size: 1.2rem;
+}
+
+.toast-success {
+    border-left-color: #10B981;
+}
+.toast-success i {
+    color: #10B981;
+}
+
+.toast-error {
+    border-left-color: #EF4444;
+}
+.toast-error i {
+    color: #EF4444;
+}
+
+.toast-warning {
+    border-left-color: #F59E0B;
+}
+.toast-warning i {
+    color: #F59E0B;
+}
+
+.toast-info {
+    border-left-color: #3B82F6;
+}
+.toast-info i {
+    color: #3B82F6;
+}
