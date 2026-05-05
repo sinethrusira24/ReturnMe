@@ -3,6 +3,7 @@ import { initChat } from './chat.js';
 import { initSearch } from './search.js';
 import { initAuth } from './auth.js';
 import { initForms } from './forms.js';
+import { initFileUpload } from './file-upload.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize all modules
@@ -11,4 +12,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initSearch();
     initAuth();
     initForms();
+    initFileUpload();
 });

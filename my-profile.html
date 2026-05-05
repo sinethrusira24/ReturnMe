@@ -9,13 +9,14 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Primary navigation">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
                 <i class="fa-solid fa-building-columns"></i> ReturnMe
             </a>
-            <div class="mobile-menu-btn">
+            <div class="mobile-menu-btn" role="button" aria-label="Toggle navigation menu" aria-expanded="false" tabindex="0">
                 <i class="fa-solid fa-bars"></i>
             </div>
             <ul class="nav-links">
@@ -44,8 +45,8 @@
                 <p class="profile-joined"><i class="fa-regular fa-calendar"></i> Member since October 2026</p>
             </div>
             <div class="profile-hero-actions">
-                <button class="btn-edit-profile" id="btn-edit-profile"><i class="fa-solid fa-user-pen"></i> Edit Profile</button>
-                <button class="btn-share-profile" id="btn-share-profile"><i class="fa-solid fa-share-nodes"></i></button>
+                <button class="btn-edit-profile" id="btn-edit-profile" aria-label="Edit your profile settings"><i class="fa-solid fa-user-pen"></i> Edit Profile</button>
+                <button class="btn-share-profile" id="btn-share-profile" aria-label="Share your profile"><i class="fa-solid fa-share-nodes"></i></button>
             </div>
         </div>
     </section>
@@ -83,15 +84,15 @@
     </section>
 
     <!-- Tabbed Content -->
-    <main class="profile-main-area">
-        <div class="profile-tabs">
-            <button class="ptab active" data-tab="reports"><i class="fa-solid fa-list"></i> My Reports</button>
-            <button class="ptab" data-tab="activity"><i class="fa-solid fa-clock-rotate-left"></i> Activity</button>
-            <button class="ptab" data-tab="settings"><i class="fa-solid fa-gear"></i> Settings</button>
+    <main class="profile-main-area" id="main-content">
+        <div class="profile-tabs" role="tablist" aria-label="Profile sections">
+            <button class="ptab active" data-tab="reports" role="tab" aria-selected="true" aria-controls="tab-reports" id="ptab-reports" tabindex="0"><i class="fa-solid fa-list"></i> My Reports</button>
+            <button class="ptab" data-tab="activity" role="tab" aria-selected="false" aria-controls="tab-activity" id="ptab-activity" tabindex="-1"><i class="fa-solid fa-clock-rotate-left"></i> Activity</button>
+            <button class="ptab" data-tab="settings" role="tab" aria-selected="false" aria-controls="tab-settings" id="ptab-settings" tabindex="-1"><i class="fa-solid fa-gear"></i> Settings</button>
         </div>
 
         <!-- Tab: My Reports -->
-        <div class="ptab-content active" id="tab-reports">
+        <div class="ptab-content active" id="tab-reports" role="tabpanel" aria-labelledby="ptab-reports">
             <div class="reports-toolbar">
                 <div class="reports-filter-pills">
                     <button class="pill-btn active" data-filter="all">All</button>
@@ -170,7 +171,7 @@
         </div>
 
         <!-- Tab: Activity -->
-        <div class="ptab-content" id="tab-activity">
+        <div class="ptab-content" id="tab-activity" role="tabpanel" aria-labelledby="ptab-activity">
             <div class="activity-timeline">
                 <div class="timeline-item">
                     <div class="timeline-dot dot-found"></div>
@@ -208,7 +209,7 @@
         </div>
 
         <!-- Tab: Settings -->
-        <div class="ptab-content" id="tab-settings">
+        <div class="ptab-content" id="tab-settings" role="tabpanel" aria-labelledby="ptab-settings">
             <div class="settings-grid">
                 <div class="settings-section">
                     <h3><i class="fa-solid fa-user"></i> Personal Information</h3>
@@ -270,6 +271,20 @@
         </div>
     </footer>
 
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon"><i id="modalIconI" class="fa-solid fa-trash-can"></i></div>
+            <h3 id="modalTitle">Are you sure?</h3>
+            <p id="modalDesc">This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancel</button>
+                <button class="modal-btn" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
     <script type="module" src="js/main.js"></script>
     <script src="js/profile.js"></script>
 </body>
