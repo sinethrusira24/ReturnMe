@@ -59,4 +59,54 @@ export function initAuth() {
             });
         });
     }
+
+    // --- Registration Form Handler ---
+    const registerForm = document.getElementById('registerForm');
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName')?.value.trim();
+            const studentId = document.getElementById('studentId')?.value.trim();
+            const email = registerForm.email.value.trim();
+            const password = registerForm.password.value.trim();
+            const confirmPassword = document.getElementById('confirmPassword')?.value.trim();
+            const terms = document.getElementById('terms')?.checked;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!fullName || !studentId || !email || !password || !confirmPassword) {
+                showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            if (!emailPattern.test(email)) {
+                showToast('Enter a valid university email address.', 'error');
+                document.getElementById('email').focus();
+                return;
+            }
+
+            if (password.length < 8) {
+                showToast('Password must be at least 8 characters.', 'error');
+                document.getElementById('password').focus();
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match.', 'error');
+                document.getElementById('confirmPassword').focus();
+                return;
+            }
+
+            if (!terms) {
+                showToast('You must agree to the Terms of Service.', 'error');
+                return;
+            }
+
+            showToast('Account created successfully! Redirecting...', 'success');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1200);
+        });
+    }
 }
