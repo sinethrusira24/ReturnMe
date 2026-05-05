@@ -22,16 +22,30 @@ export function initChat() {
                 const newMessage = document.createElement('div');
                 newMessage.classList.add('chat-message', 'sent');
                 
-                newMessage.innerHTML = `
-                    <div class="chat-bubble">
-                        <div class="chat-meta">
-                            <span class="chat-author">You</span>
-                            <span class="chat-time">${timeString}</span>
-                        </div>
-                        <p>${messageText}</p>
-                    </div>
-                    <div class="chat-avatar user-av" style="background: #3b82f6;">ME</div>
+                // Build message safely using DOM methods to prevent XSS
+                const bubble = document.createElement('div');
+                bubble.className = 'chat-bubble';
+
+                const meta = document.createElement('div');
+                meta.className = 'chat-meta';
+                meta.innerHTML = `
+                    <span class="chat-author">You</span>
+                    <span class="chat-time">${timeString}</span>
                 `;
+
+                const msgP = document.createElement('p');
+                msgP.textContent = messageText;
+
+                bubble.appendChild(meta);
+                bubble.appendChild(msgP);
+
+                const avatar = document.createElement('div');
+                avatar.className = 'chat-avatar user-av';
+                avatar.style.background = '#3b82f6';
+                avatar.textContent = 'ME';
+
+                newMessage.appendChild(bubble);
+                newMessage.appendChild(avatar);
 
                 chatContainer.appendChild(newMessage);
                 inputField.value = '';
