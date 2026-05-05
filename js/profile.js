@@ -31,17 +31,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     statCards.forEach(card => statsObserver.observe(card));
 
-    // --- Tabs ---
+    // --- Tabs with ARIA keyboard navigation ---
     const tabs = document.querySelectorAll('.ptab');
     const tabContents = document.querySelectorAll('.ptab-content');
 
+    function activateTab(tab) {
+        tabs.forEach(t => {
+            t.classList.remove('active');
+            t.setAttribute('aria-selected', 'false');
+            t.setAttribute('tabindex', '-1');
+        });
+        tabContents.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('tabindex', '0');
+        tab.focus();
+        const target = document.getElementById('tab-' + tab.dataset.tab);
+        if (target) target.classList.add('active');
+    }
+
     tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            const target = document.getElementById('tab-' + tab.dataset.tab);
-            if (target) target.classList.add('active');
+        tab.addEventListener('click', () => activateTab(tab));
+
+        // Keyboard navigation: Arrow keys to move between tabs
+        tab.addEventListener('keydown', (e) => {
+            const tabArray = Array.from(tabs);
+            const index = tabArray.indexOf(tab);
+            let newIndex;
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                newIndex = (index + 1) % tabArray.length;
+                activateTab(tabArray[newIndex]);
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                newIndex = (index - 1 + tabArray.length) % tabArray.length;
+                activateTab(tabArray[newIndex]);
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                activateTab(tabArray[0]);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                activateTab(tabArray[tabArray.length - 1]);
+            }
         });
     });
 
@@ -90,5 +122,239 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveBtn.style.background = '';
             }, 2000);
         });
+    }
+
+    // --- Edit Profile → Navigate to Settings tab ---
+    const editProfileBtn = document.getElementById('btn-edit-profile');
+    if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', () => {
+            const settingsTab = document.querySelector('.ptab[data-tab="settings"]');
+            if (settingsTab) {
+                activateTab(settingsTab);
+                // Smooth scroll to the tabs section
+                const tabsContainer = document.querySelector('.profile-tabs');
+                if (tabsContainer) {
+                    tabsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                // Focus the first input in settings after a short delay
+                setTimeout(() => {
+                    const firstInput = document.querySelector('#tab-settings input');
+                    if (firstInput) firstInput.focus();
+                }, 500);
+            }
+        });
+    }
+
+    // ========================================
+    // CONFIRMATION MODAL SYSTEM
+    // ========================================
+    const modal = document.getElementById('confirmModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalIconI = document.getElementById('modalIconI');
+    const modalConfirm = document.getElementById('modalConfirm');
+    const modalCancel = document.getElementById('modalCancel');
+    let previousFocus = null;
+
+    function showModal({ title, description, iconClass, iconType, confirmText, confirmClass, onConfirm }) {
+        if (!modal) return;
+        modalTitle.textContent = title;
+        modalDesc.textContent = description;
+        modalIconI.className = `fa-solid ${iconClass}`;
+        modalIcon.className = `modal-icon modal-icon-${iconType}`;
+
+        // Store the element that triggered the modal for focus restoration
+        previousFocus = document.activeElement;
+
+        // Remove old listener by cloning the confirm button
+        const currentConfirm = document.getElementById('modalConfirm');
+        const newConfirm = currentConfirm.cloneNode(true);
+        // Update the cloned button's text and styling
+        newConfirm.textContent = confirmText;
+        newConfirm.className = `modal-btn ${confirmClass}`;
+        currentConfirm.replaceWith(newConfirm);
+
+        newConfirm.addEventListener('click', () => {
+            hideModal();
+            if (onConfirm) onConfirm();
+        });
+
+        modal.classList.add('active');
+
+        // Trap focus inside modal
+        setTimeout(() => {
+            document.getElementById('modalCancel').focus();
+        }, 100);
+    }
+
+    function hideModal() {
+        if (!modal) return;
+        modal.classList.remove('active');
+        // Restore focus to the element that opened the modal
+        if (previousFocus) {
+            previousFocus.focus();
+            previousFocus = null;
+        }
+    }
+
+    // Cancel button
+    if (modalCancel) {
+        modalCancel.addEventListener('click', hideModal);
+    }
+
+    // Close modal on overlay click
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideModal();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                hideModal();
+            }
+        });
+    }
+
+    // --- Wire up Remove buttons ---
+    document.querySelectorAll('.pbtn-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.preport-card');
+            const itemName = card?.querySelector('h3')?.textContent || 'this report';
+            showModal({
+                title: 'Remove Report?',
+                description: `Are you sure you want to remove "${itemName}"? This action cannot be undone.`,
+                iconClass: 'fa-trash-can',
+                iconType: 'danger',
+                confirmText: 'Remove',
+                confirmClass: 'modal-btn modal-btn-danger',
+                onConfirm: () => {
+                    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => card.remove(), 400);
+                    showToast(`"${itemName}" has been removed.`, 'success');
+                }
+            });
+        });
+    });
+
+    // --- Wire up Resolve buttons ---
+    document.querySelectorAll('.pbtn-resolve').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.preport-card');
+            const itemName = card?.querySelector('h3')?.textContent || 'this item';
+            showModal({
+                title: 'Mark as Resolved?',
+                description: `Confirm that "${itemName}" has been successfully returned to its owner.`,
+                iconClass: 'fa-circle-check',
+                iconType: 'info',
+                confirmText: 'Mark Resolved',
+                confirmClass: 'modal-btn modal-btn-confirm',
+                onConfirm: () => {
+                    // Update the card visually
+                    const progressLabel = card.querySelector('.progress-label');
+                    const progressFill = card.querySelector('.progress-fill');
+                    const statusBar = card.querySelector('.preport-status-bar');
+                    if (progressLabel) {
+                        progressLabel.className = 'progress-label resolved-label';
+                        progressLabel.innerHTML = '<i class="fa-solid fa-check"></i> Resolved';
+                    }
+                    if (progressFill) {
+                        progressFill.className = 'progress-fill resolved-fill';
+                        progressFill.style.width = '100%';
+                    }
+                    if (statusBar) {
+                        statusBar.className = 'preport-status-bar';
+                        statusBar.style.background = 'linear-gradient(90deg, #10b981, #6ee7b7)';
+                    }
+                    btn.remove();
+                    showToast(`"${itemName}" marked as resolved!`, 'success');
+                }
+            });
+        });
+    });
+
+    // --- Wire up Archive buttons ---
+    document.querySelectorAll('.pbtn-archive').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.preport-card');
+            const itemName = card?.querySelector('h3')?.textContent || 'this report';
+            showModal({
+                title: 'Archive Report?',
+                description: `Archive "${itemName}"? You can view archived items later.`,
+                iconClass: 'fa-box-archive',
+                iconType: 'warning',
+                confirmText: 'Archive',
+                confirmClass: 'modal-btn modal-btn-warning',
+                onConfirm: () => {
+                    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    card.style.opacity = '0.4';
+                    card.style.transform = 'scale(0.95)';
+                    card.style.pointerEvents = 'none';
+                    showToast(`"${itemName}" has been archived.`, 'success');
+                }
+            });
+        });
+    });
+
+    // --- Wire up Change Password button ---
+    const changePasswordBtn = document.querySelector('.btn-account-action:not(.btn-danger)');
+    if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', () => {
+            showModal({
+                title: 'Change Password',
+                description: 'A password reset link will be sent to your registered email address.',
+                iconClass: 'fa-key',
+                iconType: 'info',
+                confirmText: 'Send Reset Link',
+                confirmClass: 'modal-btn modal-btn-confirm',
+                onConfirm: () => {
+                    showToast('Password reset link sent to your email!', 'success');
+                }
+            });
+        });
+    }
+
+    // --- Wire up Delete Account button ---
+    const deleteAccountBtn = document.querySelector('.btn-account-action.btn-danger');
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', () => {
+            showModal({
+                title: 'Delete Account?',
+                description: 'This will permanently delete your account and all associated data. This action is irreversible.',
+                iconClass: 'fa-trash-can',
+                iconType: 'danger',
+                confirmText: 'Delete Forever',
+                confirmClass: 'modal-btn modal-btn-danger',
+                onConfirm: () => {
+                    showToast('Account deletion requested. You will receive a confirmation email.', 'warning');
+                }
+            });
+        });
+    }
+
+    // --- Helper: show toast (inline since profile.js is not a module) ---
+    function showToast(message, type = 'info') {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        let iconClass = 'fa-info-circle';
+        if (type === 'success') iconClass = 'fa-check-circle';
+        if (type === 'error') iconClass = 'fa-circle-xmark';
+        if (type === 'warning') iconClass = 'fa-triangle-exclamation';
+        toast.innerHTML = `<i class="fa-solid ${iconClass}"></i><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 });
