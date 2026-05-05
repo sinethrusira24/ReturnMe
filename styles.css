@@ -32,6 +32,10 @@
     font-family: 'Poppins', sans-serif;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     background: linear-gradient(135deg, var(--bg-peach) 0%, var(--bg-green) 100%);
     background-attachment: fixed;
