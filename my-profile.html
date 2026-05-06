@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - ReturnMe</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -16,7 +19,8 @@
             <a href="index.html" class="nav-logo">
                 <i class="fa-solid fa-building-columns"></i> ReturnMe
             </a>
-            <div class="mobile-menu-btn" role="button" aria-label="Toggle navigation menu" aria-expanded="false" tabindex="0">
+            <div class="mobile-menu-btn" role="button" aria-label="Toggle navigation menu" aria-expanded="false"
+                tabindex="0">
                 <i class="fa-solid fa-bars"></i>
             </div>
             <ul class="nav-links">
@@ -45,8 +49,10 @@
                 <p class="profile-joined"><i class="fa-regular fa-calendar"></i> Member since October 2026</p>
             </div>
             <div class="profile-hero-actions">
-                <button class="btn-edit-profile" id="btn-edit-profile" aria-label="Edit your profile settings"><i class="fa-solid fa-user-pen"></i> Edit Profile</button>
-                <button class="btn-share-profile" id="btn-share-profile" aria-label="Share your profile"><i class="fa-solid fa-share-nodes"></i></button>
+                <button class="btn-edit-profile" id="btn-edit-profile" aria-label="Edit your profile settings"><i
+                        class="fa-solid fa-user-pen"></i> Edit Profile</button>
+                <button class="btn-share-profile" id="btn-share-profile" aria-label="Share your profile"><i
+                        class="fa-solid fa-share-nodes"></i></button>
             </div>
         </div>
     </section>
@@ -86,9 +92,12 @@
     <!-- Tabbed Content -->
     <main class="profile-main-area" id="main-content">
         <div class="profile-tabs" role="tablist" aria-label="Profile sections">
-            <button class="ptab active" data-tab="reports" role="tab" aria-selected="true" aria-controls="tab-reports" id="ptab-reports" tabindex="0"><i class="fa-solid fa-list"></i> My Reports</button>
-            <button class="ptab" data-tab="activity" role="tab" aria-selected="false" aria-controls="tab-activity" id="ptab-activity" tabindex="-1"><i class="fa-solid fa-clock-rotate-left"></i> Activity</button>
-            <button class="ptab" data-tab="settings" role="tab" aria-selected="false" aria-controls="tab-settings" id="ptab-settings" tabindex="-1"><i class="fa-solid fa-gear"></i> Settings</button>
+            <button class="ptab active" data-tab="reports" role="tab" aria-selected="true" aria-controls="tab-reports"
+                id="ptab-reports" tabindex="0"><i class="fa-solid fa-list"></i> My Reports</button>
+            <button class="ptab" data-tab="activity" role="tab" aria-selected="false" aria-controls="tab-activity"
+                id="ptab-activity" tabindex="-1"><i class="fa-solid fa-clock-rotate-left"></i> Activity</button>
+            <button class="ptab" data-tab="settings" role="tab" aria-selected="false" aria-controls="tab-settings"
+                id="ptab-settings" tabindex="-1"><i class="fa-solid fa-gear"></i> Settings</button>
         </div>
 
         <!-- Tab: My Reports -->
@@ -115,7 +124,9 @@
                         <p><i class="fa-solid fa-location-dot"></i> Main Library</p>
                         <div class="preport-progress">
                             <span class="progress-label">Status: Active</span>
-                            <div class="progress-bar"><div class="progress-fill" style="width: 40%;"></div></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 40%;"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="preport-actions">
@@ -137,7 +148,9 @@
                         <p><i class="fa-solid fa-location-dot"></i> Faculty Cafe</p>
                         <div class="preport-progress">
                             <span class="progress-label">Status: 1 Claim</span>
-                            <div class="progress-bar"><div class="progress-fill found-fill" style="width: 65%;"></div></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill found-fill" style="width: 65%;"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="preport-actions">
@@ -158,8 +171,11 @@
                         <h3>Dorm Room Key</h3>
                         <p><i class="fa-solid fa-location-dot"></i> Parking Lot B</p>
                         <div class="preport-progress">
-                            <span class="progress-label resolved-label"><i class="fa-solid fa-check"></i> Resolved</span>
-                            <div class="progress-bar"><div class="progress-fill resolved-fill" style="width: 100%;"></div></div>
+                            <span class="progress-label resolved-label"><i class="fa-solid fa-check"></i>
+                                Resolved</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill resolved-fill" style="width: 100%;"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="preport-actions">
@@ -230,29 +246,37 @@
                             <label>Faculty / Department</label>
                             <input type="text" value="Faculty of Computing">
                         </div>
-                        <button type="button" class="btn-save-settings"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                        <button type="button" class="btn-save-settings"><i class="fa-solid fa-floppy-disk"></i> Save
+                            Changes</button>
                     </form>
                 </div>
                 <div class="settings-section">
                     <h3><i class="fa-solid fa-bell"></i> Notification Preferences</h3>
                     <div class="toggle-list">
                         <div class="toggle-row">
-                            <div><strong>Email Notifications</strong><p>Receive updates via email</p></div>
+                            <div><strong>Email Notifications</strong>
+                                <p>Receive updates via email</p>
+                            </div>
                             <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
                         </div>
                         <div class="toggle-row">
-                            <div><strong>Claim Alerts</strong><p>Get notified when someone claims your item</p></div>
+                            <div><strong>Claim Alerts</strong>
+                                <p>Get notified when someone claims your item</p>
+                            </div>
                             <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
                         </div>
                         <div class="toggle-row">
-                            <div><strong>Weekly Digest</strong><p>Summary of lost & found activity</p></div>
+                            <div><strong>Weekly Digest</strong>
+                                <p>Summary of lost & found activity</p>
+                            </div>
                             <label class="switch"><input type="checkbox"><span class="slider"></span></label>
                         </div>
                     </div>
                     <h3 style="margin-top: 2rem;"><i class="fa-solid fa-shield-halved"></i> Account</h3>
                     <div class="account-actions-list">
                         <button class="btn-account-action"><i class="fa-solid fa-key"></i> Change Password</button>
-                        <button class="btn-account-action btn-danger"><i class="fa-solid fa-trash-can"></i> Delete Account</button>
+                        <button class="btn-account-action btn-danger"><i class="fa-solid fa-trash-can"></i> Delete
+                            Account</button>
                     </div>
                 </div>
             </div>
@@ -272,7 +296,8 @@
     </footer>
 
     <!-- Confirmation Modal -->
-    <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+        aria-describedby="modalDesc">
         <div class="modal-box">
             <div class="modal-icon" id="modalIcon"><i id="modalIconI" class="fa-solid fa-trash-can"></i></div>
             <h3 id="modalTitle">Are you sure?</h3>
@@ -288,4 +313,5 @@
     <script type="module" src="js/main.js"></script>
     <script src="js/profile.js"></script>
 </body>
+
 </html>
