@@ -56,6 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Just now';
                         const icon = report.type === 'lost' ? 'fa-id-card' : 'fa-mobile-screen';
+                        if (report.category === 'ids') icon = 'fa-id-card';
+                        if (report.category === 'electronics') icon = 'fa-mobile-screen';
+                        if (report.category === 'keys') icon = 'fa-key';
+                        if (report.category === 'clothing') icon = 'fa-shirt';
                         const imageHTML = report.imageUrl 
                             ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
                             : `<i class="fa-solid ${icon}"></i>`;

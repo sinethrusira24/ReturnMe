@@ -86,6 +86,7 @@ export function initForms() {
             const itemCategory = document.getElementById('itemCategory')?.value;
             const dateFound = document.getElementById('dateFound')?.value;
             const locationFound = document.getElementById('locationFound')?.value.trim();
+            const currentStatus = document.getElementById('currentStatus')?.value;
             const description = document.getElementById('description')?.value.trim();
 
             if (!fullName || !email || !phone || !itemName || !itemCategory || !dateFound || !locationFound || !description) {
@@ -107,6 +108,7 @@ export function initForms() {
                     category: itemCategory,
                     date: dateFound,
                     location: locationFound,
+                    currentStatus: currentStatus || 'with_me',
                     description: description,
                     status: "active",
                     imageUrl: imageUrl || null,
