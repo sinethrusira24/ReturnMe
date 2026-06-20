@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ReturnMe helps university students and staff report, search, and claim lost and found items securely across campus.">
+    <meta name="description"
+        content="ReturnMe helps university students and staff report, search, and claim lost and found items securely across campus.">
     <meta name="theme-color" content="#1F2937">
     <link rel="icon" href="favicon.ico">
     <title>ReturnMe | Campus Lost & Found</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
     <nav class="navbar" aria-label="Primary navigation">
@@ -18,7 +22,7 @@
             <a href="index.html" class="nav-logo">
                 <i class="fa-solid fa-building-columns"></i> ReturnMe
             </a>
-            
+
             <div class="mobile-menu-btn">
                 <i class="fa-solid fa-bars"></i>
             </div>
@@ -43,7 +47,7 @@
         <div class="hero-content">
             <h1>Find What You Lost, <span class="text-highlight">Return What You Found.</span></h1>
             <p>The centralized smart platform for our university community to securely report and claim lost items.</p>
-            
+
             <div class="hero-actions">
                 <a href="report-lost.html" class="btn-action btn-lost">
                     <i class="fa-solid fa-magnifying-glass"></i> I Lost Something
@@ -63,7 +67,8 @@
         <form id="homeSearchForm" class="search-filter-box">
             <div class="search-input-group">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input id="homeSearchInput" type="search" placeholder="Search items, locations, or categories" aria-label="Search items">
+                <input id="homeSearchInput" type="search" placeholder="Search items, locations, or categories"
+                    aria-label="Search items">
             </div>
             <select id="homeSearchType" class="filter-select" aria-label="Filter by report type">
                 <option value="">All types</option>
@@ -80,73 +85,24 @@
             <h2>Recently Reported</h2>
             <a href="search-listings.html" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-        
+
         <div class="item-grid">
-            <div class="item-card">
-                <div class="card-badge badge-lost">Lost</div>
-                <div class="card-image">
-                    <i class="fa-solid fa-id-card"></i>
-                </div>
-                <div class="card-body">
-                    <h3>Student ID Card</h3>
-                    <p class="location"><i class="fa-solid fa-location-dot"></i> Main Library, 2nd Floor</p>
-                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 24, 2026</p>
-                    <a href="item-detail.html" class="btn-card">View Details</a>
-                </div>
-            </div>
-
-            <div class="item-card">
-                <div class="card-badge badge-found">Found</div>
-                <div class="card-image">
-                    <i class="fa-solid fa-mobile-screen-button"></i>
-                </div>
-                <div class="card-body">
-                    <h3>iPhone 13 - Black Case</h3>
-                    <p class="location"><i class="fa-solid fa-location-dot"></i> Engineering Faculty Cafe</p>
-                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 23, 2026</p>
-                    <a href="item-detail.html" class="btn-card card-btn-found">Claim Item</a>
-                </div>
-            </div>
-
-            <div class="item-card">
-                <div class="card-badge badge-lost">Lost</div>
-                <div class="card-image">
-                    <i class="fa-solid fa-backpack"></i>
-                </div>
-                <div class="card-body">
-                    <h3>Blue Backpack</h3>
-                    <p class="location"><i class="fa-solid fa-location-dot"></i> Student Union Hall</p>
-                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 22, 2026</p>
-                    <a href="item-detail.html" class="btn-card">View Details</a>
-                </div>
-            </div>
-
-            <div class="item-card">
-                <div class="card-badge badge-found">Found</div>
-                <div class="card-image">
-                    <i class="fa-solid fa-key"></i>
-                </div>
-                <div class="card-body">
-                    <h3>Keycard Holder</h3>
-                    <p class="location"><i class="fa-solid fa-location-dot"></i> Parking Lot B</p>
-                    <p class="date"><i class="fa-regular fa-calendar"></i> Oct 21, 2026</p>
-                    <a href="item-detail.html" class="btn-card card-btn-found">Claim Item</a>
-                </div>
-            </div>
+            <!-- Dynamic items will be injected here by search.js -->
         </div>
     </main>
     <footer class="simple-footer">
-            <div class="footer-links">
-                <a href="mailto:support@returnme.edu">support@returnme.edu</a>
-                <a href="tel:+94716520890">+94 716 520 890</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-            </div>
-            <div class="footer-copyright">
-                &copy; <span id="current-year"></span> ReturnMe. All rights reserved.
-            </div>
-        </footer>
+        <div class="footer-links">
+            <a href="mailto:support@returnme.edu">support@returnme.edu</a>
+            <a href="tel:+94716520890">+94 716 520 890</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <div class="footer-copyright">
+            &copy; <span id="current-year"></span> ReturnMe. All rights reserved.
+        </div>
+    </footer>
     <div id="toast-container"></div>
     <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

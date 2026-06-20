@@ -1,12 +1,66 @@
 import { showToast } from './toast.js';
+import { auth, db } from './firebase-config.js';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export function initAuth() {
+    // UI Updates based on Auth State
+    onAuthStateChanged(auth, (user) => {
+        const navProfile = document.querySelector('.nav-profile');
+        const mobileLinks = document.querySelectorAll('.mobile-only');
+
+        if (user) {
+            // User is signed in
+            if (navProfile) {
+                navProfile.innerHTML = `
+                    <a href="my-profile.html" class="btn-profile"><i class="fa-solid fa-user"></i> Profile</a>
+                    <button id="btnLogout" class="btn-profile" style="cursor: pointer;">Logout</button>
+                `;
+                document.getElementById('btnLogout')?.addEventListener('click', async () => {
+                    try {
+                        await signOut(auth);
+                        showToast('Logged out successfully', 'success');
+                        setTimeout(() => window.location.href = 'index.html', 1000);
+                    } catch (error) {
+                        console.error('Error logging out', error);
+                    }
+                });
+            }
+            if (mobileLinks.length >= 2) {
+                mobileLinks[0].innerHTML = `<a href="my-profile.html">Profile</a>`;
+                mobileLinks[1].innerHTML = `<a href="#" id="mobileBtnLogout">Logout</a>`;
+                document.getElementById('mobileBtnLogout')?.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        await signOut(auth);
+                        showToast('Logged out successfully', 'success');
+                        setTimeout(() => window.location.href = 'index.html', 1000);
+                    } catch (error) {
+                        console.error('Error logging out', error);
+                    }
+                });
+            }
+        } else {
+            // User is signed out
+            if (navProfile) {
+                navProfile.innerHTML = `
+                    <a href="login.html" class="btn-profile">Login</a>
+                    <a href="register.html" class="btn-profile">Sign Up</a>
+                `;
+            }
+            if (mobileLinks.length >= 2) {
+                mobileLinks[0].innerHTML = `<a href="login.html">Login</a>`;
+                mobileLinks[1].innerHTML = `<a href="register.html">Sign Up</a>`;
+            }
+        }
+    });
+
     const loginForm = document.getElementById('loginForm');
     const passwordInput = document.getElementById('password');
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
     if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
+        loginForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const email = loginForm.email.value.trim();
@@ -15,30 +69,29 @@ export function initAuth() {
 
             if (!email || !password) {
                 showToast('Please enter both email and password.', 'error');
-                if (!email) {
-                    document.getElementById('email').focus();
-                } else {
-                    passwordInput?.focus();
-                }
                 return;
             }
 
             if (!emailPattern.test(email)) {
-                showToast('Enter a valid university email address.', 'error');
-                document.getElementById('email').focus();
+                showToast('Enter a valid email address.', 'error');
                 return;
             }
 
-            if (password.length < 8) {
-                showToast('Password must be at least 8 characters.', 'error');
-                passwordInput?.focus();
-                return;
+            try {
+                // Firebase Login
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                showToast('Login successful. Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 800);
+            } catch (error) {
+                console.error("Login Error:", error.code, error.message);
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    showToast('Invalid email or password.', 'error');
+                } else {
+                    showToast('Failed to login. Please try again.', 'error');
+                }
             }
-
-            showToast('Login successful. Redirecting...', 'success');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 800);
         });
     }
 
@@ -64,7 +117,7 @@ export function initAuth() {
     const registerForm = document.getElementById('registerForm');
 
     if (registerForm) {
-        registerForm.addEventListener('submit', function (e) {
+        registerForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const fullName = document.getElementById('fullName')?.value.trim();
@@ -103,10 +156,37 @@ export function initAuth() {
                 return;
             }
 
-            showToast('Account created successfully! Redirecting...', 'success');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1200);
+            try {
+                // Firebase Registration
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Update Auth Profile
+                await updateProfile(user, {
+                    displayName: fullName
+                });
+
+                // Save extra user data to Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    fullName: fullName,
+                    studentId: studentId,
+                    email: email,
+                    createdAt: new Date()
+                });
+
+                showToast('Account created successfully! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html'; // Or login.html
+                }, 1200);
+
+            } catch (error) {
+                console.error("Registration Error:", error.code, error.message);
+                if (error.code === 'auth/email-already-in-use') {
+                    showToast('Email is already in use.', 'error');
+                } else {
+                    showToast('Failed to create account. Please try again.', 'error');
+                }
+            }
         });
     }
 }

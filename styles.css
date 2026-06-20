@@ -382,7 +382,11 @@ body.login-page .password-field input:focus {
 
 .item-grid {
     display: grid;
+<<<<<<< Updated upstream
     grid-template-columns: repeat(3, minmax(300px, 320px));
+=======
+    grid-template-columns: repeat(4, 1fr);
+>>>>>>> Stashed changes
     gap: 2rem;
     justify-content: start;
 }
@@ -728,7 +732,14 @@ body.login-page .password-field input:focus {
 /* =========================================
    10. MOBILE RESPONSIVENESS
    ========================================= */
+@media (max-width: 1024px) {
+    .item-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+}
+
 @media (max-width: 850px) {
+    /* Grids */
+    .item-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+
     /* Item Detail Layout - Tablet */
     .item-detail-card { grid-template-columns: 1fr; }
     .item-image-side { min-height: 250px; border-right: none; border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
@@ -805,10 +816,27 @@ body.login-page .password-field input:focus {
     .btn-action { width: 100%; justify-content: center; }
 
     /* Grids & Search */
+<<<<<<< Updated upstream
     .item-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
     .search-filter-box { flex-direction: column; }
     .filter-group { width: 100%; flex-direction: column; }
     .btn-search, .filter-select { width: 100%; }
+=======
+    .item-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .search-filter-box { 
+        flex-direction: column; 
+        grid-template-columns: 1fr; 
+        padding: 1rem;
+    }
+    .filter-group { width: 100%; flex-direction: column; }
+    .btn-search, .filter-select { width: 100%; }
+    .search-input-group { min-width: unset; }
+
+    /* Containers */
+    .container { padding: 0 1rem; }
+    .section-header { flex-direction: row; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    .section-header h2 { font-size: 1.3rem; }
+>>>>>>> Stashed changes
 
     /* Forms */
     .modern-form { padding: 2rem 1.5rem; }

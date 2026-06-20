@@ -1,10 +1,30 @@
 import { showToast } from './toast.js';
+import { db, auth, storage } from './firebase-config.js';
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 export function initForms() {
+    async function uploadImageIfPresent(fileInputId) {
+        const fileInput = document.getElementById(fileInputId);
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const storageRef = ref(storage, `reports/${Date.now()}_${file.name}`);
+            try {
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                return downloadURL;
+            } catch (error) {
+                console.error("Error uploading image: ", error);
+                return null;
+            }
+        }
+        return null;
+    }
+
     // --- Report Lost Form Handler ---
     const reportLostForm = document.getElementById('reportLostForm');
     if (reportLostForm) {
-        reportLostForm.addEventListener('submit', function (e) {
+        reportLostForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const fullName = document.getElementById('fullName')?.value.trim();
@@ -21,17 +41,42 @@ export function initForms() {
                 return;
             }
 
-            showToast('Lost item report submitted successfully!', 'success');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1200);
+            try {
+                showToast('Uploading and saving report...', 'info');
+                const imageUrl = await uploadImageIfPresent('referenceImage');
+                const user = auth.currentUser;
+
+                await addDoc(collection(db, "reports"), {
+                    type: "lost",
+                    reporterName: fullName,
+                    email: email,
+                    phone: phone,
+                    itemName: itemName,
+                    category: itemCategory,
+                    date: dateLost,
+                    location: locationLost,
+                    description: description,
+                    status: "active",
+                    imageUrl: imageUrl || null,
+                    createdAt: Date.now(), // Use local timestamp to prevent sync delays
+                    reporterId: user ? user.uid : null
+                });
+
+                showToast('Lost item report submitted successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1200);
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showToast('Failed to submit report. Please try again.', 'error');
+            }
         });
     }
 
     // --- Report Found Form Handler ---
     const reportFoundForm = document.getElementById('reportFoundForm');
     if (reportFoundForm) {
-        reportFoundForm.addEventListener('submit', function (e) {
+        reportFoundForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const fullName = document.getElementById('fullName')?.value.trim();
@@ -48,17 +93,42 @@ export function initForms() {
                 return;
             }
 
-            showToast('Found item report submitted successfully!', 'success');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1200);
+            try {
+                showToast('Uploading and saving report...', 'info');
+                const imageUrl = await uploadImageIfPresent('foundImage');
+                const user = auth.currentUser;
+
+                await addDoc(collection(db, "reports"), {
+                    type: "found",
+                    reporterName: fullName,
+                    email: email,
+                    phone: phone,
+                    itemName: itemName,
+                    category: itemCategory,
+                    date: dateFound,
+                    location: locationFound,
+                    description: description,
+                    status: "active",
+                    imageUrl: imageUrl || null,
+                    createdAt: Date.now(), // Use local timestamp to prevent sync delays
+                    reporterId: user ? user.uid : null
+                });
+
+                showToast('Found item report submitted successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1200);
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showToast('Failed to submit report. Please try again.', 'error');
+            }
         });
     }
 
     // --- Claim Form Handler ---
     const claimForm = document.getElementById('claimForm');
     if (claimForm) {
-        claimForm.addEventListener('submit', function (e) {
+        claimForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const fullName = document.getElementById('fullName')?.value.trim();
@@ -67,15 +137,36 @@ export function initForms() {
             const phone = document.getElementById('phone')?.value.trim();
             const uniqueDetails = document.getElementById('uniqueDetails')?.value.trim();
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemId = urlParams.get('id');
+
             if (!fullName || !studentId || !email || !phone || !uniqueDetails) {
                 showToast('Please fill in all required fields.', 'error');
                 return;
             }
 
-            showToast('Claim submitted successfully! The finder will be notified.', 'success');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1500);
+            try {
+                const user = auth.currentUser;
+                await addDoc(collection(db, "claims"), {
+                    itemId: itemId || "unknown",
+                    claimantName: fullName,
+                    studentId: studentId,
+                    email: email,
+                    phone: phone,
+                    uniqueDetails: uniqueDetails,
+                    status: "pending",
+                    createdAt: Date.now(),
+                    claimantId: user ? user.uid : null
+                });
+
+                showToast('Claim submitted successfully! The finder will be notified.', 'success');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } catch (error) {
+                console.error("Error adding claim: ", error);
+                showToast('Failed to submit claim. Please try again.', 'error');
+            }
         });
     }
 }
