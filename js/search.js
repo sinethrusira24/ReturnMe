@@ -1,18 +1,62 @@
 import { db } from './firebase-config.js';
-import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export async function initSearch() {
     let allReports = [];
 
-    // Fetch reports from Firestore
-    try {
-        const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
+    const reportsQuery = query(collection(db, "reports"), orderBy("createdAt", "desc"));
+
+    function updateHomeView() {
+        const homeItemGrid = document.querySelector('.search-home ~ main .item-grid');
+        if (!homeItemGrid) return;
+        homeItemGrid.innerHTML = allReports.slice(0, 4).map(createCardHTML).join('');
+    }
+
+    function updateSearchView() {
+        const listingsSearchInput = document.getElementById('listingsSearchInput');
+        const listingsStatusFilter = document.getElementById('listingsStatusFilter');
+        const listingsCategoryFilter = document.getElementById('listingsCategoryFilter');
+        const listingsItemGrid = document.querySelector('main .item-grid');
+
+        if (!listingsSearchInput || !listingsItemGrid) return;
+
+        const queryStr = listingsSearchInput.value.trim().toLowerCase();
+        const statusVal = listingsStatusFilter.value;
+        const categoryVal = listingsCategoryFilter.value;
+
+        filteredReports = allReports.filter(report => {
+            const title = report.itemName?.toLowerCase() || '';
+            const location = report.location?.toLowerCase() || '';
+            const type = report.type || '';
+            const category = report.category || '';
+
+            const matchesQuery = !queryStr || title.includes(queryStr) || location.includes(queryStr);
+            const matchesStatus = statusVal === 'all' || type === statusVal;
+            const matchesCategory = categoryVal === 'all' || category === categoryVal;
+
+            return matchesQuery && matchesStatus && matchesCategory;
+        });
+
+        currentPage = 1;
+        renderPage();
+    }
+
+    function onReportsSnapshot(querySnapshot) {
+        allReports = [];
         querySnapshot.forEach((doc) => {
             allReports.push({ id: doc.id, ...doc.data() });
         });
+
+        updateHomeView();
+        updateSearchView();
+    }
+
+    try {
+        onSnapshot(reportsQuery, onReportsSnapshot, (error) => {
+            console.error("Error listening to reports: ", error);
+        });
     } catch (error) {
-        console.error("Error fetching reports: ", error);
+        console.error("Error setting up real-time reports listener: ", error);
     }
 
     function escapeAttribute(value) {
