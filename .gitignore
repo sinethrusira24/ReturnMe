@@ -1,2 +1,2 @@
 # Ignore local Firebase config so API keys aren't committed
-js/firebase-config.js
+# js/firebase-config.js
