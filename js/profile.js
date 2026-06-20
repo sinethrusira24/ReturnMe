@@ -1,10 +1,11 @@
 import { auth, db } from './firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { collection, query, where, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ===== Profile Page Interactivity =====
 
 document.addEventListener('DOMContentLoaded', () => {
-    auth.onAuthStateChanged(async (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (!user) {
             window.location.href = 'login.html';
             return;
