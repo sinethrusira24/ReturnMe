@@ -32,8 +32,8 @@ export async function initSearch() {
         // Pick an icon based on category or default
         let icon = 'fa-box';
         if (report.category === 'electronics') icon = 'fa-mobile-screen-button';
-        if (report.category === 'ids') icon = 'fa-id-card';
-        if (report.category === 'keys') icon = 'fa-key';
+        if (report.category === 'ids' || report.category === 'documents') icon = 'fa-id-card';
+        if (report.category === 'keys' || report.category === 'accessories') icon = 'fa-key';
         if (report.category === 'clothing') icon = 'fa-shirt';
         
         // Add image if exists, else icon
