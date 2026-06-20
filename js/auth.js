@@ -16,6 +16,8 @@ export function initAuth() {
                     <a href="my-profile.html" class="btn-profile"><i class="fa-solid fa-user"></i> Profile</a>
                     <button id="btnLogout" class="btn-profile" style="cursor: pointer;">Logout</button>
                 `;
+                navProfile.style.opacity = '1';
+                navProfile.style.visibility = 'visible';
                 document.getElementById('btnLogout')?.addEventListener('click', async () => {
                     try {
                         await signOut(auth);
@@ -47,6 +49,8 @@ export function initAuth() {
                     <a href="login.html" class="btn-profile">Login</a>
                     <a href="register.html" class="btn-profile">Sign Up</a>
                 `;
+                navProfile.style.opacity = '1';
+                navProfile.style.visibility = 'visible';
             }
             if (mobileLinks.length >= 2) {
                 mobileLinks[0].innerHTML = `<a href="login.html">Login</a>`;
