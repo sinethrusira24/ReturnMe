@@ -1,8 +1,101 @@
+import { auth, db } from './firebase-config.js';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 // ===== Profile Page Interactivity =====
 
 document.addEventListener('DOMContentLoaded', () => {
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
 
-    // --- Animated stat counters ---
+        try {
+            // Fetch User Data
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                document.querySelector('.profile-hero-info h1').textContent = userData.fullName || user.email;
+                document.querySelector('.profile-avatar-lg').textContent = (userData.fullName || user.email)[0].toUpperCase();
+                
+                const inputs = document.querySelectorAll('.settings-form input');
+                if (inputs[0]) inputs[0].value = userData.fullName || '';
+                if (inputs[1]) inputs[1].value = user.email || '';
+                if (inputs[2]) inputs[2].value = userData.studentId || '';
+            }
+
+            // Fetch User Reports
+            const q = query(collection(db, "reports"), where("reporterId", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            
+            const reportsGrid = document.querySelector('.profile-reports-grid');
+            if (reportsGrid) {
+                reportsGrid.innerHTML = ''; // Clear dummy reports
+                
+                let totalCount = 0;
+                let lostCount = 0;
+                let foundCount = 0;
+
+                if (querySnapshot.empty) {
+                    reportsGrid.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">You haven\'t submitted any reports yet.</p>';
+                } else {
+                    querySnapshot.forEach((docSnap) => {
+                        const report = docSnap.data();
+                        totalCount++;
+                        if (report.type === 'lost') lostCount++;
+                        if (report.type === 'found') foundCount++;
+
+                        const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Just now';
+                        const icon = report.type === 'lost' ? 'fa-id-card' : 'fa-mobile-screen';
+                        const imageHTML = report.imageUrl 
+                            ? `<img src="${report.imageUrl}" alt="${report.itemName}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+                            : `<i class="fa-solid ${icon}"></i>`;
+
+                        const cardHTML = `
+                            <div class="preport-card" data-type="${report.type}">
+                                <div class="preport-status-bar status-${report.type}"></div>
+                                <div class="preport-header">
+                                    <div class="preport-badge badge-${report.type}">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
+                                    <span class="preport-date"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
+                                </div>
+                                <div class="preport-icon-area">${imageHTML}</div>
+                                <div class="preport-body">
+                                    <h3>${report.itemName}</h3>
+                                    <p><i class="fa-solid fa-location-dot"></i> ${report.location}</p>
+                                    <div class="preport-progress">
+                                        <span class="progress-label">Status: Active</span>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 20%; background: var(--color-${report.type});"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="preport-actions">
+                                    <a href="item-detail.html?id=${docSnap.id}" class="pbtn pbtn-view"><i class="fa-solid fa-eye"></i> View</a>
+                                    <button class="pbtn pbtn-remove"><i class="fa-solid fa-trash-can"></i> Remove</button>
+                                </div>
+                            </div>
+                        `;
+                        reportsGrid.insertAdjacentHTML('beforeend', cardHTML);
+                    });
+                }
+
+                // Update Stats
+                const statCards = document.querySelectorAll('.pstat-card');
+                if (statCards.length >= 3) {
+                    statCards[0].dataset.count = totalCount;
+                    statCards[1].dataset.count = lostCount;
+                    statCards[2].dataset.count = foundCount;
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching profile data:", error);
+            showToast("Failed to load profile data", "error");
+        }
+
+        initProfileUI();
+    });
+
+    function initProfileUI() {    // --- Animated stat counters ---
     const statCards = document.querySelectorAll('.pstat-card');
     const animateCount = (el, target) => {
         let current = 0;
@@ -111,16 +204,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Save settings toast ---
+    // --- Save settings toast & Firebase Sync ---
     const saveBtn = document.querySelector('.btn-save-settings');
     if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
-            saveBtn.textContent = '✓ Saved!';
-            saveBtn.style.background = 'var(--color-found)';
-            setTimeout(() => {
-                saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
-                saveBtn.style.background = '';
-            }, 2000);
+        saveBtn.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const inputs = document.querySelectorAll('.settings-form input');
+            const newName = inputs[0]?.value.trim();
+            const newEmail = inputs[1]?.value.trim();
+            const newStudentId = inputs[2]?.value.trim();
+
+            if (!newName) {
+                showToast("Name cannot be empty", "error");
+                return;
+            }
+
+            try {
+                // Update Firestore
+                await updateDoc(doc(db, "users", user.uid), {
+                    fullName: newName,
+                    email: newEmail,
+                    studentId: newStudentId
+                });
+
+                // Update UI visually
+                document.querySelector('.profile-hero-info h1').textContent = newName;
+                document.querySelector('.profile-avatar-lg').textContent = newName[0].toUpperCase();
+
+                saveBtn.textContent = '✓ Saved!';
+                saveBtn.style.background = 'var(--color-found)';
+                setTimeout(() => {
+                    saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+                    saveBtn.style.background = '';
+                }, 2000);
+                
+                showToast("Profile updated successfully!", "success");
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                showToast("Failed to save changes.", "error");
+            }
         });
     }
 
@@ -357,4 +481,5 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
+    } // End of initProfileUI()
 });

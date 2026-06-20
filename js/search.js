@@ -1,38 +1,91 @@
-export function initSearch() {
+import { db } from './firebase-config.js';
+import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+export async function initSearch() {
+    let allReports = [];
+
+    // Fetch reports from Firestore
+    try {
+        const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            allReports.push({ id: doc.id, ...doc.data() });
+        });
+    } catch (error) {
+        console.error("Error fetching reports: ", error);
+    }
+
+    // Helper to generate Card HTML
+    function createCardHTML(report) {
+        const isLost = report.type === 'lost';
+        const badgeClass = isLost ? 'badge-lost' : 'badge-found';
+        const badgeText = isLost ? 'Lost' : 'Found';
+        
+        // Pick an icon based on category or default
+        let icon = 'fa-box';
+        if (report.category === 'electronics') icon = 'fa-mobile-screen-button';
+        if (report.category === 'id') icon = 'fa-id-card';
+        if (report.category === 'keys') icon = 'fa-key';
+        if (report.category === 'bags') icon = 'fa-backpack';
+        
+        // Add image if exists, else icon
+        const imageHTML = report.imageUrl 
+            ? `<img src="${report.imageUrl}" alt="${report.itemName}" style="width:100%; height:100%; object-fit:cover;">` 
+            : `<i class="fa-solid ${icon}"></i>`;
+
+        return `
+            <div class="item-card" data-category="${report.category}" data-status="${report.type}">
+                <div class="card-badge ${badgeClass}">${badgeText}</div>
+                <div class="card-image">
+                    ${imageHTML}
+                </div>
+                <div class="card-body">
+                    <h3>${report.itemName}</h3>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> ${report.location}</p>
+                    <p class="date"><i class="fa-regular fa-calendar"></i> ${report.date}</p>
+                    <a href="item-detail.html?id=${report.id}" class="btn-card ${isLost ? '' : 'card-btn-found'}">${isLost ? 'View Details' : 'Claim Item'}</a>
+                </div>
+            </div>
+        `;
+    }
+
     // ========================
     // HOME PAGE — Quick Search
     // ========================
     const homeSearchForm = document.getElementById('homeSearchForm');
     const homeSearchInput = document.getElementById('homeSearchInput');
     const homeSearchType = document.getElementById('homeSearchType');
-    const homeItemCards = document.querySelectorAll('#homeItemGrid .item-card, .item-grid .item-card');
+    const homeItemGrid = document.querySelector('.search-home ~ main .item-grid');
 
-    if (homeSearchForm && homeSearchInput && homeSearchType) {
-        homeSearchForm.addEventListener('submit', function (e) {
-            e.preventDefault();
+    if (homeItemGrid) {
+        // Render latest 4 items on home page initially
+        homeItemGrid.innerHTML = allReports.slice(0, 4).map(createCardHTML).join('');
 
-            const query = homeSearchInput.value.trim().toLowerCase();
-            const selectedType = homeSearchType.value;
+        if (homeSearchForm && homeSearchInput && homeSearchType) {
+            homeSearchForm.addEventListener('submit', function (e) {
+                e.preventDefault();
 
-            let found = false;
-            homeItemCards.forEach(card => {
-                const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
-                const location = card.querySelector('.location')?.textContent.toLowerCase() || '';
-                const badge = card.querySelector('.card-badge')?.textContent.toLowerCase() || '';
+                const queryStr = homeSearchInput.value.trim().toLowerCase();
+                const selectedType = homeSearchType.value;
 
-                const matchesQuery = !query || title.includes(query) || location.includes(query);
-                const matchesType = !selectedType || badge === selectedType;
-                const visible = matchesQuery && matchesType;
+                const filtered = allReports.filter(report => {
+                    const title = report.itemName?.toLowerCase() || '';
+                    const location = report.location?.toLowerCase() || '';
+                    const type = report.type || '';
 
-                card.style.display = visible ? 'block' : 'none';
-                if (visible) found = true;
+                    const matchesQuery = !queryStr || title.includes(queryStr) || location.includes(queryStr);
+                    const matchesType = !selectedType || type === selectedType;
+                    return matchesQuery && matchesType;
+                });
+
+                homeItemGrid.innerHTML = filtered.slice(0, 4).map(createCardHTML).join('');
+                
+                const noResults = document.getElementById('home-no-results');
+                if (noResults) {
+                    noResults.style.display = filtered.length ? 'none' : 'block';
+                }
             });
-
-            const noResults = document.getElementById('home-no-results');
-            if (noResults) {
-                noResults.style.display = found ? 'none' : 'block';
-            }
-        });
+        }
     }
 
     // =======================================
@@ -45,27 +98,27 @@ export function initSearch() {
     const resultsCount = document.getElementById('resultsCount');
     const noResultsMsg = document.getElementById('listingsNoResults');
     const pagination = document.getElementById('listingsPagination');
+    const listingsItemGrid = document.querySelector('main .item-grid');
 
-    if (!listingsSearchInput) return; // Not on the search page
+    if (!listingsSearchInput || !listingsItemGrid) return; // Not on the search page
 
-    const allCards = Array.from(document.querySelectorAll('.item-grid .item-card'));
-    const ITEMS_PER_PAGE = 4; // Adjust this for pagination demonstration
+    const ITEMS_PER_PAGE = 8;
     let currentPage = 1;
-    let filteredCards = [...allCards];
+    let filteredReports = [...allReports];
 
     function filterCards() {
-        const query = listingsSearchInput.value.trim().toLowerCase();
+        const queryStr = listingsSearchInput.value.trim().toLowerCase();
         const statusVal = listingsStatusFilter.value;
         const categoryVal = listingsCategoryFilter.value;
 
-        filteredCards = allCards.filter(card => {
-            const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
-            const location = card.querySelector('.location')?.textContent.toLowerCase() || '';
-            const badge = card.querySelector('.card-badge')?.textContent.trim().toLowerCase() || '';
-            const category = card.dataset.category || '';
+        filteredReports = allReports.filter(report => {
+            const title = report.itemName?.toLowerCase() || '';
+            const location = report.location?.toLowerCase() || '';
+            const type = report.type || '';
+            const category = report.category || '';
 
-            const matchesQuery = !query || title.includes(query) || location.includes(query);
-            const matchesStatus = statusVal === 'all' || badge === statusVal;
+            const matchesQuery = !queryStr || title.includes(queryStr) || location.includes(queryStr);
+            const matchesStatus = statusVal === 'all' || type === statusVal;
             const matchesCategory = categoryVal === 'all' || category === categoryVal;
 
             return matchesQuery && matchesStatus && matchesCategory;
@@ -76,23 +129,20 @@ export function initSearch() {
     }
 
     function renderPage() {
-        const totalPages = Math.max(1, Math.ceil(filteredCards.length / ITEMS_PER_PAGE));
+        const totalPages = Math.max(1, Math.ceil(filteredReports.length / ITEMS_PER_PAGE));
         if (currentPage > totalPages) currentPage = totalPages;
 
         const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
         const endIdx = startIdx + ITEMS_PER_PAGE;
 
-        // Hide all, then show current page
-        allCards.forEach(card => {
-            card.style.display = 'none';
+        const visibleReports = filteredReports.slice(startIdx, endIdx);
+        listingsItemGrid.innerHTML = visibleReports.map(createCardHTML).join('');
+
+        // Apply staggering animation
+        const renderedCards = listingsItemGrid.querySelectorAll('.item-card');
+        renderedCards.forEach((card, i) => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(15px)';
-        });
-
-        const visibleCards = filteredCards.slice(startIdx, endIdx);
-        visibleCards.forEach((card, i) => {
-            card.style.display = '';
-            // Staggered animation
             setTimeout(() => {
                 card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                 card.style.opacity = '1';
@@ -102,18 +152,17 @@ export function initSearch() {
 
         // Update results count
         if (resultsCount) {
-            const showing = Math.min(endIdx, filteredCards.length);
-            resultsCount.textContent = filteredCards.length === 0
+            const showing = Math.min(endIdx, filteredReports.length);
+            resultsCount.textContent = filteredReports.length === 0
                 ? 'No Results'
-                : `Showing Results ${startIdx + 1}–${showing} of ${filteredCards.length}`;
+                : `Showing Results ${filteredReports.length > 0 ? startIdx + 1 : 0}–${showing} of ${filteredReports.length}`;
         }
 
         // Toggle no results message
         if (noResultsMsg) {
-            noResultsMsg.classList.toggle('visible', filteredCards.length === 0);
+            noResultsMsg.classList.toggle('visible', filteredReports.length === 0);
         }
 
-        // Render pagination
         renderPagination(totalPages);
     }
 
@@ -122,11 +171,8 @@ export function initSearch() {
 
         pagination.innerHTML = '';
 
-        // Previous button
         const prevBtn = document.createElement('button');
         prevBtn.className = 'page-btn';
-        prevBtn.id = 'pagePrev';
-        prevBtn.setAttribute('aria-label', 'Previous page');
         prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
         prevBtn.disabled = currentPage <= 1;
         prevBtn.addEventListener('click', () => {
@@ -134,28 +180,20 @@ export function initSearch() {
         });
         pagination.appendChild(prevBtn);
 
-        // Page number buttons
         for (let i = 1; i <= totalPages; i++) {
             const pageBtn = document.createElement('button');
             pageBtn.className = `page-btn${i === currentPage ? ' active' : ''}`;
-            pageBtn.setAttribute('data-page', i);
-            pageBtn.setAttribute('aria-label', `Page ${i}`);
             pageBtn.textContent = i;
-            if (i === currentPage) pageBtn.setAttribute('aria-current', 'page');
             pageBtn.addEventListener('click', () => {
                 currentPage = i;
                 renderPage();
-                // Scroll to top of results
-                document.querySelector('.item-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.querySelector('.page-header')?.scrollIntoView({ behavior: 'smooth' });
             });
             pagination.appendChild(pageBtn);
         }
 
-        // Next button
         const nextBtn = document.createElement('button');
         nextBtn.className = 'page-btn';
-        nextBtn.id = 'pageNext';
-        nextBtn.setAttribute('aria-label', 'Next page');
         nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
         nextBtn.disabled = currentPage >= totalPages;
         nextBtn.addEventListener('click', () => {
@@ -170,7 +208,6 @@ export function initSearch() {
         filterCards();
     });
 
-    // Real-time filtering as user types
     listingsSearchInput.addEventListener('input', () => {
         filterCards();
     });
