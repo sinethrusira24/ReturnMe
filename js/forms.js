@@ -2,12 +2,54 @@ import { showToast } from './toast.js';
 import { db, auth, storage } from './firebase-config.js';
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 export function initForms() {
+    // Check if user is authenticated on report pages
+    const reportPages = ['reportLostForm', 'reportFoundForm'];
+    const isReportPage = reportPages.some(id => document.getElementById(id));
+
+    if (isReportPage) {
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                const mainContent = document.querySelector('main');
+                if (mainContent) {
+                    mainContent.innerHTML = `
+                        <div style="text-align: center; padding: 3rem 2rem;">
+                            <h2 style="color: var(--text-dark); margin-bottom: 1rem;">You must be logged in to report items</h2>
+                            <p style="color: var(--text-muted); margin-bottom: 2rem;">Please sign in or create an account to continue.</p>
+                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                                <a href="login.html" style="padding: 0.75rem 1.5rem; background: var(--color-primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Login</a>
+                                <a href="register.html" style="padding: 0.75rem 1.5rem; border: 2px solid var(--color-primary); color: var(--color-primary); text-decoration: none; border-radius: 8px; font-weight: 500;">Sign Up</a>
+                            </div>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            // User is authenticated, continue with form initialization
+        });
+    }
+
     async function uploadImageIfPresent(fileInputId) {
         const fileInput = document.getElementById(fileInputId);
         if (fileInput && fileInput.files && fileInput.files[0]) {
             const file = fileInput.files[0];
+            
+            // Validate file size (5MB max)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showToast('File size must be less than 5MB', 'error');
+                return null;
+            }
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                showToast('Only JPG, PNG, and PDF files are allowed', 'error');
+                return null;
+            }
+
             const storageRef = ref(storage, `reports/${Date.now()}_${file.name}`);
             try {
                 const snapshot = await uploadBytes(storageRef, file);
@@ -15,10 +57,21 @@ export function initForms() {
                 return downloadURL;
             } catch (error) {
                 console.error("Error uploading image: ", error);
+                showToast('Error uploading file', 'error');
                 return null;
             }
         }
         return null;
+    }
+
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function validatePhone(phone) {
+        const re = /^\+?[\d\s\-\(\)]{10,}$/;
+        return re.test(phone);
     }
 
     // --- Report Lost Form Handler ---
@@ -41,6 +94,21 @@ export function initForms() {
                 return;
             }
 
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showToast('Please enter a valid phone number.', 'error');
+                return;
+            }
+
+            if (description.length < 10) {
+                showToast('Description must be at least 10 characters.', 'error');
+                return;
+            }
+
             try {
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('referenceImage');
@@ -58,7 +126,7 @@ export function initForms() {
                     description: description,
                     status: "active",
                     imageUrl: imageUrl || null,
-                    createdAt: Date.now(), // Use local timestamp to prevent sync delays
+                    createdAt: Date.now(),
                     reporterId: user ? user.uid : null
                 });
 
@@ -94,6 +162,21 @@ export function initForms() {
                 return;
             }
 
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showToast('Please enter a valid phone number.', 'error');
+                return;
+            }
+
+            if (description.length < 10) {
+                showToast('Description must be at least 10 characters.', 'error');
+                return;
+            }
+
             try {
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('foundImage');
@@ -112,7 +195,7 @@ export function initForms() {
                     description: description,
                     status: "active",
                     imageUrl: imageUrl || null,
-                    createdAt: Date.now(), // Use local timestamp to prevent sync delays
+                    createdAt: Date.now(),
                     reporterId: user ? user.uid : null
                 });
 
@@ -147,10 +230,26 @@ export function initForms() {
                 return;
             }
 
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showToast('Please enter a valid phone number.', 'error');
+                return;
+            }
+
+            if (uniqueDetails.length < 20) {
+                showToast('Please provide at least 20 characters of detail.', 'error');
+                return;
+            }
+
             try {
                 showToast('Uploading and saving claim...', 'info');
                 const evidenceUrl = await uploadImageIfPresent('evidenceFile');
                 const user = auth.currentUser;
+
                 await addDoc(collection(db, "claims"), {
                     itemId: itemId || "unknown",
                     claimantName: fullName,

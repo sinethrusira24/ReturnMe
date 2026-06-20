@@ -1,10 +1,17 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { collection, query, where, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, query, where, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { showToast } from './toast.js';
 
 // ===== Profile Page Interactivity =====
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Hide main content until auth is verified
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+        mainContent.classList.add('loading');
+    }
+
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
             window.location.href = 'login.html';
@@ -12,6 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            // Show main content after auth is verified
+            if (mainContent) {
+                mainContent.classList.remove('loading');
+            }
+
             // Fetch User Data
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
@@ -65,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             : `<i class="fa-solid ${icon}"></i>`;
 
                         const cardHTML = `
-                            <div class="preport-card" data-type="${report.type}">
+                            <div class="preport-card" data-id="${docSnap.id}" data-type="${report.type}">
                                 <div class="preport-status-bar status-${report.type}"></div>
                                 <div class="preport-header">
                                     <div class="preport-badge badge-${report.type}">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
@@ -89,6 +101,26 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         `;
                         reportsGrid.insertAdjacentHTML('beforeend', cardHTML);
+
+                        // Add remove button handler
+                        setTimeout(() => {
+                            const removeBtn = reportsGrid.querySelector(`[data-id="${docSnap.id}"]`)?.querySelector('.pbtn-remove');
+                            if (removeBtn) {
+                                removeBtn.addEventListener('click', async () => {
+                                    if (!confirm(`Are you sure you want to delete "${report.itemName}"?`)) {
+                                        return;
+                                    }
+                                    try {
+                                        await deleteDoc(doc(db, "reports", docSnap.id));
+                                        showToast('Report deleted successfully', 'success');
+                                        setTimeout(() => window.location.reload(), 800);
+                                    } catch (error) {
+                                        console.error('Error deleting report:', error);
+                                        showToast('Failed to delete report', 'error');
+                                    }
+                                });
+                            }
+                        }, 100);
                     });
                 }
 
