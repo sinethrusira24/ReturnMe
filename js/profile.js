@@ -46,10 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (report.type === 'lost') lostCount++;
                         if (report.type === 'found') foundCount++;
 
+                        function escapeAttribute(value) {
+                            return String(value)
+                                .replace(/&/g, '&amp;')
+                                .replace(/"/g, '&quot;')
+                                .replace(/</g, '&lt;')
+                                .replace(/>/g, '&gt;');
+                        }
+
                         const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Just now';
                         const icon = report.type === 'lost' ? 'fa-id-card' : 'fa-mobile-screen';
                         const imageHTML = report.imageUrl 
-                            ? `<img src="${report.imageUrl}" alt="${report.itemName}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+                            ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
                             : `<i class="fa-solid ${icon}"></i>`;
 
                         const cardHTML = `
