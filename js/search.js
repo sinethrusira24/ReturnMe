@@ -15,6 +15,14 @@ export async function initSearch() {
         console.error("Error fetching reports: ", error);
     }
 
+    function escapeAttribute(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
     // Helper to generate Card HTML
     function createCardHTML(report) {
         const isLost = report.type === 'lost';
@@ -30,7 +38,7 @@ export async function initSearch() {
         
         // Add image if exists, else icon
         const imageHTML = report.imageUrl 
-            ? `<img src="${report.imageUrl}" alt="${report.itemName}" style="width:100%; height:100%; object-fit:cover;">` 
+            ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%; height:100%; object-fit:cover;">` 
             : `<i class="fa-solid ${icon}"></i>`;
 
         return `

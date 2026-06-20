@@ -201,9 +201,30 @@
                     document.querySelector('.item-description p').textContent = report.description || 'No description provided.';
                     
                     if (report.imageUrl) {
-                        document.querySelector('.main-image-container').innerHTML = `<img src="${report.imageUrl}" alt="${report.itemName}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`;
+                        const mainImageContainer = document.querySelector('.main-image-container');
+                        if (mainImageContainer) {
+                            mainImageContainer.innerHTML = '';
+                            const detailImg = document.createElement('img');
+                            detailImg.src = report.imageUrl;
+                            detailImg.alt = report.itemName || 'Report image';
+                            detailImg.style.width = '100%';
+                            detailImg.style.height = '100%';
+                            detailImg.style.objectFit = 'cover';
+                            detailImg.style.borderRadius = '10px';
+                            mainImageContainer.appendChild(detailImg);
+                        }
                         const activeThumb = document.querySelector('.gallery-thumb.active');
-                        if (activeThumb) activeThumb.innerHTML = `<img src="${report.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:5px;">`;
+                        if (activeThumb) {
+                            activeThumb.innerHTML = '';
+                            const thumbImg = document.createElement('img');
+                            thumbImg.src = report.imageUrl;
+                            thumbImg.alt = report.itemName || 'Report image';
+                            thumbImg.style.width = '100%';
+                            thumbImg.style.height = '100%';
+                            thumbImg.style.objectFit = 'cover';
+                            thumbImg.style.borderRadius = '5px';
+                            activeThumb.appendChild(thumbImg);
+                        }
                     }
                     
                     const claimBtn = document.querySelector('.btn-action');
