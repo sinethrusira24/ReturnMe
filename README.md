@@ -18,3 +18,7 @@ ReturnMe is a smart web platform built to centralize lost-and-found operations. 
 ## 💻 Tech Stack
 * HTML5, CSS3, JavaScript
 * Firebase
+
+## 🔧 Local Firebase Configuration
+`js/firebase-config.js` is intentionally excluded from version control via `.gitignore`.
+Copy `js/firebase-config.js.example` to `js/firebase-config.js` and replace the placeholder values with your Firebase project settings before running the app locally.
