@@ -9,8 +9,12 @@ export function initForms() {
     const reportPages = ['reportLostForm', 'reportFoundForm'];
     const isReportPage = reportPages.some(id => document.getElementById(id));
 
+    let currentUser = auth.currentUser;
+
     if (isReportPage) {
         onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+
             if (!user) {
                 const mainContent = document.querySelector('main');
                 if (mainContent) {
@@ -27,7 +31,6 @@ export function initForms() {
                 }
                 return;
             }
-            // User is authenticated, continue with form initialization
         });
     }
 
@@ -112,7 +115,14 @@ export function initForms() {
             try {
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('referenceImage');
-                const user = auth.currentUser;
+                const user = currentUser || auth.currentUser;
+
+                if (!user) {
+                    showToast('You must be logged in to submit a report.', 'error');
+                    return;
+                }
+
+                console.log('Submitting lost report for user:', user.uid, 'email:', user.email);
 
                 await addDoc(collection(db, "reports"), {
                     type: "lost",
@@ -127,7 +137,7 @@ export function initForms() {
                     status: "active",
                     imageUrl: imageUrl || null,
                     createdAt: Date.now(),
-                    reporterId: user ? user.uid : null
+                    reporterId: user.uid
                 });
 
                 showToast('Lost item report submitted successfully!', 'success');
@@ -180,7 +190,14 @@ export function initForms() {
             try {
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('foundImage');
-                const user = auth.currentUser;
+                const user = currentUser || auth.currentUser;
+
+                if (!user) {
+                    showToast('You must be logged in to submit a report.', 'error');
+                    return;
+                }
+
+                console.log('Submitting found report for user:', user.uid, 'email:', user.email);
 
                 await addDoc(collection(db, "reports"), {
                     type: "found",
@@ -196,7 +213,7 @@ export function initForms() {
                     status: "active",
                     imageUrl: imageUrl || null,
                     createdAt: Date.now(),
-                    reporterId: user ? user.uid : null
+                    reporterId: user.uid
                 });
 
                 showToast('Found item report submitted successfully!', 'success');
