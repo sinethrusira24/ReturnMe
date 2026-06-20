@@ -146,6 +146,8 @@ export function initForms() {
             }
 
             try {
+                showToast('Uploading and saving claim...', 'info');
+                const evidenceUrl = await uploadImageIfPresent('evidenceFile');
                 const user = auth.currentUser;
                 await addDoc(collection(db, "claims"), {
                     itemId: itemId || "unknown",
@@ -154,6 +156,7 @@ export function initForms() {
                     email: email,
                     phone: phone,
                     uniqueDetails: uniqueDetails,
+                    evidenceUrl: evidenceUrl || null,
                     status: "pending",
                     createdAt: Date.now(),
                     claimantId: user ? user.uid : null

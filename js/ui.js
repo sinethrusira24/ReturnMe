@@ -32,15 +32,28 @@ export function initUI() {
     const mobileMenuIcon = document.querySelector('.mobile-menu-btn i');
 
     if (mobileMenuBtn && navLinksContainer) {
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
         mobileMenuBtn.addEventListener('click', () => {
-            navLinksContainer.classList.toggle('mobile-active');
-            if (navLinksContainer.classList.contains('mobile-active')) {
+            const isOpen = navLinksContainer.classList.toggle('mobile-active');
+            mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+            if (isOpen) {
                 mobileMenuIcon.classList.remove('fa-bars');
                 mobileMenuIcon.classList.add('fa-xmark');
             } else {
                 mobileMenuIcon.classList.remove('fa-xmark');
                 mobileMenuIcon.classList.add('fa-bars');
             }
+        });
+
+        navLinksContainer.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (navLinksContainer.classList.contains('mobile-active')) {
+                    navLinksContainer.classList.remove('mobile-active');
+                    mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                    mobileMenuIcon.classList.remove('fa-xmark');
+                    mobileMenuIcon.classList.add('fa-bars');
+                }
+            });
         });
     }
 
