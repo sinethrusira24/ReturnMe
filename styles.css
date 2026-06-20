@@ -382,11 +382,7 @@ body.login-page .password-field input:focus {
 
 .item-grid {
     display: grid;
-<<<<<<< Updated upstream
-    grid-template-columns: repeat(3, minmax(300px, 320px));
-=======
     grid-template-columns: repeat(4, 1fr);
->>>>>>> Stashed changes
     gap: 2rem;
     justify-content: start;
 }
@@ -816,18 +812,8 @@ body.login-page .password-field input:focus {
     .btn-action { width: 100%; justify-content: center; }
 
     /* Grids & Search */
-<<<<<<< Updated upstream
-    .item-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-    .search-filter-box { flex-direction: column; }
-    .filter-group { width: 100%; flex-direction: column; }
-    .btn-search, .filter-select { width: 100%; }
-=======
     .item-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
-    .search-filter-box { 
-        flex-direction: column; 
-        grid-template-columns: 1fr; 
-        padding: 1rem;
-    }
+    .search-filter-box { flex-direction: column; padding: 1rem; }
     .filter-group { width: 100%; flex-direction: column; }
     .btn-search, .filter-select { width: 100%; }
     .search-input-group { min-width: unset; }
@@ -836,7 +822,6 @@ body.login-page .password-field input:focus {
     .container { padding: 0 1rem; }
     .section-header { flex-direction: row; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
     .section-header h2 { font-size: 1.3rem; }
->>>>>>> Stashed changes
 
     /* Forms */
     .modern-form { padding: 2rem 1.5rem; }
