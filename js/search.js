@@ -3,6 +3,9 @@ import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/
 
 export async function initSearch() {
     let allReports = [];
+    let currentPage = 1;
+    let filteredReports = [];
+    const ITEMS_PER_PAGE = 8;
 
     const reportsQuery = query(collection(db, "reports"), orderBy("createdAt", "desc"));
 
@@ -39,6 +42,23 @@ export async function initSearch() {
 
         currentPage = 1;
         renderPage();
+    }
+
+    function initializeSearchBindings() {
+        const listingsSearchInput = document.getElementById('listingsSearchInput');
+        const listingsStatusFilter = document.getElementById('listingsStatusFilter');
+        const listingsCategoryFilter = document.getElementById('listingsCategoryFilter');
+        const listingsSearchBtn = document.getElementById('listingsSearchBtn');
+
+        if (!listingsSearchInput) return;
+
+        listingsSearchBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateSearchView();
+        });
+        listingsSearchInput.addEventListener('input', updateSearchView);
+        listingsStatusFilter?.addEventListener('change', updateSearchView);
+        listingsCategoryFilter?.addEventListener('change', updateSearchView);
     }
 
     function onReportsSnapshot(querySnapshot) {
@@ -154,30 +174,10 @@ export async function initSearch() {
 
     if (!listingsSearchInput || !listingsItemGrid) return; // Not on the search page
 
-    const ITEMS_PER_PAGE = 8;
-    let currentPage = 1;
-    let filteredReports = [...allReports];
+    filteredReports = [...allReports];
 
     function filterCards() {
-        const queryStr = listingsSearchInput.value.trim().toLowerCase();
-        const statusVal = listingsStatusFilter.value;
-        const categoryVal = listingsCategoryFilter.value;
-
-        filteredReports = allReports.filter(report => {
-            const title = report.itemName?.toLowerCase() || '';
-            const location = report.location?.toLowerCase() || '';
-            const type = report.type || '';
-            const category = report.category || '';
-
-            const matchesQuery = !queryStr || title.includes(queryStr) || location.includes(queryStr);
-            const matchesStatus = statusVal === 'all' || type === statusVal;
-            const matchesCategory = categoryVal === 'all' || category === categoryVal;
-
-            return matchesQuery && matchesStatus && matchesCategory;
-        });
-
-        currentPage = 1;
-        renderPage();
+        updateSearchView();
     }
 
     function renderPage() {
@@ -255,17 +255,16 @@ export async function initSearch() {
     }
 
     // Event listeners
-    listingsSearchBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        filterCards();
-    });
+    if (listingsSearchBtn) {
+        listingsSearchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateSearchView();
+        });
+    }
 
-    listingsSearchInput.addEventListener('input', () => {
-        filterCards();
-    });
-
-    listingsStatusFilter.addEventListener('change', filterCards);
-    listingsCategoryFilter.addEventListener('change', filterCards);
+    listingsSearchInput.addEventListener('input', updateSearchView);
+    listingsStatusFilter?.addEventListener('change', updateSearchView);
+    listingsCategoryFilter?.addEventListener('change', updateSearchView);
 
     // Initial render
     renderPage();
