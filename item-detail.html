@@ -135,50 +135,22 @@
     </footer>
 
     <div id="toast-container"></div>
-    <script type="module" src="js/main.js"></script>
     <script type="module">
-        import { db } from './js/firebase-config.js';
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-        
-        document.addEventListener('DOMContentLoaded', async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            if (!id) {
-                document.querySelector('.item-header-info h1').textContent = "Item Not Found";
-                return;
-            }
-            
-            try {
-                const docRef = doc(db, "reports", id);
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    const report = docSnap.data();
-                    
-                    document.querySelector('.item-header-info h1').textContent = report.itemName;
-                    
-                    const badge = document.querySelector('.card-badge');
-                    badge.textContent = report.type.charAt(0).toUpperCase() + report.type.slice(1);
-                    badge.className = `card-badge badge-${report.type}`;
-                    
-                    document.querySelector('.item-reference').textContent = `Ref ID: #${id.substring(0, 8).toUpperCase()}`;
-                    
-                    document.querySelector('.reporter-name').textContent = report.reporterName || 'Anonymous';
-                    document.querySelector('.reporter-avatar').textContent = (report.reporterName || 'A')[0].toUpperCase();
-                    
-                    const phoneEl = document.querySelector('.reporter-contact');
-                    if (report.phone) {
-                        phoneEl.href = `tel:${report.phone}`;
-                        phoneEl.innerHTML = `<i class="fa-solid fa-phone"></i> ${report.phone}`;
-                    } else {
-                        phoneEl.style.display = 'none';
-                    }
-                    
-                    const lis = document.querySelectorAll('.item-metadata li');
-                    lis[0].querySelector('span').textContent = report.location;
-                    lis[1].querySelector('span').textContent = report.createdAt ? new Date(report.createdAt).toLocaleString() : 'Just now';
-                    
-                    document.querySelector('.item-description p').textContent = report.description || 'No description provided.';
+        import { initItemDetail } from './js/item-detail.js';
+        import { initAuth } from './js/auth.js';
+        import { initUI } from './js/ui.js';
+        import { initChat } from './js/chat.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            initAuth();
+            initChat();
+            initItemDetail();
+        });
+    </script>
+</body>
+
+</html>    document.querySelector('.item-description p').textContent = report.description || 'No description provided.';
                     
                     if (report.imageUrl) {
                         const mainImageContainer = document.querySelector('.main-image-container');

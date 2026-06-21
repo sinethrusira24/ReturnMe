@@ -2,8 +2,38 @@ import { showToast } from './toast.js';
 import { db, auth, storage } from './firebase-config.js';
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 export function initForms() {
+    // Check if user is authenticated on report pages
+    const reportPages = ['reportLostForm', 'reportFoundForm'];
+    const isReportPage = reportPages.some(id => document.getElementById(id));
+
+    let currentUser = auth.currentUser;
+
+    if (isReportPage) {
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+
+            if (!user) {
+                const mainContent = document.querySelector('main');
+                if (mainContent) {
+                    mainContent.innerHTML = `
+                        <div style="text-align: center; padding: 3rem 2rem;">
+                            <h2 style="color: var(--text-dark); margin-bottom: 1rem;">You must be logged in to report items</h2>
+                            <p style="color: var(--text-muted); margin-bottom: 2rem;">Please sign in or create an account to continue.</p>
+                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                                <a href="login.html" style="padding: 0.75rem 1.5rem; background: var(--color-primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Login</a>
+                                <a href="register.html" style="padding: 0.75rem 1.5rem; border: 2px solid var(--color-primary); color: var(--color-primary); text-decoration: none; border-radius: 8px; font-weight: 500;">Sign Up</a>
+                            </div>
+                        </div>
+                    `;
+                }
+                return;
+            }
+        });
+    }
+
     async function uploadImageIfPresent(fileInputId) {
         const fileInput = document.getElementById(fileInputId);
         if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -33,6 +63,16 @@ export function initForms() {
         return null;
     }
 
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function validatePhone(phone) {
+        const re = /^\+?[\d\s\-\(\)]{10,}$/;
+        return re.test(phone);
+    }
+
     // --- Report Lost Form Handler ---
     const reportLostForm = document.getElementById('reportLostForm');
     if (reportLostForm) {
@@ -50,6 +90,21 @@ export function initForms() {
 
             if (!fullName || !email || !phone || !itemName || !itemCategory || !dateLost || !locationLost || !description) {
                 showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showToast('Please enter a valid phone number.', 'error');
+                return;
+            }
+
+            if (description.length < 10) {
+                showToast('Description must be at least 10 characters.', 'error');
                 return;
             }
 
@@ -78,8 +133,8 @@ export function initForms() {
                     description: description,
                     status: "active",
                     imageUrl: imageUrl || null,
-                    createdAt: Date.now(), // Use local timestamp to prevent sync delays
-                    reporterId: user ? user.uid : null
+                    createdAt: Date.now(),
+                    reporterId: user.uid
                 });
 
                 showToast('Lost item report submitted successfully!', 'success');
@@ -114,6 +169,21 @@ export function initForms() {
                 return;
             }
 
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showToast('Please enter a valid phone number.', 'error');
+                return;
+            }
+
+            if (description.length < 10) {
+                showToast('Description must be at least 10 characters.', 'error');
+                return;
+            }
+
             try {
                 await auth.authStateReady();
                 const user = auth.currentUser;
@@ -139,8 +209,8 @@ export function initForms() {
                     description: description,
                     status: "active",
                     imageUrl: imageUrl || null,
-                    createdAt: Date.now(), // Use local timestamp to prevent sync delays
-                    reporterId: user ? user.uid : null
+                    createdAt: Date.now(),
+                    reporterId: user.uid
                 });
 
                 showToast('Found item report submitted successfully!', 'success');
@@ -171,6 +241,21 @@ export function initForms() {
 
             if (!fullName || !studentId || !email || !phone || !uniqueDetails) {
                 showToast('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showToast('Please enter a valid phone number.', 'error');
+                return;
+            }
+
+            if (uniqueDetails.length < 20) {
+                showToast('Please provide at least 20 characters of detail.', 'error');
                 return;
             }
 

@@ -2053,3 +2053,15 @@ body.login-page .password-field input:focus {
     white-space: nowrap;
     border-width: 0;
 }
+
+/* Profile Loading State */
+#main-content {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#main-content.loading {
+    opacity: 0;
+    visibility: hidden;
+}

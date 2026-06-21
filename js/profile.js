@@ -1,10 +1,17 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { collection, query, where, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, query, where, onSnapshot, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { showToast } from './toast.js';
 
 // ===== Profile Page Interactivity =====
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Hide main content until auth is verified
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+        mainContent.classList.add('loading');
+    }
+
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
             window.location.href = 'login.html';
@@ -12,6 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            // Show main content after auth is verified
+            if (mainContent) {
+                mainContent.classList.remove('loading');
+            }
+
             // Fetch User Data
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
@@ -26,71 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Fetch User Reports
-            const q = query(collection(db, "reports"), where("reporterId", "==", user.uid));
-            const querySnapshot = await getDocs(q);
-            
             const reportsGrid = document.querySelector('.profile-reports-grid');
-            if (reportsGrid) {
-                reportsGrid.innerHTML = ''; // Clear dummy reports
-                
-                let totalCount = 0;
-                let lostCount = 0;
-                let foundCount = 0;
+            const reportsQuery = query(collection(db, "reports"), where("reporterId", "==", user.uid));
 
-                if (querySnapshot.empty) {
-                    reportsGrid.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">You haven\'t submitted any reports yet.</p>';
-                } else {
-                    querySnapshot.forEach((docSnap) => {
-                        const report = docSnap.data();
-                        totalCount++;
-                        if (report.type === 'lost') lostCount++;
-                        if (report.type === 'found') foundCount++;
-
-                        function escapeAttribute(value) {
-                            return String(value)
-                                .replace(/&/g, '&amp;')
-                                .replace(/"/g, '&quot;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;');
-                        }
-
-                        const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Just now';
-                        let icon = report.type === 'lost' ? 'fa-id-card' : 'fa-mobile-screen';
-                        if (report.category === 'ids' || report.category === 'documents') icon = 'fa-id-card';
-                        if (report.category === 'electronics') icon = 'fa-mobile-screen';
-                        if (report.category === 'keys' || report.category === 'accessories') icon = 'fa-key';
-                        if (report.category === 'clothing') icon = 'fa-shirt';
-                        const imageHTML = report.imageUrl 
-                            ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
-                            : `<i class="fa-solid ${icon}"></i>`;
-
-                        const cardHTML = `
-                            <div class="preport-card" data-type="${report.type}">
-                                <div class="preport-status-bar status-${report.type}"></div>
-                                <div class="preport-header">
-                                    <div class="preport-badge badge-${report.type}">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
-                                    <span class="preport-date"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
-                                </div>
-                                <div class="preport-icon-area">${imageHTML}</div>
-                                <div class="preport-body">
-                                    <h3>${report.itemName}</h3>
-                                    <p><i class="fa-solid fa-location-dot"></i> ${report.location}</p>
-                                    <div class="preport-progress">
-                                        <span class="progress-label">Status: Active</span>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill" style="width: 20%; background: var(--color-${report.type});"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="preport-actions">
-                                    <a href="item-detail.html?id=${docSnap.id}" class="pbtn pbtn-view"><i class="fa-solid fa-eye"></i> View</a>
-                                    <button class="pbtn pbtn-remove"><i class="fa-solid fa-trash-can"></i> Remove</button>
-                                </div>
-                            </div>
-                        `;
-                        reportsGrid.insertAdjacentHTML('beforeend', cardHTML);
-                    });
-                }
+            function escapeAttribute(value) {
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+            }
 
                 const activityTimeline = document.getElementById('activity-timeline');
                 if (activityTimeline) {
@@ -131,12 +88,103 @@ document.addEventListener('DOMContentLoaded', () => {
                     statCards[2].dataset.count = foundCount;
                 }
             }
-        } catch (error) {
-            console.error("Error fetching profile data:", error);
-            showToast("Failed to load profile data", "error");
-        }
 
-        initProfileUI();
+            function attachReportActions() {
+                reportsGrid.querySelectorAll('.preport-card').forEach(card => {
+                    const reportId = card.dataset.id;
+                    const removeBtn = card.querySelector('.pbtn-remove');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', async () => {
+                            const itemName = card.querySelector('h3')?.textContent || 'this report';
+                            if (!confirm(`Are you sure you want to delete "${itemName}"?`)) {
+                                return;
+                            }
+
+                            try {
+                                await deleteDoc(doc(db, "reports", reportId));
+                                showToast('Report deleted successfully', 'success');
+                            } catch (error) {
+                                console.error('Error deleting report:', error);
+                                showToast('Failed to delete report', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+
+            try {
+                onSnapshot(reportsQuery, (querySnapshot) => {
+                    if (!reportsGrid) return;
+                    reportsGrid.innerHTML = '';
+
+                    let totalCount = 0;
+                    let lostCount = 0;
+                    let foundCount = 0;
+
+                    if (querySnapshot.empty) {
+                        reportsGrid.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">You haven\'t submitted any reports yet.</p>';
+                    } else {
+                        querySnapshot.forEach((docSnap) => {
+                            const report = docSnap.data();
+                            totalCount++;
+                            if (report.type === 'lost') lostCount++;
+                            if (report.type === 'found') foundCount++;
+
+                            const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Just now';
+                            let icon = report.type === 'lost' ? 'fa-id-card' : 'fa-mobile-screen';
+                            if (report.category === 'ids' || report.category === 'documents') icon = 'fa-id-card';
+                            if (report.category === 'electronics') icon = 'fa-mobile-screen';
+                            if (report.category === 'keys' || report.category === 'accessories') icon = 'fa-key';
+                            if (report.category === 'clothing') icon = 'fa-shirt';
+                            const imageHTML = report.imageUrl 
+                                ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+                                : `<i class="fa-solid ${icon}"></i>`;
+
+                            const cardHTML = `
+                                <div class="preport-card" data-id="${docSnap.id}" data-type="${report.type}">
+                                    <div class="preport-status-bar status-${report.type}"></div>
+                                    <div class="preport-header">
+                                        <div class="preport-badge badge-${report.type}">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
+                                        <span class="preport-date"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
+                                    </div>
+                                    <div class="preport-icon-area">${imageHTML}</div>
+                                    <div class="preport-body">
+                                        <h3>${report.itemName}</h3>
+                                        <p><i class="fa-solid fa-location-dot"></i> ${report.location}</p>
+                                        <div class="preport-progress">
+                                            <span class="progress-label">Status: Active</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 20%; background: var(--color-${report.type});"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="preport-actions">
+                                        <a href="item-detail.html?id=${docSnap.id}" class="pbtn pbtn-view"><i class="fa-solid fa-eye"></i> View</a>
+                                        <button class="pbtn pbtn-remove"><i class="fa-solid fa-trash-can"></i> Remove</button>
+                                    </div>
+                                </div>
+                            `;
+                            reportsGrid.insertAdjacentHTML('beforeend', cardHTML);
+                        });
+
+                        attachReportActions();
+                    }
+
+                    updateProfileStats(totalCount, lostCount, foundCount);
+                }, (error) => {
+                    console.error("Error listening to profile reports:", error);
+                    showToast("Failed to load profile data", "error");
+                });
+            } catch (error) {
+                console.error("Error setting up profile reports listener:", error);
+                showToast("Failed to load profile data", "error");
+            }
+
+            initProfileUI();
+        } catch (error) {
+            console.error("Error loading profile page:", error);
+            showToast("Failed to load profile page", "error");
+        }
     });
 
     function initProfileUI() {    // --- Animated stat counters ---
@@ -216,14 +264,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Filter pills ---
     const pills = document.querySelectorAll('.pill-btn');
-    const reportCards = document.querySelectorAll('.preport-card');
 
     pills.forEach(pill => {
         pill.addEventListener('click', () => {
             pills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
             const filter = pill.dataset.filter;
-            reportCards.forEach(card => {
+            document.querySelectorAll('.preport-card').forEach(card => {
                 if (filter === 'all' || card.dataset.type === filter) {
                     card.style.display = '';
                     card.style.animation = 'fadeTabIn 0.4s ease';
@@ -389,29 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // --- Wire up Remove buttons ---
-    document.querySelectorAll('.pbtn-remove').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const card = btn.closest('.preport-card');
-            const itemName = card?.querySelector('h3')?.textContent || 'this report';
-            showModal({
-                title: 'Remove Report?',
-                description: `Are you sure you want to remove "${itemName}"? This action cannot be undone.`,
-                iconClass: 'fa-trash-can',
-                iconType: 'danger',
-                confirmText: 'Remove',
-                confirmClass: 'modal-btn modal-btn-danger',
-                onConfirm: () => {
-                    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.9)';
-                    setTimeout(() => card.remove(), 400);
-                    showToast(`"${itemName}" has been removed.`, 'success');
-                }
-            });
-        });
-    });
 
     // --- Wire up Resolve buttons ---
     document.querySelectorAll('.pbtn-resolve').forEach(btn => {
