@@ -44,6 +44,14 @@ export function initAuth() {
             }
         } else {
             // User is signed out
+            const protectedPages = ['report-lost.html', 'report-found.html', 'my-profile.html', 'claim-item.html'];
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            if (protectedPages.includes(currentPage)) {
+                window.location.href = 'login.html';
+                return;
+            }
+
             if (navProfile) {
                 navProfile.innerHTML = `
                     <a href="login.html" class="btn-profile">Login</a>
@@ -188,7 +196,7 @@ export function initAuth() {
                 if (error.code === 'auth/email-already-in-use') {
                     showToast('Email is already in use.', 'error');
                 } else {
-                    showToast('Failed to create account. Please try again.', 'error');
+                    showToast(`Failed: ${error.code || error.message}`, 'error');
                 }
             }
         });

@@ -8,14 +8,26 @@ export function initForms() {
         const fileInput = document.getElementById(fileInputId);
         if (fileInput && fileInput.files && fileInput.files[0]) {
             const file = fileInput.files[0];
-            const storageRef = ref(storage, `reports/${Date.now()}_${file.name}`);
+            const cleanFileName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
+            const storageRef = ref(storage, `reports/${Date.now()}_${cleanFileName}`);
+            
             try {
-                const snapshot = await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(snapshot.ref);
+                // Try uploading and getting URL within 8 seconds max
+                const uploadTask = async () => {
+                    const snapshot = await uploadBytes(storageRef, file);
+                    return await getDownloadURL(snapshot.ref);
+                };
+
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Upload timed out. Firebase Storage may not be enabled or there is a CORS issue.")), 8000)
+                );
+                
+                const downloadURL = await Promise.race([ uploadTask(), timeoutPromise ]);
                 return downloadURL;
             } catch (error) {
-                console.error("Error uploading image: ", error);
-                return null;
+                console.warn("Image upload failed, saving report without image:", error);
+                showToast("Image upload failed! Did you enable Firebase Storage in the console? Saving without image...", "warning");
+                return null; // Return null so the form still submits successfully without the image
             }
         }
         return null;
@@ -42,9 +54,17 @@ export function initForms() {
             }
 
             try {
+                await auth.authStateReady();
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast('You must be logged in to submit a report.', 'error');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('referenceImage');
-                const user = auth.currentUser;
+
 
                 await addDoc(collection(db, "reports"), {
                     type: "lost",
@@ -95,9 +115,16 @@ export function initForms() {
             }
 
             try {
+                await auth.authStateReady();
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast('You must be logged in to submit a report.', 'error');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('foundImage');
-                const user = auth.currentUser;
 
                 await addDoc(collection(db, "reports"), {
                     type: "found",
@@ -148,9 +175,16 @@ export function initForms() {
             }
 
             try {
+                await auth.authStateReady();
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast('You must be logged in to submit a claim.', 'error');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
                 showToast('Uploading and saving claim...', 'info');
                 const evidenceUrl = await uploadImageIfPresent('evidenceFile');
-                const user = auth.currentUser;
                 await addDoc(collection(db, "claims"), {
                     itemId: itemId || "unknown",
                     claimantName: fullName,

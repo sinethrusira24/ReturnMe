@@ -111,116 +111,14 @@
             </div>
 
             <div class="profile-reports-grid">
-                <!-- Card 1 -->
-                <div class="preport-card" data-type="lost">
-                    <div class="preport-status-bar status-lost"></div>
-                    <div class="preport-header">
-                        <div class="preport-badge badge-lost">Lost</div>
-                        <span class="preport-date"><i class="fa-regular fa-clock"></i> Oct 24, 2026</span>
-                    </div>
-                    <div class="preport-icon-area"><i class="fa-solid fa-id-card"></i></div>
-                    <div class="preport-body">
-                        <h3>Student ID Card</h3>
-                        <p><i class="fa-solid fa-location-dot"></i> Main Library</p>
-                        <div class="preport-progress">
-                            <span class="progress-label">Status: Active</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 40%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="preport-actions">
-                        <a href="item-detail.html" class="pbtn pbtn-view"><i class="fa-solid fa-eye"></i> View</a>
-                        <button class="pbtn pbtn-remove"><i class="fa-solid fa-trash-can"></i> Remove</button>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="preport-card" data-type="found">
-                    <div class="preport-status-bar status-found"></div>
-                    <div class="preport-header">
-                        <div class="preport-badge badge-found">Found</div>
-                        <span class="preport-date"><i class="fa-regular fa-clock"></i> Oct 23, 2026</span>
-                    </div>
-                    <div class="preport-icon-area"><i class="fa-solid fa-mobile-screen"></i></div>
-                    <div class="preport-body">
-                        <h3>iPhone 13 - Black</h3>
-                        <p><i class="fa-solid fa-location-dot"></i> Faculty Cafe</p>
-                        <div class="preport-progress">
-                            <span class="progress-label">Status: 1 Claim</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill found-fill" style="width: 65%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="preport-actions">
-                        <a href="item-detail.html" class="pbtn pbtn-view"><i class="fa-solid fa-eye"></i> View</a>
-                        <button class="pbtn pbtn-resolve"><i class="fa-solid fa-circle-check"></i> Resolve</button>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="preport-card" data-type="lost">
-                    <div class="preport-status-bar status-lost"></div>
-                    <div class="preport-header">
-                        <div class="preport-badge badge-lost">Lost</div>
-                        <span class="preport-date"><i class="fa-regular fa-clock"></i> Oct 20, 2026</span>
-                    </div>
-                    <div class="preport-icon-area"><i class="fa-solid fa-key"></i></div>
-                    <div class="preport-body">
-                        <h3>Dorm Room Key</h3>
-                        <p><i class="fa-solid fa-location-dot"></i> Parking Lot B</p>
-                        <div class="preport-progress">
-                            <span class="progress-label resolved-label"><i class="fa-solid fa-check"></i>
-                                Resolved</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill resolved-fill" style="width: 100%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="preport-actions">
-                        <a href="item-detail.html" class="pbtn pbtn-view"><i class="fa-solid fa-eye"></i> View</a>
-                        <button class="pbtn pbtn-archive"><i class="fa-solid fa-box-archive"></i> Archive</button>
-                    </div>
-                </div>
+                <!-- Dynamic reports will be loaded here -->
             </div>
         </div>
 
         <!-- Tab: Activity -->
         <div class="ptab-content" id="tab-activity" role="tabpanel" aria-labelledby="ptab-activity">
-            <div class="activity-timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot dot-found"></div>
-                    <div class="timeline-card">
-                        <span class="timeline-time">Oct 23, 2026 — 3:15 PM</span>
-                        <h4>You reported a found item</h4>
-                        <p>iPhone 13 - Black found at Faculty Cafe</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot dot-claim"></div>
-                    <div class="timeline-card">
-                        <span class="timeline-time">Oct 24, 2026 — 10:30 AM</span>
-                        <h4>New claim received</h4>
-                        <p>Someone submitted a claim for iPhone 13 - Black</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot dot-lost"></div>
-                    <div class="timeline-card">
-                        <span class="timeline-time">Oct 24, 2026 — 11:00 AM</span>
-                        <h4>You reported a lost item</h4>
-                        <p>Student ID Card lost near Main Library</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot dot-resolved"></div>
-                    <div class="timeline-card">
-                        <span class="timeline-time">Oct 25, 2026 — 9:00 AM</span>
-                        <h4>Item resolved!</h4>
-                        <p>Dorm Room Key was successfully returned</p>
-                    </div>
-                </div>
+            <div class="activity-timeline" id="activity-timeline">
+                <!-- Dynamic activity will be loaded here -->
             </div>
         </div>
 
