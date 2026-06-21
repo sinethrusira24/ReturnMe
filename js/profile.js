@@ -28,12 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                document.querySelector('.profile-hero-info h1').textContent = userData.fullName || user.email;
-                document.querySelector('.profile-avatar-lg').textContent = (userData.fullName || user.email)[0].toUpperCase();
+                document.querySelector('.profile-hero-info h1').textContent = userData.fullName || user.displayName || user.email;
+                document.querySelector('.profile-avatar-lg').textContent = (userData.fullName || user.displayName || user.email)[0].toUpperCase();
                 
                 const inputs = document.querySelectorAll('.settings-form input');
-                if (inputs[0]) inputs[0].value = userData.fullName || '';
-                if (inputs[1]) inputs[1].value = user.email || '';
+                if (inputs[0]) inputs[0].value = userData.fullName || user.displayName || '';
+                if (inputs[1]) inputs[1].value = userData.email || user.email || '';
                 if (inputs[2]) inputs[2].value = userData.studentId || '';
             }
 
@@ -49,7 +49,38 @@ document.addEventListener('DOMContentLoaded', () => {
                     .replace(/>/g, '&gt;');
             }
 
-            function updateProfileStats(totalCount, lostCount, foundCount) {
+                const activityTimeline = document.getElementById('activity-timeline');
+                if (activityTimeline) {
+                    activityTimeline.innerHTML = '';
+                    if (querySnapshot.empty) {
+                        activityTimeline.innerHTML = '<p class="no-results" style="text-align: center; color: var(--text-muted); padding: 2rem;">No recent activity found.</p>';
+                    } else {
+                        // Sort reports by date for timeline
+                        const sortedReports = [];
+                        querySnapshot.forEach(docSnap => sortedReports.push(docSnap.data()));
+                        sortedReports.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                        sortedReports.forEach(report => {
+                            const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleString() : 'Just now';
+                            const dotClass = report.type === 'lost' ? 'dot-lost' : 'dot-found';
+                            const title = `You reported a ${report.type} item`;
+                            const desc = `${report.itemName} - ${report.location}`;
+
+                            activityTimeline.insertAdjacentHTML('beforeend', `
+                                <div class="timeline-item">
+                                    <div class="timeline-dot ${dotClass}"></div>
+                                    <div class="timeline-card">
+                                        <span class="timeline-time">${dateStr}</span>
+                                        <h4>${title}</h4>
+                                        <p>${desc}</p>
+                                    </div>
+                                </div>
+                            `);
+                        });
+                    }
+                }
+
+                // Update Stats
                 const statCards = document.querySelectorAll('.pstat-card');
                 if (statCards.length >= 3) {
                     statCards[0].dataset.count = totalCount;
@@ -287,6 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     fullName: newName,
                     email: newEmail,
                     studentId: newStudentId
+                });
+
+                // Update Auth Profile
+                import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").then(({ updateProfile }) => {
+                    updateProfile(user, { displayName: newName }).catch(e => console.error("Auth profile update failed", e));
                 });
 
                 // Update UI visually
