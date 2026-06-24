@@ -44,9 +44,9 @@
                 <span class="avatar-status-dot"></span>
             </div>
             <div class="profile-hero-info">
-                <h1>Hasira Perera</h1>
-                <p class="profile-tagline"><i class="fa-solid fa-graduation-cap"></i> Software Engineering Student</p>
-                <p class="profile-joined"><i class="fa-regular fa-calendar"></i> Member since October 2026</p>
+                <h1 id="profileNameDisplay">Loading...</h1>
+                <p class="profile-tagline" id="profileTaglineDisplay"><i class="fa-solid fa-graduation-cap"></i> Student</p>
+                <p class="profile-joined" id="profileJoinedDisplay"><i class="fa-regular fa-calendar"></i> Member since ...</p>
             </div>
             <div class="profile-hero-actions">
                 <button class="btn-edit-profile" id="btn-edit-profile" aria-label="Edit your profile settings"><i
@@ -130,19 +130,19 @@
                     <form class="settings-form">
                         <div class="sfield">
                             <label>Full Name</label>
-                            <input type="text" value="Hasira Perera">
+                            <input type="text" id="settingFullName" value="">
                         </div>
                         <div class="sfield">
                             <label>Email Address</label>
-                            <input type="email" value="hasira@university.edu">
+                            <input type="email" id="settingEmail" value="" readonly style="opacity: 0.7;">
                         </div>
                         <div class="sfield">
                             <label>Phone Number</label>
-                            <input type="tel" value="+94 77 123 4567">
+                            <input type="tel" id="settingPhone" value="">
                         </div>
                         <div class="sfield">
-                            <label>Faculty / Department</label>
-                            <input type="text" value="Faculty of Computing">
+                            <label>Student ID</label>
+                            <input type="text" id="settingStudentId" value="">
                         </div>
                         <button type="button" class="btn-save-settings"><i class="fa-solid fa-floppy-disk"></i> Save
                             Changes</button>

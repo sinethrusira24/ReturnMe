@@ -42,51 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const reportsQuery = query(collection(db, "reports"), where("reporterId", "==", user.uid));
 
             function escapeAttribute(value) {
+                if (value === null || value === undefined) return '';
                 return String(value)
                     .replace(/&/g, '&amp;')
                     .replace(/"/g, '&quot;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;');
-            }
-
-                const activityTimeline = document.getElementById('activity-timeline');
-                if (activityTimeline) {
-                    activityTimeline.innerHTML = '';
-                    if (querySnapshot.empty) {
-                        activityTimeline.innerHTML = '<p class="no-results" style="text-align: center; color: var(--text-muted); padding: 2rem;">No recent activity found.</p>';
-                    } else {
-                        // Sort reports by date for timeline
-                        const sortedReports = [];
-                        querySnapshot.forEach(docSnap => sortedReports.push(docSnap.data()));
-                        sortedReports.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-                        sortedReports.forEach(report => {
-                            const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleString() : 'Just now';
-                            const dotClass = report.type === 'lost' ? 'dot-lost' : 'dot-found';
-                            const title = `You reported a ${report.type} item`;
-                            const desc = `${report.itemName} - ${report.location}`;
-
-                            activityTimeline.insertAdjacentHTML('beforeend', `
-                                <div class="timeline-item">
-                                    <div class="timeline-dot ${dotClass}"></div>
-                                    <div class="timeline-card">
-                                        <span class="timeline-time">${dateStr}</span>
-                                        <h4>${title}</h4>
-                                        <p>${desc}</p>
-                                    </div>
-                                </div>
-                            `);
-                        });
-                    }
-                }
-
-                // Update Stats
-                const statCards = document.querySelectorAll('.pstat-card');
-                if (statCards.length >= 3) {
-                    statCards[0].dataset.count = totalCount;
-                    statCards[1].dataset.count = lostCount;
-                    statCards[2].dataset.count = foundCount;
-                }
             }
 
             function attachReportActions() {
@@ -120,6 +81,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalCount = 0;
                     let lostCount = 0;
                     let foundCount = 0;
+                    
+                    const activityTimeline = document.getElementById('activity-timeline');
+                    if (activityTimeline) {
+                        activityTimeline.innerHTML = '';
+                        if (querySnapshot.empty) {
+                            activityTimeline.innerHTML = '<p class="no-results" style="text-align: center; color: var(--text-muted); padding: 2rem;">No recent activity found.</p>';
+                        } else {
+                            // Sort reports by date for timeline
+                            const sortedReports = [];
+                            querySnapshot.forEach(docSnap => sortedReports.push(docSnap.data()));
+                            sortedReports.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                            sortedReports.forEach(report => {
+                                const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleString() : 'Just now';
+                                const dotClass = report.type === 'lost' ? 'dot-lost' : 'dot-found';
+                                const title = `You reported a ${report.type} item`;
+                                const desc = `${report.itemName} - ${report.location}`;
+
+                                activityTimeline.insertAdjacentHTML('beforeend', `
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot ${dotClass}"></div>
+                                        <div class="timeline-card">
+                                            <span class="timeline-time">${dateStr}</span>
+                                            <h4>${title}</h4>
+                                            <p>${desc}</p>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                        }
+                    }
 
                     if (querySnapshot.empty) {
                         reportsGrid.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">You haven\'t submitted any reports yet.</p>';
@@ -170,7 +162,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         attachReportActions();
                     }
 
-                    updateProfileStats(totalCount, lostCount, foundCount);
+                    // Update Stats
+                    const statCards = document.querySelectorAll('.pstat-card');
+                    if (statCards.length >= 3) {
+                        statCards[0].dataset.count = totalCount;
+                        statCards[1].dataset.count = lostCount;
+                        statCards[2].dataset.count = foundCount;
+                    }
+                    // Wait, `updateProfileStats` isn't defined here. We just set datasets. 
+                    // Let's remove `updateProfileStats` call since the dataset logic is there and `initProfileUI` handles animation.
+                    
                 }, (error) => {
                     console.error("Error listening to profile reports:", error);
                     showToast("Failed to load profile data", "error");

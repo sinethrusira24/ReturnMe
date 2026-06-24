@@ -42,66 +42,9 @@
         </a>
 
         <div class="item-detail-card">
-            
-            <div class="item-image-side">
-                <div class="card-badge badge-found">Found</div>
-                <div class="main-image-container">
-                    <i class="fa-solid fa-mobile-screen-button placeholder-icon"></i>
-                </div>
-                <div class="image-gallery">
-                    <div class="gallery-thumb active"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                    <div class="gallery-thumb"><i class="fa-solid fa-image"></i></div>
-                    <div class="gallery-thumb"><i class="fa-solid fa-image"></i></div>
-                </div>
-            </div>
-
-            <div class="item-info-side">
-                <div class="item-header-info">
-                    <div class="header-top-row">
-                        <span class="item-reference">Ref ID: #FND-2026-084</span>
-                        <button class="btn-share" id="shareBtn" aria-label="Share this listing"><i class="fa-solid fa-share-nodes"></i> Share</button>
-                    </div>
-                    <h1>iPhone 13 - Black Case</h1>
-                </div>
-
-                <div class="reporter-info">
-                    <h3>Reported By</h3>
-                    <div class="reporter-profile">
-                        <div class="reporter-avatar">NK</div>
-                        <div class="reporter-details">
-                            <span class="reporter-name">Nikini Silva</span>
-                            <a href="tel:+94711234567" class="reporter-contact"><i class="fa-solid fa-phone"></i> +94 71 123 4567</a>
-                        </div>
-                    </div>
-                </div>
-
-                <ul class="item-metadata">
-                    <li>
-                        <i class="fa-solid fa-location-dot"></i>
-                        <div>
-                            <strong>Location Found</strong>
-                            <span>Engineering Faculty Cafe, Table 4</span>
-                        </div>
-                    </li>
-                    <li>
-                        <i class="fa-regular fa-calendar"></i>
-                        <div>
-                            <strong>Date & Time</strong>
-                            <span>Oct 23, 2026 at 2:15 PM</span>
-                        </div>
-                    </li>
-                </ul>
-
-                <div class="item-description">
-                    <h3>Description</h3>
-                    <p>Found a black iPhone 13 sitting on the corner table near the window in the Engineering Cafe. It has a matte black Spigen case and a slightly cracked screen protector on the top right edge.</p>
-                </div>
-
-                <div class="item-actions">
-                    <a href="claim-item.html" class="btn-action btn-found btn-full">
-                        <i class="fa-solid fa-shield-halved"></i> Claim This Item
-                    </a>
-                </div>
+            <div style="padding: 3rem; text-align: center; color: var(--text-muted); width: 100%;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>Loading item details...</p>
             </div>
         </div>
 
@@ -150,46 +93,4 @@
     </script>
 </body>
 
-</html>    document.querySelector('.item-description p').textContent = report.description || 'No description provided.';
-                    
-                    if (report.imageUrl) {
-                        const mainImageContainer = document.querySelector('.main-image-container');
-                        if (mainImageContainer) {
-                            mainImageContainer.innerHTML = '';
-                            const detailImg = document.createElement('img');
-                            detailImg.src = report.imageUrl;
-                            detailImg.alt = report.itemName || 'Report image';
-                            detailImg.style.width = '100%';
-                            detailImg.style.height = '100%';
-                            detailImg.style.objectFit = 'cover';
-                            detailImg.style.borderRadius = '10px';
-                            mainImageContainer.appendChild(detailImg);
-                        }
-                        const activeThumb = document.querySelector('.gallery-thumb.active');
-                        if (activeThumb) {
-                            activeThumb.innerHTML = '';
-                            const thumbImg = document.createElement('img');
-                            thumbImg.src = report.imageUrl;
-                            thumbImg.alt = report.itemName || 'Report image';
-                            thumbImg.style.width = '100%';
-                            thumbImg.style.height = '100%';
-                            thumbImg.style.objectFit = 'cover';
-                            thumbImg.style.borderRadius = '5px';
-                            activeThumb.appendChild(thumbImg);
-                        }
-                    }
-                    
-                    const claimBtn = document.querySelector('.btn-action');
-                    if (claimBtn) {
-                        claimBtn.href = `claim-item.html?id=${id}`;
-                    }
-                } else {
-                    document.querySelector('.item-header-info h1').textContent = "Item Not Found";
-                }
-            } catch (error) {
-                console.error("Error fetching item details: ", error);
-            }
-        });
-    </script>
-</body>
 </html>
