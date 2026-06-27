@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .replace(/>/g, '&gt;');
             }
 
+
             function attachReportActions() {
                 reportsGrid.querySelectorAll('.preport-card').forEach(card => {
                     const reportId = card.dataset.id;

@@ -142,4 +142,5 @@ export async function initItemDetail() {
         console.error("Error setting up item listener:", error);
         document.querySelector('main').innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-muted);">Error loading item details. Please try again.</p>';
     }
+
 }
