@@ -67,6 +67,23 @@ export function initAuth() {
         }
     });
 
+    // Intercept clicks on protected links
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link) {
+            const href = link.getAttribute('href');
+            if (href) {
+                const protectedPages = ['report-lost.html', 'report-found.html', 'my-profile.html', 'claim-item.html'];
+                const isProtected = protectedPages.some(page => href.includes(page));
+                // Only redirect if auth is fully initialized and user is null
+                if (isProtected && auth.currentUser === null) {
+                    e.preventDefault();
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+    });
+
     const loginForm = document.getElementById('loginForm');
     const passwordInput = document.getElementById('password');
     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
