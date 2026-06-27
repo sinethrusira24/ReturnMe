@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .replace(/>/g, '&gt;');
             }
 
+            function updateActivityTimeline(querySnapshot) {
                 const activityTimeline = document.getElementById('activity-timeline');
                 if (activityTimeline) {
                     activityTimeline.innerHTML = '';
@@ -79,8 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                 }
+            }
 
-                // Update Stats
+            function updateProfileStats(totalCount, lostCount, foundCount) {
                 const statCards = document.querySelectorAll('.pstat-card');
                 if (statCards.length >= 3) {
                     statCards[0].dataset.count = totalCount;
@@ -171,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     updateProfileStats(totalCount, lostCount, foundCount);
+                    updateActivityTimeline(querySnapshot);
                 }, (error) => {
                     console.error("Error listening to profile reports:", error);
                     showToast("Failed to load profile data", "error");
