@@ -1972,9 +1972,17 @@ body.login-page .password-field input:focus {
     /* Navbar Adjustments */
     .mobile-menu-btn {
         display: block;
+        order: 3;
+        margin-left: 1rem;
     }
 
     .nav-profile {
+        display: flex;
+        order: 2;
+        margin-left: auto;
+    }
+
+    .nav-profile .btn-profile {
         display: none;
     }
 
