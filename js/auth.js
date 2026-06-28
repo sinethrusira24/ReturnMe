@@ -12,12 +12,49 @@ export function initAuth() {
         if (user) {
             // User is signed in
             if (navProfile) {
+                // If user object has a displayName, we can use the first letter for avatar
+                const initials = user.displayName ? user.displayName.charAt(0).toUpperCase() : '<i class="fa-solid fa-user"></i>';
+                
                 navProfile.innerHTML = `
-                    <a href="my-profile.html" class="btn-profile"><i class="fa-solid fa-user"></i> Profile</a>
-                    <button id="btnLogout" class="btn-profile" style="cursor: pointer;">Logout</button>
+                    <div class="user-avatar-btn" id="userAvatarBtn" aria-label="User menu" role="button" tabindex="0">
+                        ${initials}
+                    </div>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="my-profile.html"><i class="fa-solid fa-circle-user"></i> My Profile</a>
+                        <a href="report-lost.html"><i class="fa-solid fa-magnifying-glass"></i> Report Lost</a>
+                        <a href="report-found.html"><i class="fa-solid fa-box-open"></i> Report Found</a>
+                        <hr>
+                        <button id="btnLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                    </div>
                 `;
                 navProfile.style.opacity = '1';
                 navProfile.style.visibility = 'visible';
+
+                // Add Dropdown Toggle Logic
+                const avatarBtn = document.getElementById('userAvatarBtn');
+                const dropdown = document.getElementById('profileDropdown');
+                
+                if (avatarBtn && dropdown) {
+                    avatarBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        dropdown.classList.toggle('active');
+                    });
+                    
+                    // Allow keyboard toggle
+                    avatarBtn.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            dropdown.classList.toggle('active');
+                        }
+                    });
+                    
+                    document.addEventListener('click', (e) => {
+                        if (!dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+                            dropdown.classList.remove('active');
+                        }
+                    });
+                }
+
                 document.getElementById('btnLogout')?.addEventListener('click', async () => {
                     try {
                         await signOut(auth);

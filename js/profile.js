@@ -31,10 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('.profile-hero-info h1').textContent = userData.fullName || user.displayName || user.email;
                 document.querySelector('.profile-avatar-lg').textContent = (userData.fullName || user.displayName || user.email)[0].toUpperCase();
                 
+                const emailDisplay = document.getElementById('profileEmailDisplay');
+                if (emailDisplay) {
+                    emailDisplay.innerHTML = `<i class="fa-solid fa-envelope"></i> ${userData.email || user.email || 'N/A'}`;
+                }
+                const studentIdDisplay = document.getElementById('profileStudentIdDisplay');
+                if (studentIdDisplay) {
+                    studentIdDisplay.innerHTML = `<i class="fa-solid fa-id-card"></i> ${userData.studentId || 'Not provided'}`;
+                }
+
                 const inputs = document.querySelectorAll('.settings-form input');
                 if (inputs[0]) inputs[0].value = userData.fullName || user.displayName || '';
                 if (inputs[1]) inputs[1].value = userData.email || user.email || '';
-                if (inputs[2]) inputs[2].value = userData.studentId || '';
+                if (inputs[2]) inputs[2].value = userData.phone || '';
+                if (inputs[3]) inputs[3].value = userData.studentId || '';
             }
 
             // Fetch User Reports
@@ -307,7 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const inputs = document.querySelectorAll('.settings-form input');
             const newName = inputs[0]?.value.trim();
             const newEmail = inputs[1]?.value.trim();
-            const newStudentId = inputs[2]?.value.trim();
+            const newPhone = inputs[2]?.value.trim();
+            const newStudentId = inputs[3]?.value.trim();
 
             if (!newName) {
                 showToast("Name cannot be empty", "error");
@@ -319,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await updateDoc(doc(db, "users", user.uid), {
                     fullName: newName,
                     email: newEmail,
+                    phone: newPhone,
                     studentId: newStudentId
                 });
 
@@ -330,6 +342,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update UI visually
                 document.querySelector('.profile-hero-info h1').textContent = newName;
                 document.querySelector('.profile-avatar-lg').textContent = newName[0].toUpperCase();
+                
+                const emailDisplay = document.getElementById('profileEmailDisplay');
+                if (emailDisplay) {
+                    emailDisplay.innerHTML = `<i class="fa-solid fa-envelope"></i> ${newEmail || 'N/A'}`;
+                }
+                const studentIdDisplay = document.getElementById('profileStudentIdDisplay');
+                if (studentIdDisplay) {
+                    studentIdDisplay.innerHTML = `<i class="fa-solid fa-id-card"></i> ${newStudentId || 'Not provided'}`;
+                }
 
                 saveBtn.textContent = '✓ Saved!';
                 saveBtn.style.background = 'var(--color-found)';
