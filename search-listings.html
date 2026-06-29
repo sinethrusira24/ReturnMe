@@ -38,20 +38,20 @@
             <h1 class="page-title">Browse Lost & Found</h1>
             <p class="page-subtitle">Search the campus database to find your missing items or locate the owner of something you found.</p>
             
-            <div class="search-filter-box" id="searchListingsForm">
-                <div class="search-input-group">
+            <div class="search-page-filter" id="searchListingsForm">
+                <div class="search-input-group search-page-input">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="listingsSearchInput" placeholder="Search for keys, phones, IDs..." aria-label="Search items">
                 </div>
                 
-                <div class="filter-group">
-                    <select class="filter-select" id="listingsStatusFilter" aria-label="Filter by status">
+                <div class="filter-controls">
+                    <select class="filter-select search-page-select" id="listingsStatusFilter" aria-label="Filter by status">
                         <option value="all">All Statuses</option>
                         <option value="lost">Lost Items</option>
                         <option value="found">Found Items</option>
                     </select>
                     
-                    <select class="filter-select" id="listingsCategoryFilter" aria-label="Filter by category">
+                    <select class="filter-select search-page-select" id="listingsCategoryFilter" aria-label="Filter by category">
                         <option value="all">All Categories</option>
                         <option value="electronics">Electronics</option>
                         <option value="documents">IDs & Documents</option>
@@ -59,7 +59,7 @@
                         <option value="clothing">Clothing</option>
                     </select>
                     
-                    <button class="btn-search" id="listingsSearchBtn">Search</button>
+                    <button class="btn-search search-page-btn" id="listingsSearchBtn">Search</button>
                 </div>
             </div>
         </div>
