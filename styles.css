@@ -72,6 +72,10 @@ body::before {
         radial-gradient(at 0% 0%, hsla(343,100%,76%,0.08) 0px, transparent 50%);
 }
 
+body.login-page::before {
+    display: none;
+}
+
 body.login-page {
     background: radial-gradient(circle at top, #0F172A 0%, #0B1120 100%);
 }
@@ -580,6 +584,13 @@ body.login-page .password-field input:focus {
 .search-filter-box .btn-search {
     width: 100%;
     min-width: 140px;
+}
+
+@media (max-width: 768px) {
+    .search-filter-box {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
 }
 
 .no-results {
@@ -3579,4 +3590,23 @@ body.login-page .password-field input:focus {
     background-color: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
     color: #FFFFFF !important;
+}
+
+/* =========================================
+   BACKGROUND VIDEO (Login Page)
+   ========================================= */
+.bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: -100;
+    object-fit: cover;
+    opacity: 1; /* Removed transparency to fix washed out foggy look */
+    filter: brightness(0.35); /* Slightly darken so login form pops, without blur */
+    pointer-events: none; /* Make sure users can't click it */
 }
