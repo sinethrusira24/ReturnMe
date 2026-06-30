@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let totalCount = 0;
                     let lostCount = 0;
                     let foundCount = 0;
+                    let resolvedCount = 0;
                     
                     const activityTimeline = document.getElementById('activity-timeline');
                     if (activityTimeline) {
@@ -132,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             totalCount++;
                             if (report.type === 'lost') lostCount++;
                             if (report.type === 'found') foundCount++;
+                            if (report.status === 'resolved') resolvedCount++;
 
                             const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Just now';
                             let icon = report.type === 'lost' ? 'fa-id-card' : 'fa-mobile-screen';
@@ -143,9 +145,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
                                 : `<i class="fa-solid ${icon}"></i>`;
 
+                            let progressLabel = report.status === 'resolved' ? '<i class="fa-solid fa-check"></i> Resolved' : 'Status: Active';
+                            let progressClass = report.status === 'resolved' ? 'progress-label resolved-label' : 'progress-label';
+                            let progressFillClass = report.status === 'resolved' ? 'progress-fill resolved-fill' : 'progress-fill';
+                            let progressWidth = report.status === 'resolved' ? '100%' : '20%';
+                            let statusBarBg = report.status === 'resolved' ? 'linear-gradient(90deg, #10b981, #6ee7b7)' : '';
+                            let statusBarClass = report.status === 'resolved' ? 'preport-status-bar' : `preport-status-bar status-${report.type}`;
+
                             const cardHTML = `
                                 <div class="preport-card" data-id="${docSnap.id}" data-type="${report.type}">
-                                    <div class="preport-status-bar status-${report.type}"></div>
+                                    <div class="${statusBarClass}" style="background: ${statusBarBg}"></div>
                                     <div class="preport-header">
                                         <div class="preport-badge badge-${report.type}">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
                                         <span class="preport-date"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
@@ -155,9 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <h3>${report.itemName}</h3>
                                         <p><i class="fa-solid fa-location-dot"></i> ${report.location}</p>
                                         <div class="preport-progress">
-                                            <span class="progress-label">Status: Active</span>
+                                            <span class="${progressClass}">${progressLabel}</span>
                                             <div class="progress-bar">
-                                                <div class="progress-fill" style="width: 20%; background: var(--color-${report.type});"></div>
+                                                <div class="${progressFillClass}" style="width: ${progressWidth}; background: var(--color-${report.type});"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -175,13 +184,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Update Stats
                     const statCards = document.querySelectorAll('.pstat-card');
-                    if (statCards.length >= 3) {
+                    if (statCards.length >= 4) {
                         statCards[0].dataset.count = totalCount;
+                        statCards[0].querySelector('.pstat-number').textContent = totalCount;
+                        
                         statCards[1].dataset.count = lostCount;
+                        statCards[1].querySelector('.pstat-number').textContent = lostCount;
+                        
                         statCards[2].dataset.count = foundCount;
+                        statCards[2].querySelector('.pstat-number').textContent = foundCount;
+                        
+                        statCards[3].dataset.count = resolvedCount;
+                        statCards[3].querySelector('.pstat-number').textContent = resolvedCount;
                     }
-                    // Wait, `updateProfileStats` isn't defined here. We just set datasets. 
-                    // Let's remove `updateProfileStats` call since the dataset logic is there and `initProfileUI` handles animation.
                     
                 }, (error) => {
                     console.error("Error listening to profile reports:", error);
