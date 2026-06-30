@@ -3060,7 +3060,7 @@ body.login-page .password-field input:focus {
 
 @media (max-width: 768px) {
     .profile-hero {
-        padding: 2.5rem 1rem 2rem;
+        padding: 2.5rem 1rem 2.5rem;
     }
 
     .profile-hero-content {
@@ -3130,7 +3130,7 @@ body.login-page .password-field input:focus {
 
 @media (max-width: 480px) {
     .profile-hero {
-        padding: 2rem 0.75rem 1.5rem;
+        padding: 2rem 0.75rem 2.5rem;
     }
 
     .profile-hero-info h1 {
