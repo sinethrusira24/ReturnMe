@@ -35,7 +35,7 @@ export async function initItemDetail() {
 
         const reporterInitial = (item.reporterName || 'User')[0].toUpperCase();
         const imageHTML = item.imageUrl 
-            ? `<img src="${item.imageUrl}" alt="${item.itemName}" style="width:100%; height:100%; object-fit:cover;">`
+            ? `<img src="${item.imageUrl}" alt="${item.itemName}" style="width:100%; height:100%; object-fit:contain; max-height:350px; border-radius:8px;">`
             : `<i class="fa-solid ${icon}" style="font-size: 4rem; color: var(--color-primary);"></i>`;
 
         const actionButtonText = isLost ? 'Report Found This Item' : 'Claim This Item';
@@ -59,17 +59,6 @@ export async function initItemDetail() {
                             <button class="btn-share" id="shareBtn" aria-label="Share this listing"><i class="fa-solid fa-share-nodes"></i> Share</button>
                         </div>
                         <h1>${item.itemName}</h1>
-                    </div>
-
-                    <div class="reporter-info">
-                        <h3>Reported By</h3>
-                        <div class="reporter-profile">
-                            <div class="reporter-avatar">${reporterInitial}</div>
-                            <div class="reporter-details">
-                                <span class="reporter-name">${item.reporterName}</span>
-                                <a href="tel:${item.phone}" class="reporter-contact"><i class="fa-solid fa-phone"></i> ${item.phone}</a>
-                            </div>
-                        </div>
                     </div>
 
                     <ul class="item-metadata">
@@ -99,6 +88,17 @@ export async function initItemDetail() {
                     <div class="item-description">
                         <h3>Description</h3>
                         <p>${item.description}</p>
+                    </div>
+
+                    <div class="reporter-info">
+                        <h3>Reported By</h3>
+                        <div class="reporter-profile">
+                            <div class="reporter-avatar">${reporterInitial}</div>
+                            <div class="reporter-details">
+                                <span class="reporter-name">${item.reporterName}</span>
+                                <a href="tel:${item.phone}" class="reporter-contact"><i class="fa-solid fa-phone"></i> ${item.phone}</a>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="item-actions">

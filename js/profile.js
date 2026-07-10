@@ -192,7 +192,7 @@ if (remainingDays > 2) {
                             if (report.category === 'keys' || report.category === 'accessories') icon = 'fa-key';
                             if (report.category === 'clothing') icon = 'fa-shirt';
                             const imageHTML = report.imageUrl 
-                                ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+                                ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%;height:100%;object-fit:contain;border-radius:10px;">`
                                 : `<i class="fa-solid ${icon}"></i>`;
 
                             let progressLabel = report.status === 'resolved' ? '<i class="fa-solid fa-check"></i> Resolved' : 'Status: Active';
