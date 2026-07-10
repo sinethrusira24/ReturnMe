@@ -117,25 +117,33 @@ export function initForms() {
                     return;
                 }
 
+                const createdAt = Date.now();
+const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
+
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('referenceImage');
 
 
                 await addDoc(collection(db, "reports"), {
-                    type: "lost",
-                    reporterName: fullName,
-                    email: email,
-                    phone: phone,
-                    itemName: itemName,
+                 type: "lost",
+                 reporterName: fullName,
+                   email: email,
+                   phone: phone,
+                   itemName: itemName,
                     category: itemCategory,
-                    date: dateLost,
-                    location: locationLost,
-                    description: description,
+                  date: dateLost,
+                  location: locationLost,
+                 description: description,
+
                     status: "active",
-                    imageUrl: imageUrl || null,
-                    createdAt: Date.now(),
-                    reporterId: user.uid
-                });
+
+                      imageUrl: imageUrl || null,
+
+                      createdAt: createdAt,
+                     expireAt: expireAt,
+
+                  reporterId: user.uid
+           });
 
                 showToast('Lost item report submitted successfully!', 'success');
                 setTimeout(() => {
@@ -196,6 +204,9 @@ export function initForms() {
                 showToast('Uploading and saving report...', 'info');
                 const imageUrl = await uploadImageIfPresent('foundImage');
 
+                const createdAt = Date.now();
+const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
+
                 await addDoc(collection(db, "reports"), {
                     type: "found",
                     reporterName: fullName,
@@ -209,7 +220,8 @@ export function initForms() {
                     description: description,
                     status: "active",
                     imageUrl: imageUrl || null,
-                    createdAt: Date.now(),
+                   createdAt: createdAt,
+                   expireAt: expireAt,
                     reporterId: user.uid
                 });
 

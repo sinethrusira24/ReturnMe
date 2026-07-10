@@ -84,6 +84,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
+            function attachUpdateActions() {
+    reportsGrid.querySelectorAll('.pbtn-update').forEach(btn => {
+
+        btn.addEventListener('click', () => {
+
+            const card = btn.closest('.preport-card');
+            const reportId = card.dataset.id;
+
+            window.location.href = `edit-report.html?id=${reportId}`;
+
+        });
+
+    });
+}
+
             try {
                 onSnapshot(reportsQuery, (querySnapshot) => {
                     if (!reportsGrid) return;
@@ -103,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Sort reports by date for timeline
                             const sortedReports = [];
                             querySnapshot.forEach(docSnap => sortedReports.push(docSnap.data()));
+                            
                             sortedReports.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
                             sortedReports.forEach(report => {
@@ -130,12 +146,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         querySnapshot.forEach((docSnap) => {
                             const report = docSnap.data();
+                            const now = Date.now();
+
+if (report.expireAt && report.expireAt < now) {
+    return; // Skip expired reports
+}
                             totalCount++;
                             if (report.type === 'lost') lostCount++;
                             if (report.type === 'found') foundCount++;
                             if (report.status === 'resolved') resolvedCount++;
 
                             const dateStr = report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Just now';
+
+                            // Calculate remaining days
+const today = Date.now();
+
+const expireAt = report.expireAt ?? (report.createdAt + 7 * 24 * 60 * 60 * 1000);
+
+const remainingDays = Math.ceil(
+    (expireAt - today) / (1000 * 60 * 60 * 24)
+);
+
+let expiryText = "";
+let expiryColor = "";
+
+if (remainingDays > 2) {
+    expiryText = `⏳ Expires in ${remainingDays} days`;
+    expiryColor = "#10b981"; // green
+} else if (remainingDays === 2) {
+    expiryText = "🟡 Expires in 2 days";
+    expiryColor = "#f59e0b"; // orange
+} else if (remainingDays === 1) {
+    expiryText = "🟠 Expires Tomorrow";
+    expiryColor = "#ea580c";
+} else if (remainingDays === 0) {
+    expiryText = "🔴 Expires Today";
+    expiryColor = "#dc2626";
+} else {
+    expiryText = "❌ Expired";
+    expiryColor = "#6b7280";
+}
                             let icon = report.type === 'lost' ? 'fa-id-card' : 'fa-mobile-screen';
                             if (report.category === 'ids' || report.category === 'documents') icon = 'fa-id-card';
                             if (report.category === 'electronics') icon = 'fa-mobile-screen';
@@ -154,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             const cardHTML = `
                                 <div class="preport-card" data-id="${docSnap.id}" data-type="${report.type}">
-                                    <div class="${statusBarClass}" style="background: ${statusBarBg}"></div>
+                                    <div class="${statusBarClass}"style="${statusBarBg ? `background:${statusBarBg};` : ''}"></div>
                                     <div class="preport-header">
                                         <div class="preport-badge badge-${report.type}">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
                                         <span class="preport-date"><i class="fa-regular fa-clock"></i> ${dateStr}</span>
@@ -164,23 +214,44 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <h3>${report.itemName}</h3>
                                         <p><i class="fa-solid fa-location-dot"></i> ${report.location}</p>
                                         <div class="preport-progress">
+                                        <p style="margin:8px 0;color:${expiryColor};font-weight:600;">
+    ${expiryText}
+</p>
                                             <span class="${progressClass}">${progressLabel}</span>
                                             <div class="progress-bar">
                                                 <div class="${progressFillClass}" style="width: ${progressWidth}; background: var(--color-${report.type});"></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="preport-actions">
-                                        <a href="item-detail.html?id=${docSnap.id}" class="pbtn pbtn-view"><i class="fa-solid fa-eye"></i> View</a>
-                                        <button class="pbtn pbtn-remove"><i class="fa-solid fa-trash-can"></i> Remove</button>
-                                    </div>
-                                </div>
-                            `;
-                            reportsGrid.insertAdjacentHTML('beforeend', cardHTML);
+                                   <div class="preport-actions">
+
+    <a href="item-detail.html?id=${docSnap.id}"
+       class="pbtn pbtn-view">
+        <i class="fa-solid fa-eye"></i>
+        View
+    </a>
+
+    <button class="pbtn pbtn-update">
+        <i class="fa-solid fa-pen"></i>
+        Update
+    </button>
+
+    <button class="pbtn pbtn-remove">
+        <i class="fa-solid fa-trash-can"></i>
+        Remove
+    </button>
+
+</div>
+`;
+
+reportsGrid.insertAdjacentHTML('beforeend', cardHTML);
+                           
                         });
 
                         attachReportActions();
+                        attachUpdateActions();
                     }
+                    
 
                     // Update Stats
                     const statCards = document.querySelectorAll('.pstat-card');
