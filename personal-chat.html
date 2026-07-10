@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <title>Private Chat - ReturnMe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fa-solid fa-building-columns"></i> ReturnMe
+            </a>
+            <div class="mobile-menu-btn">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search-listings.html">Search Items</a></li>
+                <li><a href="report-lost.html">Report Lost</a></li>
+                <li><a href="report-found.html">Report Found</a></li>
+                <li class="mobile-only"><a href="login.html">Login</a></li>
+                <li class="mobile-only"><a href="register.html">Sign Up</a></li>
+            </ul>
+            <div class="nav-profile">
+                <a href="login.html" class="btn-profile">Login</a>
+                <a href="register.html" class="btn-profile">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+    <main class="item-detail-container" style="padding-bottom: 4rem;">
+        <a href="javascript:history.back()" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </a>
+        <div class="item-detail-card" style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+            <div class="discussion-header">
+                <h2 id="privateChatHeaderTitle"><i class="fa-regular fa-comments"></i> Private Chat</h2>
+                <p id="privateChatInfo">Secure direct discussion with the item reporter.</p>
+            </div>
+            <div class="chat-container" id="chatContainer">
+                <div class="chat-notice" style="text-align:center; padding:2rem; color:var(--text-muted);">
+                    Loading private chat...
+                </div>
+            </div>
+            <form class="chat-input-area" id="chatForm">
+                <input type="text" placeholder="Send a private message..." required>
+                <input type="file" id="chatImageInput" accept="image/*" style="display: none;">
+                <button type="button" id="chatImageBtn" class="btn-send" title="Share photo proof" style="background: var(--color-primary);">
+                    <i class="fa-solid fa-image"></i>
+                </button>
+                <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </main>
+    <footer class="simple-footer">
+        <div class="footer-links">
+            <a href="mailto:support@returnme.edu">support@returnme.edu</a>
+            <a href="tel:+94716520890">+94 716 520 890</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <div class="footer-copyright">
+            &copy; 2026 ReturnMe. All rights reserved.
+        </div>
+    </footer>
+    <div id="toast-container"></div>
+    <script type="module">
+        import { initUI } from './js/ui.js';
+        import { initAuth } from './js/auth.js';
+        import { initPrivateChat } from './js/chat.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initUI();
+            initAuth();
+            initPrivateChat();
+        });
+    </script>
+</body>
+</html>

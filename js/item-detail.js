@@ -106,7 +106,7 @@ export async function initItemDetail() {
                             <i class="fa-solid fa-${isLost ? 'magnifying-glass' : 'shield-halved'}"></i> ${actionButtonText}
                         </a>
                         <button class="btn-action btn-secondary" id="contactBtn">
-                            <i class="fa-solid fa-envelope"></i> Contact Reporter
+                            <i class="fa-solid fa-comments"></i> Chat Privately
                         </button>
                     </div>
                 </div>
@@ -122,7 +122,7 @@ export async function initItemDetail() {
             });
 
             document.getElementById('contactBtn')?.addEventListener('click', () => {
-                window.location.href = `mailto:${item.email}?subject=Regarding your ${isLost ? 'lost' : 'found'} item: ${item.itemName}`;
+                window.location.href = `personal-chat.html?id=${itemId}`;
             });
         }
     }
