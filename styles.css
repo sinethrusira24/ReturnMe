@@ -175,8 +175,8 @@ body.login-page .password-field input:focus {
    ========================================= */
 .navbar {
     background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: sticky;
     top: 0;
@@ -273,6 +273,11 @@ body.login-page .password-field input:focus {
     opacity: 0;
 }
 
+.nav-indicator-container {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
 .nav-profile {
     display: flex;
     gap: 1rem;
@@ -317,6 +322,7 @@ body.login-page .password-field input:focus {
     cursor: pointer;
     border: 2px solid rgba(255, 255, 255, 0.2);
     transition: var(--transition);
+    -webkit-user-select: none;
     user-select: none;
 }
 
@@ -330,6 +336,7 @@ body.login-page .password-field input:focus {
     top: calc(100% + 0.5rem);
     right: 0;
     background: rgba(15, 23, 42, 0.95);
+    -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
@@ -394,6 +401,7 @@ body.login-page .password-field input:focus {
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     z-index: 99;
     opacity: 0;
@@ -556,8 +564,8 @@ body.login-page .password-field input:focus {
 
 .search-filter-box {
     background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
@@ -627,8 +635,8 @@ body.login-page .password-field input:focus {
 
 .item-card {
     background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-soft);
@@ -924,8 +932,8 @@ body.login-page .password-field input:focus {
 
 .glass-form-wrapper {
     background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-hover);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -951,6 +959,15 @@ body.login-page .password-field input:focus {
     align-items: center;
     font-size: 1.5rem;
     margin: 0 auto 1.5rem auto;
+}
+
+.header-icon-lost {
+    background: rgba(213, 87, 73, 0.1);
+    color: var(--color-lost);
+}
+
+.lost-icon {
+    color: var(--color-lost);
 }
 
 .form-header h1 {
@@ -2062,6 +2079,7 @@ body.login-page .password-field input:focus {
         left: 1rem;
         width: calc(100% - 2rem);
         background: rgba(31, 41, 55, 0.98);
+        -webkit-backdrop-filter: blur(15px);
         backdrop-filter: blur(15px);
         flex-direction: column;
         align-items: center;
@@ -2374,6 +2392,7 @@ body.login-page .password-field input:focus {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -2417,6 +2436,7 @@ body.login-page .password-field input:focus {
 
 .pstat-card {
     background: rgba(15, 23, 42, 0.75);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
@@ -2591,6 +2611,7 @@ body.login-page .password-field input:focus {
 
 .preport-card {
     background: rgba(15, 23, 42, 0.7);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
@@ -3235,6 +3256,7 @@ body.login-page .password-field input:focus {
 
 .toast {
     background: rgba(15, 23, 42, 0.95);
+    -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     color: var(--text-dark);
     padding: 1rem 1.5rem;
@@ -3321,6 +3343,7 @@ body.login-page .password-field input:focus {
 .modal-box {
     background: rgba(15, 23, 42, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     border-radius: var(--radius-lg);
     padding: 2.5rem 2rem 2rem;
