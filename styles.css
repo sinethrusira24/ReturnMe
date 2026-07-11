@@ -42,6 +42,7 @@
 
 html {
     overflow-x: hidden;
+    width: 100%;
 }
 
 body {
@@ -51,6 +52,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body::before {
@@ -1601,15 +1604,7 @@ body.login-page .password-field input:focus {
     letter-spacing: 1px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     z-index: 10;
-}
-
-.badge-lost {
-    background: linear-gradient(135deg, #ef4444, #b91c1c);
-    color: white;
-}
-.badge-found {
-    background: linear-gradient(135deg, #10b981, #047857);
-    color: white;
+    color: var(--white);
 }
 
 .item-info-card {

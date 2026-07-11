@@ -331,29 +331,36 @@ if (userData.profileImage) {
 
             initProfileUI();
 
-            const imageInput=document.getElementById("profileImageInput");
+            const imageInput = document.getElementById("profileImageInput");
+            const preview = document.getElementById("profileImagePreview");
+            const letter = document.getElementById("profileAvatarLetter");
 
-const preview=document.getElementById("profileImagePreview");
+            if (imageInput) {
+                imageInput.addEventListener("change", async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
 
-const letter=document.getElementById("profileAvatarLetter");
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = "block";
+                    letter.style.display = "none";
 
-if(imageInput){
+                    try {
+                        showToast('Uploading image...', 'info');
+                        const storageRef = ref(storage, `profile-images/${user.uid}`);
+                        await uploadBytes(storageRef, file);
+                        const profileImageUrl = await getDownloadURL(storageRef);
 
-imageInput.addEventListener("change",(e)=>{
-
-const file=e.target.files[0];
-
-if(!file)return;
-
-preview.src=URL.createObjectURL(file);
-
-preview.style.display="block";
-
-letter.style.display="none";
-
-});
-
-}
+                        await updateDoc(doc(db, "users", user.uid), {
+                            profileImage: profileImageUrl
+                        });
+                        imageInput.value = ""; // Clear to prevent re-uploading on Save
+                        showToast('Profile image updated!', 'success');
+                    } catch (error) {
+                        console.error('Error uploading image:', error);
+                        showToast('Failed to save profile image', 'error');
+                    }
+                });
+            }
 
             // Fetch Inbox
             const inboxList = document.getElementById('inbox-list');
