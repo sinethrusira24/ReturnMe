@@ -2719,7 +2719,7 @@ body.login-page .password-field input:focus {
 
 .pill-btn.active {
     background: var(--text-dark);
-    color: #fff;
+    color: var(--bg-mesh-1);
     border-color: var(--text-dark);
 }
 
@@ -2863,13 +2863,13 @@ body.login-page .password-field input:focus {
 }
 
 .preport-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
     padding: 0 1rem 1rem;
 }
 
 .pbtn {
-    flex: 1;
     padding: 0.5rem;
     border-radius: 8px;
     border: none;
@@ -2892,6 +2892,15 @@ body.login-page .password-field input:focus {
 
 .pbtn-view:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+.pbtn-update {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+}
+
+.pbtn-update:hover {
+    background: #ffffff;
 }
 
 .pbtn-remove {
