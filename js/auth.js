@@ -82,6 +82,20 @@ if (userDoc.exists() && userDoc.data().profileImage) {
                 const avatarBtn = document.getElementById('userAvatarBtn');
                 const profileDropdown = document.getElementById('profileDropdown');
                 
+                // Listen to user document to sync profile picture
+                onSnapshot(doc(db, "users", user.uid), (userDoc) => {
+                    if (userDoc.exists() && avatarBtn) {
+                        const userData = userDoc.data();
+                        if (userData.profileImage) {
+                            avatarBtn.innerHTML = `<img src="${userData.profileImage}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                        } else {
+                            avatarBtn.innerHTML = userData.fullName 
+                                ? userData.fullName.charAt(0).toUpperCase() 
+                                : (user.displayName ? user.displayName.charAt(0).toUpperCase() : '<i class="fa-solid fa-user"></i>');
+                        }
+                    }
+                });
+                
                 const notifBtn = document.getElementById('notificationBtn');
                 const notifDropdown = document.getElementById('notificationDropdown');
                 const notifBadge = document.getElementById('notificationBadge');

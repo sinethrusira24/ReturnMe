@@ -52,8 +52,7 @@
         N
     </div>
 
-    <!-- Online Dot -->
-    <span class="avatar-status-dot"></span>
+
 
     <!-- Camera -->
     <label for="profileImageInput" class="profile-upload-btn">
@@ -247,6 +246,24 @@
             <div class="modal-actions">
                 <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancel</button>
                 <button class="modal-btn" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Share Modal -->
+    <div class="modal-overlay" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle"
+        aria-describedby="shareModalDesc">
+        <div class="modal-box modal-box-share">
+            <div class="modal-icon modal-icon-info"><i class="fa-solid fa-share-nodes"></i></div>
+            <h3 id="shareModalTitle">Share Your Profile</h3>
+            <p id="shareModalDesc">Copy this link or use your device share sheet to let others view your profile.</p>
+            <div class="share-link-box">
+                <input type="text" id="shareLinkInput" readonly aria-label="Profile share link">
+                <button type="button" class="modal-btn modal-btn-confirm" id="copyShareLinkBtn">Copy</button>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="shareModalClose">Close</button>
+                <button class="modal-btn modal-btn-confirm" id="shareNowBtn">Share</button>
             </div>
         </div>
     </div>

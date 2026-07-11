@@ -331,29 +331,50 @@ if (userData.profileImage) {
 
             initProfileUI();
 
-            const imageInput=document.getElementById("profileImageInput");
+const imageInput = document.getElementById("profileImageInput");
+const preview = document.getElementById("profileImagePreview");
+const letter = document.getElementById("profileAvatarLetter");
 
-const preview=document.getElementById("profileImagePreview");
+if (imageInput) {
+    imageInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-const letter=document.getElementById("profileAvatarLetter");
+        // Show preview immediately
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+        letter.style.display = "none";
 
-if(imageInput){
+        try {
+            showToast("Uploading image...", "info");
 
+            const storageRef = ref(storage, `profile-images/${user.uid}`);
+            await uploadBytes(storageRef, file);
 
-imageInput.addEventListener("change",(e)=>{
+            const profileImageUrl = await getDownloadURL(storageRef);
 
-const file=e.target.files[0];
+            await updateDoc(doc(db, "users", user.uid), {
+                profileImage: profileImageUrl
+            });
 
-if(!file)return;
+            // Update preview with Firebase URL
+            preview.src = profileImageUrl;
 
-preview.src=URL.createObjectURL(file);
+            // Update navbar avatar immediately
+            const navAvatar = document.querySelector(".user-avatar-btn img");
+            if (navAvatar) {
+                navAvatar.src = profileImageUrl;
+            }
 
-preview.style.display="block";
+            imageInput.value = "";
 
-letter.style.display="none";
+            showToast("Profile image updated!", "success");
 
-});
-
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            showToast("Failed to save profile image", "error");
+        }
+    });
 }
 
                         await updateDoc(doc(db, "users", user.uid), {
@@ -819,6 +840,76 @@ if (profileImage) {
                 if (e.key === 'Escape' && modal.classList.contains('active')) {
                     hideModal();
                 }
+            });
+        }
+
+        // --- Profile Share Modal ---
+        const shareBtn = document.getElementById('btn-share-profile');
+        const shareModal = document.getElementById('shareModal');
+        const shareLinkInput = document.getElementById('shareLinkInput');
+        const copyShareLinkBtn = document.getElementById('copyShareLinkBtn');
+        const shareModalClose = document.getElementById('shareModalClose');
+        const shareNowBtn = document.getElementById('shareNowBtn');
+
+        function openShareModal() {
+            if (!shareModal || !shareLinkInput) return;
+            const shareUrl = `${window.location.origin}${window.location.pathname}`;
+            shareLinkInput.value = shareUrl;
+            shareModal.classList.add('active');
+            setTimeout(() => shareModalClose?.focus(), 100);
+        }
+
+        function closeShareModal() {
+            if (!shareModal) return;
+            shareModal.classList.remove('active');
+            shareBtn?.focus();
+        }
+
+        async function copyProfileLink() {
+            if (!shareLinkInput) return;
+            try {
+                await navigator.clipboard.writeText(shareLinkInput.value);
+                showToast('Profile link copied to clipboard!', 'success');
+            } catch (err) {
+                console.error('Copy failed:', err);
+                showToast('Unable to copy link. Please copy it manually.', 'error');
+            }
+        }
+
+        async function shareProfileLink() {
+            if (!shareLinkInput) return;
+            const url = shareLinkInput.value;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'ReturnMe Profile',
+                        text: 'Check out my ReturnMe profile:',
+                        url
+                    });
+                } catch (err) {
+                    console.error('Share failed:', err);
+                }
+            } else {
+                await copyProfileLink();
+            }
+        }
+
+        if (shareBtn) {
+            shareBtn.addEventListener('click', openShareModal);
+        }
+        if (copyShareLinkBtn) {
+            copyShareLinkBtn.addEventListener('click', copyProfileLink);
+        }
+        if (shareModalClose) {
+            shareModalClose.addEventListener('click', closeShareModal);
+        }
+        if (shareNowBtn) {
+            shareNowBtn.addEventListener('click', shareProfileLink);
+        }
+
+        if (shareModal) {
+            shareModal.addEventListener('click', (e) => {
+                if (e.target === shareModal) closeShareModal();
             });
         }
 
