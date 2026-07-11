@@ -339,6 +339,7 @@ const letter=document.getElementById("profileAvatarLetter");
 
 if(imageInput){
 
+
 imageInput.addEventListener("change",(e)=>{
 
 const file=e.target.files[0];
@@ -354,6 +355,25 @@ letter.style.display="none";
 });
 
 }
+
+                        await updateDoc(doc(db, "users", user.uid), {
+                            profileImage: profileImageUrl
+                        });
+                        document.getElementById("profileImagePreview").src = profileImageUrl;
+
+const navAvatar = document.querySelector(".user-avatar-btn img");
+if (navAvatar) {
+    navAvatar.src = profileImageUrl;
+}
+                        imageInput.value = ""; // Clear to prevent re-uploading on Save
+                        showToast('Profile image updated!', 'success');
+                    } catch (error) {
+                        console.error('Error uploading image:', error);
+                        showToast('Failed to save profile image', 'error');
+                    }
+                });
+            }
+
 
             // Fetch Inbox
             const inboxList = document.getElementById('inbox-list');
