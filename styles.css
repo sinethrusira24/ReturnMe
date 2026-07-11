@@ -182,7 +182,7 @@ body.login-page .password-field input:focus {
     top: 0;
     z-index: 100;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease, padding 0.4s ease;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
 }
 
 .navbar-shrunk {
@@ -205,6 +205,7 @@ body.login-page .password-field input:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: padding 0.4s ease;
 }
 
 .nav-logo {
@@ -628,8 +629,8 @@ body.login-page .password-field input:focus {
 
 .item-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
     justify-content: start;
 }
 
@@ -674,7 +675,7 @@ body.login-page .password-field input:focus {
 }
 
 .card-image {
-    height: 180px;
+    height: 150px;
     background-color: rgba(0, 0, 0, 0.03);
     display: flex;
     justify-content: center;
@@ -705,18 +706,18 @@ body.login-page .password-field input:focus {
 }
 
 .card-body {
-    padding: 1.5rem;
+    padding: 1.2rem;
 }
 
 .card-body h3 {
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+    font-size: 1.1rem;
     color: var(--text-dark);
 }
 
 .card-body p {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-bottom: 0.4rem;
     display: flex;
     align-items: center;
@@ -729,9 +730,9 @@ body.login-page .password-field input:focus {
     text-align: center;
     background-color: rgba(0, 0, 0, 0.05);
     color: var(--text-dark);
-    padding: 0.8rem;
+    padding: 0.6rem;
     border-radius: var(--radius-lg);
-    margin-top: 1.2rem;
+    margin-top: 1rem;
     text-decoration: none;
     font-weight: 600;
     transition: var(--transition);
@@ -3884,3 +3885,5 @@ body.login-page .password-field input:focus {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.notif-item:hover { background: rgba(255, 255, 255, 0.05); }
+.notif-item.unread { background: rgba(var(16, 185, 129), 0.1); border-left: 3px solid var(--color-found); }

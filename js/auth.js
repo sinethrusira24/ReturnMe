@@ -1,7 +1,7 @@
 import { showToast } from './toast.js';
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, setDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export function initAuth() {
     // UI Updates based on Auth State
@@ -16,6 +16,19 @@ export function initAuth() {
                 const initials = user.displayName ? user.displayName.charAt(0).toUpperCase() : '<i class="fa-solid fa-user"></i>';
                 
                 navProfile.innerHTML = `
+                    <div class="notification-container" style="position: relative; display: flex; align-items: center; margin-right: 1rem;">
+                        <div class="notification-btn" id="notificationBtn" aria-label="Notifications" role="button" tabindex="0" style="cursor: pointer; position: relative; color: var(--text-dark); font-size: 1.2rem; transition: var(--transition);">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge" style="display: none; position: absolute; top: -5px; right: -5px; background: var(--color-lost); color: white; font-size: 0.65rem; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: scale(0);">0</span>
+                        </div>
+                        <div class="profile-dropdown" id="notificationDropdown" style="width: 320px; right: -50px;">
+                            <div class="notification-header" style="padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600;">Notifications</div>
+                            <div class="notification-list" id="notificationList" style="max-height: 350px; overflow-y: auto; padding: 0.5rem 0;">
+                                <p class="no-notifications" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.9rem;">No new notifications</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="user-avatar-btn" id="userAvatarBtn" aria-label="User menu" role="button" tabindex="0">
                         ${initials}
                     </div>
@@ -32,25 +45,81 @@ export function initAuth() {
 
                 // Add Dropdown Toggle Logic
                 const avatarBtn = document.getElementById('userAvatarBtn');
-                const dropdown = document.getElementById('profileDropdown');
+                const profileDropdown = document.getElementById('profileDropdown');
                 
-                if (avatarBtn && dropdown) {
+                const notifBtn = document.getElementById('notificationBtn');
+                const notifDropdown = document.getElementById('notificationDropdown');
+                const notifBadge = document.getElementById('notificationBadge');
+                
+                // Fetch Notifications
+                const notifQuery = query(collection(db, "users", user.uid, "notifications"), orderBy("createdAt", "desc"));
+                onSnapshot(notifQuery, (snapshot) => {
+                    const list = document.getElementById('notificationList');
+                    if (!list) return;
+                    
+                    let unreadCount = 0;
+                    let notifHtml = '';
+                    
+                    if (snapshot.empty) {
+                        notifHtml = '<p class="no-notifications" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.9rem;">No new notifications</p>';
+                    } else {
+                        snapshot.forEach(docSnap => {
+                            const data = docSnap.data();
+                            if (!data.isRead) unreadCount++;
+                            
+                            const timeStr = new Date(data.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                            notifHtml += `
+                                <a href="${data.link || '#'}" class="notif-item ${data.isRead ? 'read' : 'unread'}" style="display: block; padding: 0.8rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-decoration: none; transition: background 0.2s;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                                        <strong style="color: ${data.isRead ? 'var(--text-muted)' : 'var(--white)'}; font-size: 0.85rem;">${data.title}</strong>
+                                        <span style="color: var(--text-muted); font-size: 0.7rem;">${timeStr}</span>
+                                    </div>
+                                    <div style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.3;">${data.body}</div>
+                                </a>
+                            `;
+                        });
+                    }
+                    
+                    list.innerHTML = notifHtml;
+                    
+                    if (unreadCount > 0) {
+                        notifBadge.style.display = 'flex';
+                        notifBadge.style.transform = 'scale(1)';
+                        notifBadge.textContent = unreadCount;
+                    } else {
+                        notifBadge.style.transform = 'scale(0)';
+                        setTimeout(() => notifBadge.style.display = 'none', 200);
+                    }
+                });
+
+                if (avatarBtn && profileDropdown && notifBtn && notifDropdown) {
                     avatarBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        dropdown.classList.toggle('active');
+                        notifDropdown.classList.remove('active');
+                        profileDropdown.classList.toggle('active');
+                    });
+                    
+                    notifBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        profileDropdown.classList.remove('active');
+                        notifDropdown.classList.toggle('active');
                     });
                     
                     // Allow keyboard toggle
                     avatarBtn.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            dropdown.classList.toggle('active');
+                            notifDropdown.classList.remove('active');
+                            profileDropdown.classList.toggle('active');
                         }
                     });
                     
                     document.addEventListener('click', (e) => {
-                        if (!dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
-                            dropdown.classList.remove('active');
+                        if (!profileDropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+                            profileDropdown.classList.remove('active');
+                        }
+                        if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                            notifDropdown.classList.remove('active');
                         }
                     });
                 }

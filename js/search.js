@@ -12,7 +12,7 @@ export async function initSearch() {
     function updateHomeView() {
         const homeItemGrid = document.querySelector('.search-home ~ main .item-grid');
         if (!homeItemGrid) return;
-        homeItemGrid.innerHTML = allReports.slice(0, 4).map(createCardHTML).join('');
+        homeItemGrid.innerHTML = allReports.slice(0, 5).map(createCardHTML).join('');
     }
 
     function updateSearchView() {
@@ -131,8 +131,8 @@ export async function initSearch() {
     const homeItemGrid = document.querySelector('.search-home ~ main .item-grid');
 
     if (homeItemGrid) {
-        // Render latest 4 items on home page initially
-        homeItemGrid.innerHTML = allReports.slice(0, 4).map(createCardHTML).join('');
+        // Render latest 5 items on home page initially
+        homeItemGrid.innerHTML = allReports.slice(0, 5).map(createCardHTML).join('');
 
         if (homeSearchForm && homeSearchInput && homeSearchType) {
             homeSearchForm.addEventListener('submit', function (e) {

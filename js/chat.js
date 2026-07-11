@@ -239,6 +239,17 @@ export function initPrivateChat() {
                     updatedAt: Date.now()
                 }, { merge: true });
                 
+                if (targetUserId !== currentUser.uid) {
+                    await addDoc(collection(db, "users", targetUserId, "notifications"), {
+                        type: "message",
+                        title: `New message from ${currentUserName}`,
+                        body: messageText,
+                        link: `personal-chat.html?id=${itemId}&user=${currentUser.uid}`,
+                        isRead: false,
+                        createdAt: Date.now()
+                    });
+                }
+                
                 inputField.value = '';
             } catch (error) {
                 console.error('Error sending private message:', error);
@@ -307,6 +318,17 @@ export function initPrivateChat() {
                         lastMessage: messageText || '[Photo]',
                         updatedAt: Date.now()
                     }, { merge: true });
+                    
+                    if (targetUserId !== currentUser.uid) {
+                        await addDoc(collection(db, "users", targetUserId, "notifications"), {
+                            type: "message",
+                            title: `New photo from ${currentUserName}`,
+                            body: messageText || "[Photo shared]",
+                            link: `personal-chat.html?id=${itemId}&user=${currentUser.uid}`,
+                            isRead: false,
+                            createdAt: Date.now()
+                        });
+                    }
                     
                     inputField.value = '';
                     chatImageInput.value = '';
