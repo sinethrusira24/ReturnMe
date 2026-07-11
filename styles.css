@@ -2886,7 +2886,7 @@ body.login-page .password-field input:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.8rem 1rem 0;
+    padding: 1rem 1rem 0.8rem;
 }
 
 .preport-badge {
@@ -2919,7 +2919,7 @@ body.login-page .password-field input:focus {
 }
 
 .preport-body {
-    padding: 0 1rem 0.8rem;
+    padding: 1rem 1rem 0.8rem;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -3327,6 +3327,20 @@ body.login-page .password-field input:focus {
     .settings-grid {
         grid-template-columns: 1fr;
     }
+
+    .profile-reports-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .profile-tabs::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
@@ -3352,6 +3366,7 @@ body.login-page .password-field input:focus {
         font-size: 1.6rem;
     }
 
+    .profile-avatar-img,
     .profile-avatar-lg {
         width: 90px;
         height: 90px;
@@ -3382,6 +3397,17 @@ body.login-page .password-field input:focus {
 
     .profile-reports-grid {
         grid-template-columns: 1fr;
+    }
+
+    .preport-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.4rem;
+        padding: 0 0.8rem 0.8rem;
+    }
+
+    .pbtn {
+        padding: 0.4rem;
+        font-size: 0.75rem;
     }
 
     .item-detail-card {
@@ -3425,6 +3451,7 @@ body.login-page .password-field input:focus {
         font-size: 0.78rem;
     }
 
+    .profile-avatar-img,
     .profile-avatar-lg {
         width: 75px;
         height: 75px;
