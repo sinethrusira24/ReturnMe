@@ -2,6 +2,7 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { doc, getDoc, collection, query, where, onSnapshot, deleteDoc, setDoc, updateDoc, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from './toast.js';
+import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ===== Profile Page Interactivity =====
 
@@ -781,9 +782,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     iconType: 'info',
                     confirmText: 'Send Reset Link',
                     confirmClass: 'modal-btn modal-btn-confirm',
-                    onConfirm: () => {
-                        showToast('Password reset link sent to your email!', 'success');
-                    }
+                   onConfirm: async () => {
+
+    try {
+
+        await sendPasswordResetEmail(auth, auth.currentUser.email);
+
+        showToast("Password reset email sent!", "success");
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast("Failed to send reset email.", "error");
+
+    }
+
+}
                 });
             });
         }
