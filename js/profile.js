@@ -1,7 +1,14 @@
-import { auth, db } from './firebase-config.js';
+import { auth, db, storage } from './firebase-config.js';
+import {
+ref,
+uploadBytes,
+getDownloadURL
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { doc, getDoc, collection, query, where, onSnapshot, deleteDoc, setDoc, updateDoc, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from './toast.js';
+import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ===== Profile Page Interactivity =====
 
@@ -28,9 +35,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                document.querySelector('.profile-hero-info h1').textContent = userData.fullName || user.displayName || user.email;
-                document.querySelector('.profile-avatar-lg').textContent = (userData.fullName || user.displayName || user.email)[0].toUpperCase();
+                const preview=document.getElementById("profileImagePreview");
+const letter=document.getElementById("profileAvatarLetter");
 
+if(userData.profileImage){
+
+    preview.src=userData.profileImage;
+    preview.style.display="block";
+    letter.style.display="none";
+
+}
+                document.querySelector('.profile-hero-info h1').textContent = userData.fullName || user.displayName || user.email;
+                const avatarLetter = document.getElementById("profileAvatarLetter");
+const avatarImage = document.getElementById("profileImagePreview");
+
+if (userData.profileImage) {
+
+    avatarImage.src = userData.profileImage;
+    avatarImage.style.display = "block";
+    avatarLetter.style.display = "none";
+
+} else {
+
+    avatarLetter.textContent =
+        (userData.fullName || user.displayName || user.email)[0].toUpperCase();
+
+}
                 const emailDisplay = document.getElementById('profileEmailDisplay');
                 if (emailDisplay) {
                     emailDisplay.innerHTML = `<i class="fa-solid fa-envelope"></i> ${userData.email || user.email || 'N/A'}`;
@@ -300,6 +330,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             initProfileUI();
+
+            const imageInput=document.getElementById("profileImageInput");
+
+const preview=document.getElementById("profileImagePreview");
+
+const letter=document.getElementById("profileAvatarLetter");
+
+if(imageInput){
+
+imageInput.addEventListener("change",(e)=>{
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+preview.src=URL.createObjectURL(file);
+
+preview.style.display="block";
+
+letter.style.display="none";
+
+});
+
+}
 
             // Fetch Inbox
             const inboxList = document.getElementById('inbox-list');
@@ -578,12 +632,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 try {
                     // Update Firestore
-                    await updateDoc(doc(db, "users", user.uid), {
-                        fullName: newName,
-                        email: newEmail,
-                        phone: newPhone,
-                        studentId: newStudentId
-                    });
+                    // Upload profile image if user selected one
+let profileImage = "";
+
+const file = document.getElementById("profileImageInput").files[0];
+
+if (file) {
+
+    const storageRef = ref(storage, `profile-images/${user.uid}`);
+
+    await uploadBytes(storageRef, file);
+
+    profileImage = await getDownloadURL(storageRef);
+
+}
+
+// Data to update
+const updateData = {
+    fullName: newName,
+    email: newEmail,
+    phone: newPhone,
+    studentId: newStudentId
+};
+
+// Save image URL only if a new image was uploaded
+if (profileImage) {
+    updateData.profileImage = profileImage;
+}
+
+// Update Firestore
+await updateDoc(doc(db, "users", user.uid), updateData);
 
                     // Update Auth Profile
                     import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").then(({ updateProfile }) => {
@@ -592,7 +670,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Update UI visually
                     document.querySelector('.profile-hero-info h1').textContent = newName;
-                    document.querySelector('.profile-avatar-lg').textContent = newName[0].toUpperCase();
+                    const avatarLetter = document.getElementById("profileAvatarLetter");
+const avatarImage = document.getElementById("profileImagePreview");
+
+if (profileImage) {
+
+    avatarImage.src = profileImage;
+    avatarImage.style.display = "block";
+    avatarLetter.style.display = "none";
+
+} else {
+
+    avatarLetter.textContent = newName[0].toUpperCase();
+
+}
 
                     const emailDisplay = document.getElementById('profileEmailDisplay');
                     if (emailDisplay) {
@@ -781,9 +872,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     iconType: 'info',
                     confirmText: 'Send Reset Link',
                     confirmClass: 'modal-btn modal-btn-confirm',
-                    onConfirm: () => {
-                        showToast('Password reset link sent to your email!', 'success');
-                    }
+                   onConfirm: async () => {
+
+    try {
+
+        await sendPasswordResetEmail(auth, auth.currentUser.email);
+
+        showToast("Password reset email sent!", "success");
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast("Failed to send reset email.", "error");
+
+    }
+
+}
                 });
             });
         }

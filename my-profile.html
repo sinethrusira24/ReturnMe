@@ -41,8 +41,33 @@
         <div class="profile-hero-bg"></div>
         <div class="profile-hero-content">
             <div class="profile-avatar-wrapper">
-                <div class="profile-avatar-lg">H</div>
-                <span class="avatar-status-dot"></span>
+              <div class="profile-avatar-container">
+
+    <img id="profileImagePreview"
+         class="profile-avatar-img"
+         src=""
+         style="display:none;">
+
+    <div id="profileAvatarLetter" class="profile-avatar-lg">
+        N
+    </div>
+
+    <!-- Online Dot -->
+    <span class="avatar-status-dot"></span>
+
+    <!-- Camera -->
+    <label for="profileImageInput" class="profile-upload-btn">
+        <i class="fa-solid fa-camera"></i>
+    </label>
+
+    <input
+        type="file"
+        id="profileImageInput"
+        accept="image/*"
+        hidden>
+
+</div>
+                
             </div>
             <div class="profile-hero-info">
                 <h1 id="profileNameDisplay">Loading...</h1>
