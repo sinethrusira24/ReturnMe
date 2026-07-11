@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc, getDoc, collection, query, where, onSnapshot, deleteDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, getDoc, collection, query, where, onSnapshot, deleteDoc, setDoc, updateDoc, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from './toast.js';
 
 // ===== Profile Page Interactivity =====
@@ -312,8 +312,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
 
+                    // Add Clear All button
+                    inboxList.innerHTML = `
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
+                            <button id="clearAllInboxBtn" style="background: var(--bg-mesh-1); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: var(--transition);"><i class="fa-solid fa-trash-can"></i> Clear All</button>
+                        </div>
+                    `;
+
                     let chats = [];
-                    snapshot.forEach(docSnap => chats.push(docSnap.data()));
+                    snapshot.forEach(docSnap => chats.push({ _docId: docSnap.id, ...docSnap.data() }));
                     chats.sort((a, b) => b.updatedAt - a.updatedAt);
 
                     chats.forEach(chat => {
@@ -322,24 +329,63 @@ document.addEventListener('DOMContentLoaded', () => {
                         const timeStr = new Date(chat.updatedAt).toLocaleString();
                         
                         const itemHtml = `
-                            <a href="personal-chat.html?id=${chat.itemId}&user=${otherUserId}" class="inbox-item">
-                                <div class="inbox-avatar">${otherUserName[0].toUpperCase()}</div>
-                                <div class="inbox-content">
-                                    <div class="inbox-header">
-                                        <span class="inbox-name">${otherUserName}</span>
-                                        <span class="inbox-time">${timeStr}</span>
+                            <div class="inbox-item-container" style="display: grid; grid-template-columns: 1fr 45px; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+                                <a href="personal-chat.html?id=${chat.itemId}&user=${otherUserId}" class="inbox-item" style="margin-bottom: 0;">
+                                    <div class="inbox-avatar">${otherUserName[0].toUpperCase()}</div>
+                                    <div class="inbox-content">
+                                        <div class="inbox-header">
+                                            <span class="inbox-name">${otherUserName}</span>
+                                            <span class="inbox-time">${timeStr}</span>
+                                        </div>
+                                        <span class="inbox-item-name">Regarding: ${chat.itemName || 'an item'}</span>
+                                        <div class="inbox-message">${chat.lastMessage || 'Sent a message'}</div>
                                     </div>
-                                    <span class="inbox-item-name">Regarding: ${chat.itemName || 'an item'}</span>
-                                    <div class="inbox-message">${chat.lastMessage || 'Sent a message'}</div>
-                                </div>
-                            </a>
+                                </a>
+                                <button class="delete-inbox-btn" data-id="${chat._docId}" aria-label="Clear message" style="background: var(--bg-mesh-1); border: 1px solid rgba(255,255,255,0.1); color: var(--color-lost); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; opacity: 0.8;"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
                         `;
                         inboxList.insertAdjacentHTML('beforeend', itemHtml);
                     });
+
+                    // Event Listeners for Inbox Deletions
+                    const clearAllBtn = document.getElementById('clearAllInboxBtn');
+                    if (clearAllBtn) {
+                        clearAllBtn.addEventListener('click', async () => {
+                            if (!confirm("Clear all messages from your Inbox? (The chat history will remain intact)")) return;
+                            try {
+                                const batch = writeBatch(db);
+                                chats.forEach(chat => {
+                                    batch.update(doc(db, "inboxChats", chat._docId), { users: arrayRemove(user.uid) });
+                                });
+                                await batch.commit();
+                                showToast('Inbox cleared', 'success');
+                            } catch (error) {
+                                console.error("Error clearing all messages:", error);
+                                showToast('Failed to clear inbox', 'error');
+                            }
+                        });
+                    }
+
+                    document.querySelectorAll('.delete-inbox-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (!confirm("Remove this message from your Inbox?")) return;
+                            try {
+                                await updateDoc(doc(db, "inboxChats", btn.dataset.id), { users: arrayRemove(user.uid) });
+                                showToast('Removed from Inbox', 'success');
+                            } catch (error) {
+                                console.error("Error clearing message:", error);
+                                showToast('Failed to remove message', 'error');
+                            }
+                        });
+                    });
+
                 }, (error) => {
                     console.error("Error fetching inbox:", error);
                 });
             }
+            
             
             // Fetch Incoming Claims
             const claimsList = document.getElementById('claims-list');

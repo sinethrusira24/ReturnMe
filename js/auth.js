@@ -122,10 +122,27 @@ export function initAuth() {
                         profileDropdown.classList.toggle('active');
                     });
                     
-                    notifBtn.addEventListener('click', (e) => {
+                    notifBtn.addEventListener('click', async (e) => {
                         e.stopPropagation();
                         profileDropdown.classList.remove('active');
+                        const isOpening = !notifDropdown.classList.contains('active');
                         notifDropdown.classList.toggle('active');
+                        
+                        if (isOpening) {
+                            try {
+                                const unreadQuery = query(collection(db, "users", user.uid, "notifications"), where("isRead", "==", false));
+                                const unreadSnap = await getDocs(unreadQuery);
+                                if (!unreadSnap.empty) {
+                                    const batch = writeBatch(db);
+                                    unreadSnap.forEach(docSnap => {
+                                        batch.update(docSnap.ref, { isRead: true });
+                                    });
+                                    await batch.commit();
+                                }
+                            } catch (error) {
+                                console.error("Error marking notifications as read:", error);
+                            }
+                        }
                     });
                     
                     // Allow keyboard toggle
