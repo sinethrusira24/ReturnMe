@@ -44,6 +44,12 @@ export async function initSearch() {
         renderPage();
     }
 
+    let searchTimeout;
+    function debounceSearchView() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(updateSearchView, 250);
+    }
+
     function initializeSearchBindings() {
         const listingsSearchInput = document.getElementById('listingsSearchInput');
         const listingsStatusFilter = document.getElementById('listingsStatusFilter');
@@ -56,7 +62,7 @@ export async function initSearch() {
             e.preventDefault();
             updateSearchView();
         });
-        listingsSearchInput.addEventListener('input', updateSearchView);
+        listingsSearchInput.addEventListener('input', debounceSearchView);
         listingsStatusFilter?.addEventListener('change', updateSearchView);
         listingsCategoryFilter?.addEventListener('change', updateSearchView);
     }
@@ -108,8 +114,8 @@ export async function initSearch() {
         
         // Add image if exists, else icon
         const imageHTML = report.imageUrl 
-            ? `<img src="${escapeAttribute(report.imageUrl)}" class="blurred-bg" aria-hidden="true">
-               <img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" class="main-img">` 
+            ? `<img src="${escapeAttribute(report.imageUrl)}" class="blurred-bg" aria-hidden="true" loading="lazy">
+               <img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" class="main-img" loading="lazy">` 
             : `<i class="fa-solid ${icon}"></i>`;
 
         return `
@@ -197,16 +203,11 @@ export async function initSearch() {
         const visibleReports = filteredReports.slice(startIdx, endIdx);
         listingsItemGrid.innerHTML = visibleReports.map(createCardHTML).join('');
 
-        // Apply staggering animation
+        // Apply staggering animation via CSS classes instead of setTimeout thrashing
         const renderedCards = listingsItemGrid.querySelectorAll('.item-card');
         renderedCards.forEach((card, i) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(15px)';
-            setTimeout(() => {
-                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, i * 80);
+            card.style.animation = `fadeInUp 0.4s ease forwards ${i * 0.05}s`;
+            card.style.opacity = '0'; // Initial state before animation starts
         });
 
         // Update results count
@@ -269,7 +270,7 @@ export async function initSearch() {
         });
     }
 
-    listingsSearchInput.addEventListener('input', updateSearchView);
+    listingsSearchInput.addEventListener('input', debounceSearchView);
     listingsStatusFilter?.addEventListener('change', updateSearchView);
     listingsCategoryFilter?.addEventListener('change', updateSearchView);
 

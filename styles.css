@@ -194,23 +194,7 @@ body.login-page .password-field input:focus {
     z-index:20;
 }
 
-/* Online Dot */
-.avatar-status-dot{
-    position:absolute;
 
-    bottom:18px;
-    right:-2px;
-
-    width:18px;
-    height:18px;
-
-    background:#22c55e;
-
-    border:3px solid white;
-    border-radius:50%;
-
-    z-index:15;
-}
 @keyframes pulseGlow {
 
     0%,
@@ -4036,3 +4020,14 @@ body.login-page .password-field input:focus {
 }
 .notif-item:hover { background: rgba(255, 255, 255, 0.05); }
 .notif-item.unread { background: rgba(var(16, 185, 129), 0.1); border-left: 3px solid var(--color-found); }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
