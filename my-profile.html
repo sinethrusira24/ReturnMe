@@ -97,6 +97,8 @@
                 id="ptab-reports" tabindex="0"><i class="fa-solid fa-list"></i> My Reports</button>
             <button class="ptab" data-tab="inbox" role="tab" aria-selected="false" aria-controls="tab-inbox"
                 id="ptab-inbox" tabindex="-1"><i class="fa-solid fa-envelope"></i> Inbox</button>
+            <button class="ptab" data-tab="claims" role="tab" aria-selected="false" aria-controls="tab-claims"
+                id="ptab-claims" tabindex="-1"><i class="fa-solid fa-hand-holding-hand"></i> Claims</button>
             <button class="ptab" data-tab="activity" role="tab" aria-selected="false" aria-controls="tab-activity"
                 id="ptab-activity" tabindex="-1"><i class="fa-solid fa-clock-rotate-left"></i> Activity</button>
             <button class="ptab" data-tab="settings" role="tab" aria-selected="false" aria-controls="tab-settings"
@@ -122,6 +124,13 @@
         <div class="ptab-content" id="tab-activity" role="tabpanel" aria-labelledby="ptab-activity">
             <div class="activity-timeline" id="activity-timeline">
                 <!-- Dynamic activity will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Tab: Claims -->
+        <div class="ptab-content" id="tab-claims" role="tabpanel" aria-labelledby="ptab-claims">
+            <div class="claims-list" id="claims-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                <p style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading claims...</p>
             </div>
         </div>
 

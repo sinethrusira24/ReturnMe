@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { collection, query, where, onSnapshot, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, getDoc, collection, query, where, onSnapshot, deleteDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from './toast.js';
 
 // ===== Profile Page Interactivity =====
@@ -86,16 +86,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
             function attachUpdateActions() {
                 reportsGrid.querySelectorAll('.pbtn-update').forEach(btn => {
-
                     btn.addEventListener('click', () => {
-
                         const card = btn.closest('.preport-card');
                         const reportId = card.dataset.id;
-
                         window.location.href = `edit-report.html?id=${reportId}`;
-
                     });
-
+                });
+                
+                reportsGrid.querySelectorAll('.pbtn-resolve').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (btn.hasAttribute('disabled')) return;
+                        const card = btn.closest('.preport-card');
+                        const reportId = card.dataset.id;
+                        if (!confirm('Mark this report as resolved? It will be hidden from search results.')) return;
+                        
+                        try {
+                            btn.disabled = true;
+                            await updateDoc(doc(db, "reports", reportId), {
+                                status: "resolved"
+                            });
+                            showToast('Report marked as resolved!', 'success');
+                        } catch (error) {
+                            console.error('Error resolving report:', error);
+                            showToast('Failed to resolve report', 'error');
+                            btn.disabled = false;
+                        }
+                    });
                 });
             }
 
@@ -235,6 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <i class="fa-solid fa-pen"></i>
         Update
     </button>
+    
+    <button class="pbtn pbtn-resolve" ${report.status === 'resolved' ? 'disabled style="opacity:0.5;"' : ''}>
+        <i class="fa-solid fa-check-circle"></i>
+        Resolve
+    </button>
 
     <button class="pbtn pbtn-remove">
         <i class="fa-solid fa-trash-can"></i>
@@ -319,6 +340,55 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error("Error fetching inbox:", error);
                 });
             }
+            
+            // Fetch Incoming Claims
+            const claimsList = document.getElementById('claims-list');
+            if (claimsList) {
+                const claimsQuery = query(collection(db, "claims"), where("founderId", "==", user.uid));
+                onSnapshot(claimsQuery, (snapshot) => {
+                    claimsList.innerHTML = '';
+                    if (snapshot.empty) {
+                        claimsList.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">No incoming claims yet.</p>';
+                        return;
+                    }
+
+                    let claims = [];
+                    snapshot.forEach(docSnap => {
+                        claims.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    claims.sort((a, b) => b.createdAt - a.createdAt);
+
+                    claims.forEach(claim => {
+                        const timeStr = new Date(claim.createdAt).toLocaleString();
+                        const evidenceHtml = claim.evidenceUrl ? `<a href="${claim.evidenceUrl}" target="_blank" style="color:var(--color-primary);text-decoration:underline;font-size:0.9rem;"><i class="fa-solid fa-image"></i> View Evidence</a>` : '';
+                        
+                        const itemHtml = `
+                            <div class="inbox-item" style="cursor: default;">
+                                <div class="inbox-avatar" style="background:var(--color-primary);">${claim.claimantName[0].toUpperCase()}</div>
+                                <div class="inbox-content">
+                                    <div class="inbox-header">
+                                        <span class="inbox-name">${claim.claimantName}</span>
+                                        <span class="inbox-time">${timeStr}</span>
+                                    </div>
+                                    <span class="inbox-item-name"><i class="fa-solid fa-envelope"></i> ${claim.email} | <i class="fa-solid fa-phone"></i> ${claim.phone}</span>
+                                    <div class="inbox-message" style="margin-top:0.5rem;">
+                                        <strong>Claim Details:</strong> ${claim.uniqueDetails}<br>
+                                        ${evidenceHtml}
+                                    </div>
+                                    <div style="margin-top: 1rem;">
+                                        <a href="personal-chat.html?id=${claim.itemId}&user=${claim.claimantId}" class="pbtn pbtn-update" style="text-decoration:none; display:inline-block; padding: 0.5rem 1rem; border-radius: 5px; color: white;">
+                                            <i class="fa-solid fa-comment-dots"></i> Message Claimant
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        claimsList.insertAdjacentHTML('beforeend', itemHtml);
+                    });
+                }, (error) => {
+                    console.error("Error fetching claims:", error);
+                });
+            }
 
         } catch (error) {
             console.error("Error loading profile page:", error);
@@ -400,6 +470,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+
+        // Automatically activate tab from URL if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewTab = urlParams.get('view');
+        if (viewTab) {
+            const targetTab = document.querySelector(`.ptab[data-tab="${viewTab}"]`);
+            if (targetTab) activateTab(targetTab);
+        }
 
         // --- Filter pills ---
         const pills = document.querySelectorAll('.pill-btn');

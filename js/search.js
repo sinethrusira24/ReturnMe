@@ -63,8 +63,14 @@ export async function initSearch() {
 
     function onReportsSnapshot(querySnapshot) {
         allReports = [];
+        const now = Date.now();
         querySnapshot.forEach((doc) => {
-            allReports.push({ id: doc.id, ...doc.data() });
+            const data = doc.data();
+            const expireAt = data.expireAt ?? (data.createdAt + 7 * 24 * 60 * 60 * 1000);
+            // Only add active and non-expired reports to the search pool
+            if (data.status !== 'resolved' && expireAt > now) {
+                allReports.push({ id: doc.id, ...data });
+            }
         });
 
         updateHomeView();
@@ -151,7 +157,7 @@ export async function initSearch() {
                     return matchesQuery && matchesType;
                 });
 
-                homeItemGrid.innerHTML = filtered.slice(0, 4).map(createCardHTML).join('');
+                homeItemGrid.innerHTML = filtered.slice(0, 5).map(createCardHTML).join('');
                 
                 const noResults = document.getElementById('home-no-results');
                 if (noResults) {
