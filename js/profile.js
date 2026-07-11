@@ -769,7 +769,116 @@ if (profileImage) {
 
             newConfirm.addEventListener('click', () => {
                 hideModal();
+<<<<<<< HEAD
+            }
+        });
+    }
+
+    // --- Profile Share Modal ---
+    const shareBtn = document.getElementById('btn-share-profile');
+    const shareModal = document.getElementById('shareModal');
+    const shareLinkInput = document.getElementById('shareLinkInput');
+    const copyShareLinkBtn = document.getElementById('copyShareLinkBtn');
+    const shareModalClose = document.getElementById('shareModalClose');
+    const shareNowBtn = document.getElementById('shareNowBtn');
+
+    function openShareModal() {
+        if (!shareModal || !shareLinkInput) return;
+        const shareUrl = `${window.location.origin}${window.location.pathname}`;
+        shareLinkInput.value = shareUrl;
+        shareModal.classList.add('active');
+        setTimeout(() => shareModalClose?.focus(), 100);
+    }
+
+    function closeShareModal() {
+        if (!shareModal) return;
+        shareModal.classList.remove('active');
+        shareBtn?.focus();
+    }
+
+    async function copyProfileLink() {
+        if (!shareLinkInput) return;
+        try {
+            await navigator.clipboard.writeText(shareLinkInput.value);
+            showToast('Profile link copied to clipboard!', 'success');
+        } catch (err) {
+            console.error('Copy failed:', err);
+            showToast('Unable to copy link. Please copy it manually.', 'error');
+        }
+    }
+
+    async function shareProfileLink() {
+        if (!shareLinkInput) return;
+        const url = shareLinkInput.value;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'ReturnMe Profile',
+                    text: 'Check out my ReturnMe profile:',
+                    url
+                });
+            } catch (err) {
+                console.error('Share failed:', err);
+            }
+        } else {
+            await copyProfileLink();
+        }
+    }
+
+    if (shareBtn) {
+        shareBtn.addEventListener('click', openShareModal);
+    }
+    if (copyShareLinkBtn) {
+        copyShareLinkBtn.addEventListener('click', copyProfileLink);
+    }
+    if (shareModalClose) {
+        shareModalClose.addEventListener('click', closeShareModal);
+    }
+    if (shareNowBtn) {
+        shareNowBtn.addEventListener('click', shareProfileLink);
+    }
+
+    if (shareModal) {
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) closeShareModal();
+        });
+    }
+
+    // --- Wire up Resolve buttons ---
+    document.querySelectorAll('.pbtn-resolve').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.preport-card');
+            const itemName = card?.querySelector('h3')?.textContent || 'this item';
+            showModal({
+                title: 'Mark as Resolved?',
+                description: `Confirm that "${itemName}" has been successfully returned to its owner.`,
+                iconClass: 'fa-circle-check',
+                iconType: 'info',
+                confirmText: 'Mark Resolved',
+                confirmClass: 'modal-btn modal-btn-confirm',
+                onConfirm: () => {
+                    // Update the card visually
+                    const progressLabel = card.querySelector('.progress-label');
+                    const progressFill = card.querySelector('.progress-fill');
+                    const statusBar = card.querySelector('.preport-status-bar');
+                    if (progressLabel) {
+                        progressLabel.className = 'progress-label resolved-label';
+                        progressLabel.innerHTML = '<i class="fa-solid fa-check"></i> Resolved';
+                    }
+                    if (progressFill) {
+                        progressFill.className = 'progress-fill resolved-fill';
+                        progressFill.style.width = '100%';
+                    }
+                    if (statusBar) {
+                        statusBar.className = 'preport-status-bar';
+                        statusBar.style.background = 'linear-gradient(90deg, #10b981, #6ee7b7)';
+                    }
+                    btn.remove();
+                    showToast(`"${itemName}" marked as resolved!`, 'success');
+                }
+=======
                 if (onConfirm) onConfirm();
+>>>>>>> main
             });
 
             modal.classList.add('active');
