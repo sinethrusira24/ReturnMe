@@ -12,7 +12,7 @@ export async function initSearch() {
     function updateHomeView() {
         const homeItemGrid = document.querySelector('.search-home ~ main .item-grid');
         if (!homeItemGrid) return;
-        homeItemGrid.innerHTML = allReports.slice(0, 4).map(createCardHTML).join('');
+        homeItemGrid.innerHTML = allReports.slice(0, 5).map(createCardHTML).join('');
     }
 
     function updateSearchView() {
@@ -44,6 +44,12 @@ export async function initSearch() {
         renderPage();
     }
 
+    let searchTimeout;
+    function debounceSearchView() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(updateSearchView, 250);
+    }
+
     function initializeSearchBindings() {
         const listingsSearchInput = document.getElementById('listingsSearchInput');
         const listingsStatusFilter = document.getElementById('listingsStatusFilter');
@@ -56,15 +62,21 @@ export async function initSearch() {
             e.preventDefault();
             updateSearchView();
         });
-        listingsSearchInput.addEventListener('input', updateSearchView);
+        listingsSearchInput.addEventListener('input', debounceSearchView);
         listingsStatusFilter?.addEventListener('change', updateSearchView);
         listingsCategoryFilter?.addEventListener('change', updateSearchView);
     }
 
     function onReportsSnapshot(querySnapshot) {
         allReports = [];
+        const now = Date.now();
         querySnapshot.forEach((doc) => {
-            allReports.push({ id: doc.id, ...doc.data() });
+            const data = doc.data();
+            const expireAt = data.expireAt ?? (data.createdAt + 7 * 24 * 60 * 60 * 1000);
+            // Only add active and non-expired reports to the search pool
+            if (data.status !== 'resolved' && expireAt > now) {
+                allReports.push({ id: doc.id, ...data });
+            }
         });
 
         updateHomeView();
@@ -102,7 +114,8 @@ export async function initSearch() {
         
         // Add image if exists, else icon
         const imageHTML = report.imageUrl 
-            ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%; height:100%; object-fit:contain;">` 
+            ? `<img src="${escapeAttribute(report.imageUrl)}" class="blurred-bg" aria-hidden="true" loading="lazy">
+               <img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" class="main-img" loading="lazy">` 
             : `<i class="fa-solid ${icon}"></i>`;
 
         return `
@@ -130,8 +143,8 @@ export async function initSearch() {
     const homeItemGrid = document.querySelector('.search-home ~ main .item-grid');
 
     if (homeItemGrid) {
-        // Render latest 4 items on home page initially
-        homeItemGrid.innerHTML = allReports.slice(0, 4).map(createCardHTML).join('');
+        // Render latest 5 items on home page initially
+        homeItemGrid.innerHTML = allReports.slice(0, 5).map(createCardHTML).join('');
 
         if (homeSearchForm && homeSearchInput && homeSearchType) {
             homeSearchForm.addEventListener('submit', function (e) {
@@ -150,7 +163,7 @@ export async function initSearch() {
                     return matchesQuery && matchesType;
                 });
 
-                homeItemGrid.innerHTML = filtered.slice(0, 4).map(createCardHTML).join('');
+                homeItemGrid.innerHTML = filtered.slice(0, 5).map(createCardHTML).join('');
                 
                 const noResults = document.getElementById('home-no-results');
                 if (noResults) {
@@ -190,16 +203,11 @@ export async function initSearch() {
         const visibleReports = filteredReports.slice(startIdx, endIdx);
         listingsItemGrid.innerHTML = visibleReports.map(createCardHTML).join('');
 
-        // Apply staggering animation
+        // Apply staggering animation via CSS classes instead of setTimeout thrashing
         const renderedCards = listingsItemGrid.querySelectorAll('.item-card');
         renderedCards.forEach((card, i) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(15px)';
-            setTimeout(() => {
-                card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, i * 80);
+            card.style.animation = `fadeInUp 0.4s ease forwards ${i * 0.05}s`;
+            card.style.opacity = '0'; // Initial state before animation starts
         });
 
         // Update results count
@@ -262,7 +270,7 @@ export async function initSearch() {
         });
     }
 
-    listingsSearchInput.addEventListener('input', updateSearchView);
+    listingsSearchInput.addEventListener('input', debounceSearchView);
     listingsStatusFilter?.addEventListener('change', updateSearchView);
     listingsCategoryFilter?.addEventListener('change', updateSearchView);
 

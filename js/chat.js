@@ -1,5 +1,5 @@
 import { db, auth, storage } from './firebase-config.js';
-import { collection, addDoc, query, orderBy, onSnapshot, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { showToast } from './toast.js';
 
@@ -87,40 +87,21 @@ export function initChat() {
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble';
 
-        const meta = document.createElement('div');
-        meta.className = 'chat-meta';
-        
-        let authorHtml = `<span class="chat-author">${isMe ? 'You' : msg.senderName}</span>`;
-        if (isOwner && !isMe) {
-            authorHtml = `<span class="chat-author reporter-badge">${msg.senderName} (Finder)</span>`;
-        } else if (isOwner && isMe) {
-            authorHtml = `<span class="chat-author reporter-badge">You (Finder)</span>`;
+        let authorHtml = '';
+        if (!isMe) {
+            let authorName = msg.senderName;
+            let badge = '';
+            if (isOwner) badge = ' (Finder)';
+            authorHtml = `<div class="chat-author ${isOwner ? 'reporter-badge' : ''}">${authorName}${badge}</div>`;
         }
 
-        meta.innerHTML = `
+        bubble.innerHTML = `
             ${authorHtml}
-            <span class="chat-time">${timeString}</span>
+            <div class="chat-text">${msg.text}</div>
+            <div class="chat-time" style="text-align: right; font-size: 0.65rem; margin-top: 4px; color: rgba(255,255,255,0.6);">${timeString}</div>
         `;
 
-        const msgP = document.createElement('p');
-        msgP.textContent = msg.text;
-
-        bubble.appendChild(meta);
-        bubble.appendChild(msgP);
-
-        const avatar = document.createElement('div');
-        avatar.className = `chat-avatar ${isOwner ? 'reporter-av' : 'user-av'}`;
-        if (isMe) avatar.style.background = '#3b82f6';
-        avatar.textContent = isMe ? 'ME' : (msg.senderName[0] || 'U').toUpperCase();
-
-        if (isMe) {
-            newMessage.appendChild(bubble);
-            newMessage.appendChild(avatar);
-        } else {
-            newMessage.appendChild(avatar);
-            newMessage.appendChild(bubble);
-        }
-
+        newMessage.appendChild(bubble);
         chatContainer.appendChild(newMessage);
     }
 }
@@ -135,6 +116,7 @@ export function initPrivateChat() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const itemId = urlParams.get('id');
+    const otherUserParam = urlParams.get('user');
 
     if (!itemId) return;
 
@@ -142,6 +124,8 @@ export function initPrivateChat() {
     let reportOwnerName = 'Finder';
     let itemName = 'this item';
     let currentUser = null;
+    let targetUserId = null;
+    let targetUserName = 'User';
     let chatReady = false;
     let chatInitialized = false;
 
@@ -172,71 +156,41 @@ export function initPrivateChat() {
 
         const newMessage = document.createElement('div');
         newMessage.classList.add('chat-message', isMe ? 'sent' : 'received');
-
+        
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble';
 
-        const meta = document.createElement('div');
-        meta.className = 'chat-meta';
-
-        let authorHtml = `<span class="chat-author">${isMe ? 'You' : msg.senderName}</span>`;
-        if (isOwner && !isMe) {
-            authorHtml = `<span class="chat-author reporter-badge">${msg.senderName} (Finder)</span>`;
-        } else if (isOwner && isMe) {
-            authorHtml = `<span class="chat-author reporter-badge">You (Finder)</span>`;
+        let authorHtml = '';
+        if (!isMe) {
+            let authorName = msg.senderName;
+            let badge = '';
+            if (isOwner) badge = ' (Finder)';
+            authorHtml = `<div class="chat-author ${isOwner ? 'reporter-badge' : ''}">${authorName}${badge}</div>`;
         }
 
-        meta.innerHTML = `
+        bubble.innerHTML = `
             ${authorHtml}
-            <span class="chat-time">${timeString}</span>
+            <div class="chat-text">${msg.text}</div>
+            ${msg.imageUrl ? `<div class="chat-image-container" style="margin-top: 0.5rem; border-radius: 0.5rem; overflow: hidden; max-width: 300px;"><img src="${msg.imageUrl}" alt="Shared photo proof" style="width: 100%; height: auto; display: block; cursor: pointer;" onclick="window.open('${msg.imageUrl}', '_blank')"></div>` : ''}
+            <div class="chat-time" style="text-align: right; font-size: 0.65rem; margin-top: 4px; color: rgba(255,255,255,0.6);">${timeString}</div>
         `;
 
-        const msgP = document.createElement('p');
-        msgP.textContent = msg.text;
-
-        bubble.appendChild(meta);
-        bubble.appendChild(msgP);
-
-        if (msg.imageUrl) {
-            const imgContainer = document.createElement('div');
-            imgContainer.style.cssText = 'margin-top: 0.5rem; border-radius: 0.5rem; overflow: hidden; max-width: 300px;';
-            const img = document.createElement('img');
-            img.src = msg.imageUrl;
-            img.alt = 'Shared photo proof';
-            img.style.cssText = 'width: 100%; height: auto; display: block; cursor: pointer;';
-            img.addEventListener('click', () => {
-                window.open(msg.imageUrl, '_blank');
-            });
-            imgContainer.appendChild(img);
-            bubble.appendChild(imgContainer);
-        }
-
-        const avatar = document.createElement('div');
-        avatar.className = `chat-avatar ${isOwner ? 'reporter-av' : 'user-av'}`;
-        if (isMe) avatar.style.background = '#3b82f6';
-        avatar.textContent = isMe ? 'ME' : (msg.senderName[0] || 'U').toUpperCase();
-
-        if (isMe) {
-            newMessage.appendChild(bubble);
-            newMessage.appendChild(avatar);
-        } else {
-            newMessage.appendChild(avatar);
-            newMessage.appendChild(bubble);
-        }
-
+        newMessage.appendChild(bubble);
         chatContainer.appendChild(newMessage);
     }
 
     function initializePrivateChat() {
         if (chatInitialized) return;
         if (!currentUser || !reportOwnerId) return;
-        if (currentUser.uid === reportOwnerId) {
-            infoText.textContent = 'You are the reporter for this item. Messages here remain private to this chat.';
+        if (currentUser.uid === reportOwnerId && !otherUserParam) {
+            infoText.textContent = 'You are the reporter for this item. Waiting for others to contact you.';
+            targetUserId = currentUser.uid; // fallback
         } else {
-            infoText.textContent = `Secure direct chat with ${reportOwnerName}.`;
+            targetUserId = otherUserParam || reportOwnerId;
+            infoText.textContent = `Secure direct chat for ${itemName}.`;
         }
 
-        const chatId = getChatId(currentUser.uid, reportOwnerId || currentUser.uid);
+        const chatId = getChatId(currentUser.uid, targetUserId);
         const messagesRef = collection(db, "reports", itemId, "privateChats", chatId, "messages");
         const q = query(messagesRef, orderBy("createdAt", "asc"));
 
@@ -264,12 +218,38 @@ export function initPrivateChat() {
             }
 
             try {
+                const currentUserName = currentUser.displayName || currentUser.email.split('@')[0];
                 await addDoc(messagesRef, {
                     text: messageText,
                     senderId: currentUser.uid,
-                    senderName: currentUser.displayName || currentUser.email.split('@')[0],
+                    senderName: currentUserName,
                     createdAt: Date.now()
                 });
+                
+                await setDoc(doc(db, "inboxChats", chatId), {
+                    chatId: chatId,
+                    itemId: itemId,
+                    itemName: itemName,
+                    users: [currentUser.uid, targetUserId],
+                    userNames: {
+                        [currentUser.uid]: currentUserName,
+                        [targetUserId]: targetUserName
+                    },
+                    lastMessage: messageText,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                
+                if (targetUserId !== currentUser.uid) {
+                    await addDoc(collection(db, "users", targetUserId, "notifications"), {
+                        type: "message",
+                        title: `New message from ${currentUserName}`,
+                        body: messageText,
+                        link: `personal-chat.html?id=${itemId}&user=${currentUser.uid}`,
+                        isRead: false,
+                        createdAt: Date.now()
+                    });
+                }
+                
                 inputField.value = '';
             } catch (error) {
                 console.error('Error sending private message:', error);
@@ -317,13 +297,38 @@ export function initPrivateChat() {
                     const inputField = chatForm.querySelector('input[type="text"]');
                     const messageText = inputField.value.trim();
 
+                    const currentUserName = currentUser.displayName || currentUser.email.split('@')[0];
                     await addDoc(messagesRef, {
                         text: messageText || '[Photo proof shared]',
                         imageUrl: imageUrl,
                         senderId: currentUser.uid,
-                        senderName: currentUser.displayName || currentUser.email.split('@')[0],
+                        senderName: currentUserName,
                         createdAt: Date.now()
                     });
+                    
+                    await setDoc(doc(db, "inboxChats", chatId), {
+                        chatId: chatId,
+                        itemId: itemId,
+                        itemName: itemName,
+                        users: [currentUser.uid, targetUserId],
+                        userNames: {
+                            [currentUser.uid]: currentUserName,
+                            [targetUserId]: targetUserName
+                        },
+                        lastMessage: messageText || '[Photo]',
+                        updatedAt: Date.now()
+                    }, { merge: true });
+                    
+                    if (targetUserId !== currentUser.uid) {
+                        await addDoc(collection(db, "users", targetUserId, "notifications"), {
+                            type: "message",
+                            title: `New photo from ${currentUserName}`,
+                            body: messageText || "[Photo shared]",
+                            link: `personal-chat.html?id=${itemId}&user=${currentUser.uid}`,
+                            isRead: false,
+                            createdAt: Date.now()
+                        });
+                    }
                     
                     inputField.value = '';
                     chatImageInput.value = '';
@@ -359,7 +364,22 @@ export function initPrivateChat() {
         reportOwnerId = docSnap.data().reporterId;
         reportOwnerName = docSnap.data().reporterName || 'Finder';
         itemName = docSnap.data().itemName || itemName;
-        headerTitle.textContent = `Private chat with ${reportOwnerName}`;
+        
+        targetUserId = otherUserParam || reportOwnerId;
+        
+        // Try to get target user's name
+        if (targetUserId === reportOwnerId) {
+            targetUserName = reportOwnerName;
+            headerTitle.textContent = `Private chat with ${targetUserName}`;
+        } else {
+            getDoc(doc(db, "users", targetUserId)).then(uSnap => {
+                if(uSnap.exists()) {
+                    targetUserName = uSnap.data().fullName || 'User';
+                    headerTitle.textContent = `Private chat with ${targetUserName}`;
+                }
+            });
+        }
+
         infoText.textContent = `Secure direct chat for ${itemName}.`;
 
         if (currentUser) {

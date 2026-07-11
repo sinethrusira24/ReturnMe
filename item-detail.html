@@ -42,27 +42,33 @@
             <i class="fa-solid fa-arrow-left"></i> Back to Search
         </a>
 
-        <div class="item-detail-card">
-            <div style="padding: 3rem; text-align: center; color: var(--text-muted); width: 100%;">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                <p>Loading item details...</p>
-            </div>
-        </div>
-
-        <div class="discussion-section">
-            <div class="discussion-header">
-                <h2><i class="fa-regular fa-comments"></i> Discussion Board</h2>
-                <p>Ask questions to clarify details before submitting an official claim.</p>
-            </div>
-            
-            <div class="chat-container" id="chatContainer">
-                <!-- Dynamic messages will be loaded here -->
+        <div class="item-layout-grid">
+            <div class="item-main-content">
+                <div class="item-detail-card">
+                    <div style="padding: 3rem; text-align: center; color: var(--text-muted); width: 100%;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Loading item details...</p>
+                    </div>
+                </div>
             </div>
 
-            <form class="chat-input-area" id="chatForm">
-                <input type="text" placeholder="Type your question here..." required>
-                <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
-            </form>
+            <div class="item-sidebar">
+                <div class="discussion-section">
+                    <div class="discussion-header">
+                        <h2><i class="fa-regular fa-comments"></i> Discussion Board</h2>
+                        <p>Ask questions to clarify details before submitting an official claim.</p>
+                    </div>
+                    
+                    <div class="chat-container" id="chatContainer">
+                        <!-- Dynamic messages will be loaded here -->
+                    </div>
+
+                    <form class="chat-input-area" id="chatForm">
+                        <input type="text" placeholder="Type your question here..." required>
+                        <button type="submit" class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
         </div>
     </main>
 

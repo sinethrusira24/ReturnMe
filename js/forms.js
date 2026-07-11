@@ -1,6 +1,6 @@
 import { showToast } from './toast.js';
 import { db, auth, storage } from './firebase-config.js';
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -207,7 +207,7 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                 const createdAt = Date.now();
 const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
 
-                await addDoc(collection(db, "reports"), {
+                const newReportRef = await addDoc(collection(db, "reports"), {
                     type: "found",
                     reporterName: fullName,
                     email: email,
@@ -224,6 +224,29 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                    expireAt: expireAt,
                     reporterId: user.uid
                 });
+                
+                // If this found report was linked from a lost item, notify the lost item's owner
+                const urlParams = new URLSearchParams(window.location.search);
+                const relatedLostId = urlParams.get('relatedLost');
+                
+                if (relatedLostId) {
+                    const lostDocRef = doc(db, "reports", relatedLostId);
+                    const lostDoc = await getDoc(lostDocRef);
+                    
+                    if (lostDoc.exists()) {
+                        const lostData = lostDoc.data();
+                        if (lostData.reporterId && lostData.reporterId !== user.uid) {
+                            await addDoc(collection(db, "users", lostData.reporterId, "notifications"), {
+                                type: "match",
+                                title: "Someone found your item!",
+                                body: `${fullName} has reported finding an item matching your lost '${lostData.itemName}'.`,
+                                link: `item-detail.html?id=${newReportRef.id}`,
+                                isRead: false,
+                                createdAt: Date.now()
+                            });
+                        }
+                    }
+                }
 
                 showToast('Found item report submitted successfully!', 'success');
                 setTimeout(() => {
@@ -282,8 +305,22 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
 
                 showToast('Uploading and saving claim...', 'info');
                 const evidenceUrl = await uploadImageIfPresent('evidenceFile');
+                // Fetch founder ID before saving claim
+                let founderId = null;
+                let itemName = "unknown item";
+                if (itemId) {
+                    const reportRef = doc(db, "reports", itemId);
+                    const reportDoc = await getDoc(reportRef);
+                    if (reportDoc.exists()) {
+                        const reportData = reportDoc.data();
+                        founderId = reportData.reporterId;
+                        itemName = reportData.itemName;
+                    }
+                }
+
                 await addDoc(collection(db, "claims"), {
                     itemId: itemId || "unknown",
+                    founderId: founderId,
                     claimantName: fullName,
                     studentId: studentId,
                     email: email,
@@ -294,6 +331,18 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                     createdAt: Date.now(),
                     claimantId: user ? user.uid : null
                 });
+                
+                // Notify the founder
+                if (founderId && founderId !== user.uid) {
+                    await addDoc(collection(db, "users", founderId, "notifications"), {
+                        type: "claim",
+                        title: "New Claim Request!",
+                        body: `${fullName} has submitted a claim for your found '${itemName}'.`,
+                        link: `my-profile.html?view=claims`, // UI will handle this
+                        isRead: false,
+                        createdAt: Date.now()
+                    });
+                }
 
                 showToast('Claim submitted successfully! The finder will be notified.', 'success');
                 setTimeout(() => {

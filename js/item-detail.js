@@ -34,9 +34,27 @@ export async function initItemDetail() {
         });
 
         const reporterInitial = (item.reporterName || 'User')[0].toUpperCase();
-        const imageHTML = item.imageUrl 
-            ? `<img src="${item.imageUrl}" alt="${item.itemName}" style="width:100%; height:100%; object-fit:contain; max-height:350px; border-radius:8px;">`
-            : `<i class="fa-solid ${icon}" style="font-size: 4rem; color: var(--color-primary);"></i>`;
+        let images = [];
+        if (item.images && item.images.length > 0) {
+            images = item.images;
+        } else if (item.imageUrl) {
+            images = [item.imageUrl];
+        }
+
+        let imageHTML = '';
+        let swipeHint = '';
+        if (images.length > 0) {
+            if (images.length === 1) {
+                imageHTML = `<div class="image-showcase"><img src="${images[0]}" alt="${item.itemName}" class="detail-image"></div>`;
+            } else {
+                imageHTML = `<div class="image-carousel">` + 
+                    images.map(img => `<div class="carousel-slide"><img src="${img}" alt="${item.itemName}" class="detail-image"></div>`).join('') +
+                    `</div>`;
+                swipeHint = `<div class="swipe-hint"><i class="fa-solid fa-arrows-left-right"></i> Swipe to see more</div>`;
+            }
+        } else {
+            imageHTML = `<div class="placeholder-icon-container"><i class="fa-solid ${icon}"></i></div>`;
+        }
 
         const actionButtonText = isLost ? 'Report Found This Item' : 'Claim This Item';
         const actionButtonClass = isLost ? 'btn-found' : 'btn-found';
@@ -45,69 +63,61 @@ export async function initItemDetail() {
         const detailCard = document.querySelector('.item-detail-card');
         if (detailCard) {
             detailCard.innerHTML = `
-                <div class="item-image-side">
-                    <div class="card-badge ${badgeClass}">${badgeText}</div>
-                    <div class="main-image-container">
-                        ${imageHTML}
-                    </div>
+                <div class="item-image-card">
+                    <div class="status-badge ${badgeClass}">${badgeText}</div>
+                    ${imageHTML}
+                    ${swipeHint}
                 </div>
 
-                <div class="item-info-side">
-                    <div class="item-header-info">
-                        <div class="header-top-row">
-                            <span class="item-reference">Ref ID: #${refId}</span>
-                            <button class="btn-share" id="shareBtn" aria-label="Share this listing"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                <div class="item-info-card">
+                    <div class="content-header">
+                        <div class="header-tags">
+                            <span class="ref-tag">#${refId}</span>
+                            <span class="category-tag"><i class="fa-solid fa-tag"></i> ${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</span>
                         </div>
-                        <h1>${item.itemName}</h1>
+                        <button class="btn-share-icon" id="shareBtn" aria-label="Share this listing"><i class="fa-solid fa-share-nodes"></i></button>
+                    </div>
+                    <h1 class="item-title">${item.itemName}</h1>
+
+                    <div class="quick-facts">
+                        <div class="fact-item">
+                            <div class="fact-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="fact-text">
+                                <span class="fact-label">${isLost ? 'Lost At' : 'Found At'}</span>
+                                <span class="fact-value">${item.location}</span>
+                            </div>
+                        </div>
+                        <div class="fact-item">
+                            <div class="fact-icon"><i class="fa-regular fa-calendar"></i></div>
+                            <div class="fact-text">
+                                <span class="fact-label">Date & Time</span>
+                                <span class="fact-value">${reportDate}</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <ul class="item-metadata">
-                        <li>
-                            <i class="fa-solid fa-location-dot"></i>
-                            <div>
-                                <strong>${isLost ? 'Location Lost' : 'Location Found'}</strong>
-                                <span>${item.location}</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-regular fa-calendar"></i>
-                            <div>
-                                <strong>Date & Time</strong>
-                                <span>${reportDate}</span>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-tag"></i>
-                            <div>
-                                <strong>Category</strong>
-                                <span>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</span>
-                            </div>
-                        </li>
-                    </ul>
-
-                    <div class="item-description">
+                    <div class="item-story">
                         <h3>Description</h3>
                         <p>${item.description}</p>
                     </div>
 
-                    <div class="reporter-info">
-                        <h3>Reported By</h3>
-                        <div class="reporter-profile">
-                            <div class="reporter-avatar">${reporterInitial}</div>
-                            <div class="reporter-details">
-                                <span class="reporter-name">${item.reporterName}</span>
-                                <a href="tel:${item.phone}" class="reporter-contact"><i class="fa-solid fa-phone"></i> ${item.phone}</a>
+                    <div class="interaction-footer">
+                        <div class="user-brief">
+                            <div class="user-avatar">${reporterInitial}</div>
+                            <div class="user-info">
+                                <span class="user-name">${item.reporterName}</span>
+                                <a href="tel:${item.phone}" class="user-phone"><i class="fa-solid fa-phone"></i> ${item.phone}</a>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="item-actions">
-                        <a href="${actionButtonLink}" class="btn-action ${actionButtonClass}">
-                            <i class="fa-solid fa-${isLost ? 'magnifying-glass' : 'shield-halved'}"></i> ${actionButtonText}
-                        </a>
-                        <button class="btn-action btn-secondary" id="contactBtn">
-                            <i class="fa-solid fa-comments"></i> Chat Privately
-                        </button>
+                        <div class="action-group">
+                            <a href="${actionButtonLink}" class="btn-primary-action ${actionButtonClass}">
+                                <i class="fa-solid fa-${isLost ? 'magnifying-glass' : 'shield-halved'}"></i> 
+                                <span>${actionButtonText}</span>
+                            </a>
+                            <button class="btn-icon-secondary" id="contactBtn" title="Chat Privately">
+                                <i class="fa-solid fa-comments"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;

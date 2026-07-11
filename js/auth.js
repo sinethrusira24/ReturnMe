@@ -1,7 +1,7 @@
 import { showToast } from './toast.js';
 import { auth, db } from './firebase-config.js';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, setDoc, deleteDoc, collection, query, where, orderBy, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export function initAuth() {
     // UI Updates based on Auth State
@@ -16,6 +16,22 @@ export function initAuth() {
                 const initials = user.displayName ? user.displayName.charAt(0).toUpperCase() : '<i class="fa-solid fa-user"></i>';
                 
                 navProfile.innerHTML = `
+                    <div class="notification-container" style="position: relative; display: flex; align-items: center; margin-right: 1rem;">
+                        <div class="notification-btn" id="notificationBtn" aria-label="Notifications" role="button" tabindex="0" style="cursor: pointer; position: relative; color: var(--text-dark); font-size: 1.2rem; transition: var(--transition);">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge" style="display: none; position: absolute; top: -5px; right: -5px; background: var(--color-lost); color: white; font-size: 0.65rem; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: scale(0);">0</span>
+                        </div>
+                        <div class="profile-dropdown" id="notificationDropdown" style="width: 320px; right: -50px;">
+                            <div class="notification-header" style="padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                                <span>Notifications</span>
+                                <button id="clearAllNotifs" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; display: none;"><i class="fa-solid fa-trash-can"></i> Clear All</button>
+                            </div>
+                            <div class="notification-list" id="notificationList" style="max-height: 350px; overflow-y: auto; padding: 0.5rem 0;">
+                                <p class="no-notifications" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.9rem;">No new notifications</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="user-avatar-btn" id="userAvatarBtn" aria-label="User menu" role="button" tabindex="0">
                         ${initials}
                     </div>
@@ -32,27 +48,155 @@ export function initAuth() {
 
                 // Add Dropdown Toggle Logic
                 const avatarBtn = document.getElementById('userAvatarBtn');
-                const dropdown = document.getElementById('profileDropdown');
+                const profileDropdown = document.getElementById('profileDropdown');
                 
-                if (avatarBtn && dropdown) {
+                // Listen to user document to sync profile picture
+                onSnapshot(doc(db, "users", user.uid), (userDoc) => {
+                    if (userDoc.exists() && avatarBtn) {
+                        const userData = userDoc.data();
+                        if (userData.profileImage) {
+                            avatarBtn.innerHTML = `<img src="${userData.profileImage}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                        } else {
+                            avatarBtn.innerHTML = userData.fullName 
+                                ? userData.fullName.charAt(0).toUpperCase() 
+                                : (user.displayName ? user.displayName.charAt(0).toUpperCase() : '<i class="fa-solid fa-user"></i>');
+                        }
+                    }
+                });
+                
+                const notifBtn = document.getElementById('notificationBtn');
+                const notifDropdown = document.getElementById('notificationDropdown');
+                const notifBadge = document.getElementById('notificationBadge');
+                
+                // Fetch Notifications
+                const notifQuery = query(collection(db, "users", user.uid, "notifications"), orderBy("createdAt", "desc"));
+                onSnapshot(notifQuery, (snapshot) => {
+                    const list = document.getElementById('notificationList');
+                    if (!list) return;
+                    
+                    let unreadCount = 0;
+                    let notifHtml = '';
+                    
+                    if (snapshot.empty) {
+                        notifHtml = '<p class="no-notifications" style="text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.9rem;">No new notifications</p>';
+                    } else {
+                        snapshot.forEach(docSnap => {
+                            const data = docSnap.data();
+                            if (!data.isRead) unreadCount++;
+                            
+                            const timeStr = new Date(data.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                            notifHtml += `
+                                <div class="notif-item-container" style="display: grid; grid-template-columns: 1fr 40px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <a href="${data.link || '#'}" class="notif-item ${data.isRead ? 'read' : 'unread'}" style="display: block; padding: 0.8rem 1rem; text-decoration: none; overflow: hidden; transition: background 0.2s;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+                                            <strong style="color: ${data.isRead ? 'var(--text-muted)' : 'var(--white)'}; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${data.title}</strong>
+                                            <span style="color: var(--text-muted); font-size: 0.7rem; flex-shrink: 0; margin-left: 0.5rem;">${timeStr}</span>
+                                        </div>
+                                        <div style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${data.body}</div>
+                                    </a>
+                                    <button class="delete-notif-btn" data-id="${docSnap.id}" aria-label="Delete notification" style="background: none; border: none; color: var(--color-lost); cursor: pointer; padding: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: opacity 0.2s;"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    list.innerHTML = notifHtml;
+                    
+                    const clearAllBtn = document.getElementById('clearAllNotifs');
+                    if (clearAllBtn) {
+                        clearAllBtn.style.display = snapshot.empty ? 'none' : 'block';
+                    }
+
+                    // Attach delete listeners
+                    document.querySelectorAll('.delete-notif-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            try {
+                                await deleteDoc(doc(db, "users", user.uid, "notifications", btn.dataset.id));
+                            } catch (error) {
+                                console.error("Error deleting notification:", error);
+                            }
+                        });
+                    });
+                    
+                    if (unreadCount > 0) {
+                        notifBadge.style.display = 'flex';
+                        notifBadge.style.transform = 'scale(1)';
+                        notifBadge.textContent = unreadCount;
+                    } else {
+                        notifBadge.style.transform = 'scale(0)';
+                        setTimeout(() => notifBadge.style.display = 'none', 200);
+                    }
+                });
+
+                if (avatarBtn && profileDropdown && notifBtn && notifDropdown) {
                     avatarBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        dropdown.classList.toggle('active');
+                        notifDropdown.classList.remove('active');
+                        profileDropdown.classList.toggle('active');
+                    });
+                    
+                    notifBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        profileDropdown.classList.remove('active');
+                        const isOpening = !notifDropdown.classList.contains('active');
+                        notifDropdown.classList.toggle('active');
+                        
+                        if (isOpening) {
+                            try {
+                                const unreadQuery = query(collection(db, "users", user.uid, "notifications"), where("isRead", "==", false));
+                                const unreadSnap = await getDocs(unreadQuery);
+                                if (!unreadSnap.empty) {
+                                    const batch = writeBatch(db);
+                                    unreadSnap.forEach(docSnap => {
+                                        batch.update(docSnap.ref, { isRead: true });
+                                    });
+                                    await batch.commit();
+                                }
+                            } catch (error) {
+                                console.error("Error marking notifications as read:", error);
+                            }
+                        }
                     });
                     
                     // Allow keyboard toggle
                     avatarBtn.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            dropdown.classList.toggle('active');
+                            notifDropdown.classList.remove('active');
+                            profileDropdown.classList.toggle('active');
                         }
                     });
                     
                     document.addEventListener('click', (e) => {
-                        if (!dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
-                            dropdown.classList.remove('active');
+                        if (!profileDropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+                            profileDropdown.classList.remove('active');
+                        }
+                        if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                            notifDropdown.classList.remove('active');
                         }
                     });
+                    
+                    const clearAllBtn = document.getElementById('clearAllNotifs');
+                    if (clearAllBtn) {
+                        clearAllBtn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            if (!confirm("Are you sure you want to clear all notifications?")) return;
+                            try {
+                                const q = query(collection(db, "users", user.uid, "notifications"));
+                                const snap = await getDocs(q);
+                                const batch = writeBatch(db);
+                                snap.forEach(docSnap => {
+                                    batch.delete(docSnap.ref);
+                                });
+                                await batch.commit();
+                                showToast('All notifications cleared', 'success');
+                            } catch (error) {
+                                console.error("Error clearing notifications:", error);
+                                showToast('Failed to clear notifications', 'error');
+                            }
+                        });
+                    }
                 }
 
                 document.getElementById('btnLogout')?.addEventListener('click', async () => {
@@ -146,6 +290,14 @@ export function initAuth() {
             try {
                 // Firebase Login
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+                if (!userCredential.user.emailVerified) {
+                    await sendEmailVerification(userCredential.user);
+                    await signOut(auth);
+                    showToast('We just sent a new verification link to your email. Please verify before logging in.', 'warning');
+                    return;
+                }
+
                 showToast('Login successful. Redirecting...', 'success');
                 setTimeout(() => {
                     window.location.href = 'index.html';
@@ -156,6 +308,35 @@ export function initAuth() {
                     showToast('Invalid email or password.', 'error');
                 } else {
                     showToast('Failed to login. Please try again.', 'error');
+                }
+            }
+        });
+    }
+
+    const forgotPasswordBtn = document.querySelector('.forgot-password');
+    if (forgotPasswordBtn) {
+        forgotPasswordBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('email');
+            if (!emailInput) return;
+            const email = emailInput.value.trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!email || !emailPattern.test(email)) {
+                showToast('Please enter a valid email address to reset your password.', 'warning');
+                emailInput.focus();
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast('Password reset link sent to your email!', 'success');
+            } catch (error) {
+                console.error("Password Reset Error:", error.code, error.message);
+                if (error.code === 'auth/user-not-found') {
+                    showToast('No account found with this email.', 'error');
+                } else {
+                    showToast('Failed to send reset email. Please try again.', 'error');
                 }
             }
         });
@@ -240,10 +421,16 @@ export function initAuth() {
                     createdAt: new Date()
                 });
 
-                showToast('Account created successfully! Redirecting...', 'success');
+                // Send email verification
+                await sendEmailVerification(user);
+                
+                // Sign out immediately so they must verify their email before logging in
+                await signOut(auth);
+
+                showToast('Account created! Please check your email to verify your account.', 'success');
                 setTimeout(() => {
-                    window.location.href = 'index.html'; // Or login.html
-                }, 1200);
+                    window.location.href = 'login.html';
+                }, 2500);
 
             } catch (error) {
                 console.error("Registration Error:", error.code, error.message);
