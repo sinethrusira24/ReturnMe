@@ -546,6 +546,76 @@ reportsGrid.insertAdjacentHTML('beforeend', cardHTML);
         });
     }
 
+    // --- Profile Share Modal ---
+    const shareBtn = document.getElementById('btn-share-profile');
+    const shareModal = document.getElementById('shareModal');
+    const shareLinkInput = document.getElementById('shareLinkInput');
+    const copyShareLinkBtn = document.getElementById('copyShareLinkBtn');
+    const shareModalClose = document.getElementById('shareModalClose');
+    const shareNowBtn = document.getElementById('shareNowBtn');
+
+    function openShareModal() {
+        if (!shareModal || !shareLinkInput) return;
+        const shareUrl = `${window.location.origin}${window.location.pathname}`;
+        shareLinkInput.value = shareUrl;
+        shareModal.classList.add('active');
+        setTimeout(() => shareModalClose?.focus(), 100);
+    }
+
+    function closeShareModal() {
+        if (!shareModal) return;
+        shareModal.classList.remove('active');
+        shareBtn?.focus();
+    }
+
+    async function copyProfileLink() {
+        if (!shareLinkInput) return;
+        try {
+            await navigator.clipboard.writeText(shareLinkInput.value);
+            showToast('Profile link copied to clipboard!', 'success');
+        } catch (err) {
+            console.error('Copy failed:', err);
+            showToast('Unable to copy link. Please copy it manually.', 'error');
+        }
+    }
+
+    async function shareProfileLink() {
+        if (!shareLinkInput) return;
+        const url = shareLinkInput.value;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'ReturnMe Profile',
+                    text: 'Check out my ReturnMe profile:',
+                    url
+                });
+            } catch (err) {
+                console.error('Share failed:', err);
+            }
+        } else {
+            await copyProfileLink();
+        }
+    }
+
+    if (shareBtn) {
+        shareBtn.addEventListener('click', openShareModal);
+    }
+    if (copyShareLinkBtn) {
+        copyShareLinkBtn.addEventListener('click', copyProfileLink);
+    }
+    if (shareModalClose) {
+        shareModalClose.addEventListener('click', closeShareModal);
+    }
+    if (shareNowBtn) {
+        shareNowBtn.addEventListener('click', shareProfileLink);
+    }
+
+    if (shareModal) {
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) closeShareModal();
+        });
+    }
+
     // --- Wire up Resolve buttons ---
     document.querySelectorAll('.pbtn-resolve').forEach(btn => {
         btn.addEventListener('click', () => {
