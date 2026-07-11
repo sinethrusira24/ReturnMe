@@ -102,7 +102,8 @@ export async function initSearch() {
         
         // Add image if exists, else icon
         const imageHTML = report.imageUrl 
-            ? `<img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" style="width:100%; height:100%; object-fit:contain;">` 
+            ? `<img src="${escapeAttribute(report.imageUrl)}" class="blurred-bg" aria-hidden="true">
+               <img src="${escapeAttribute(report.imageUrl)}" alt="${escapeAttribute(report.itemName)}" class="main-img">` 
             : `<i class="fa-solid ${icon}"></i>`;
 
         return `
