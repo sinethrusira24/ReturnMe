@@ -1,11 +1,22 @@
 import { showToast } from './toast.js';
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc, setDoc, deleteDoc, collection, query, where, orderBy, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+import {
+    doc,
+    getDoc,
+    setDoc,
+    deleteDoc,
+    collection,
+    query,
+    where,
+    orderBy,
+    onSnapshot,
+    getDocs,
+    writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 export function initAuth() {
     // UI Updates based on Auth State
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         const navProfile = document.querySelector('.nav-profile');
         const mobileLinks = document.querySelectorAll('.mobile-only');
 
@@ -13,7 +24,28 @@ export function initAuth() {
             // User is signed in
             if (navProfile) {
                 // If user object has a displayName, we can use the first letter for avatar
-                const initials = user.displayName ? user.displayName.charAt(0).toUpperCase() : '<i class="fa-solid fa-user"></i>';
+               let avatarHTML;
+
+const userDoc = await getDoc(doc(db, "users", user.uid));
+
+if (userDoc.exists() && userDoc.data().profileImage) {
+
+    avatarHTML = `
+        <img src="${userDoc.data().profileImage}"
+        style="
+        width:40px;
+        height:40px;
+        border-radius:50%;
+        object-fit:cover;">
+    `;
+
+} else {
+
+    avatarHTML = user.displayName 
+        ? user.displayName.charAt(0).toUpperCase()
+        : '<i class="fa-solid fa-user"></i>';
+
+}
                 
                 navProfile.innerHTML = `
                     <div class="notification-container" style="position: relative; display: flex; align-items: center; margin-right: 1rem;">
@@ -33,7 +65,7 @@ export function initAuth() {
                     </div>
                     
                     <div class="user-avatar-btn" id="userAvatarBtn" aria-label="User menu" role="button" tabindex="0">
-                        ${initials}
+                       ${avatarHTML}
                     </div>
                     <div class="profile-dropdown" id="profileDropdown">
                         <a href="my-profile.html"><i class="fa-solid fa-circle-user"></i> My Profile</a>
