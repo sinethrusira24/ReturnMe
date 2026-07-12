@@ -43,8 +43,7 @@
 }
 
 html {
-    overflow-x: hidden;
-    width: 100%;
+    /* Removed overflow-x: hidden and width: 100% to fix double scrollbar bug */
 }
 
 body {
@@ -54,8 +53,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
-    width: 100%;
 }
 
 body::before {
@@ -63,7 +60,7 @@ body::before {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     z-index: -100;
     pointer-events: none;
@@ -4188,4 +4185,27 @@ body.login-page .password-field input:focus {
         -webkit-backdrop-filter: blur(8px) !important;
         backdrop-filter: blur(8px) !important;
     }
+}
+
+/* --- Skeleton Loader --- */
+@keyframes pulse-skeleton {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}
+
+.skeleton-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    height: 350px;
+    animation: pulse-skeleton 1.5s infinite ease-in-out;
 }

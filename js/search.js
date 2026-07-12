@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, query, orderBy, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 export async function initSearch() {
     let allReports = [];
@@ -7,7 +7,10 @@ export async function initSearch() {
     let filteredReports = [];
     const ITEMS_PER_PAGE = 8;
 
-    const reportsQuery = query(collection(db, "reports"), orderBy("createdAt", "desc"));
+    const reportsQuery = query(
+        collection(db, "reports"), 
+        where("status", "==", "active")
+    );
 
     function updateHomeView() {
         const homeItemGrid = document.querySelector('.search-home ~ main .item-grid');
@@ -78,6 +81,9 @@ export async function initSearch() {
                 allReports.push({ id: doc.id, ...data });
             }
         });
+
+        // Sort by createdAt descending in memory to avoid needing a Firestore composite index
+        allReports.sort((a, b) => b.createdAt - a.createdAt);
 
         updateHomeView();
         updateSearchView();

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="favicon.png" type="image/png">
-    <title>Search Items - ReturnME</title>
+    <title>Search Items - ReturnMe</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
     <nav class="navbar">
@@ -37,29 +40,33 @@
     <header class="page-header">
         <div class="container">
             <h1 class="page-title">Browse Lost & Found</h1>
-            <p class="page-subtitle">Search the campus database to find your missing items or locate the owner of something you found.</p>
-            
+            <p class="page-subtitle">Search the campus database to find your missing items or locate the owner of
+                something you found.</p>
+
             <div class="search-page-filter" id="searchListingsForm">
                 <div class="search-input-group search-page-input">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="listingsSearchInput" placeholder="Search for keys, phones, IDs..." aria-label="Search items">
+                    <input type="text" id="listingsSearchInput" placeholder="Search for keys, phones, IDs..."
+                        aria-label="Search items">
                 </div>
-                
+
                 <div class="filter-controls">
-                    <select class="filter-select search-page-select" id="listingsStatusFilter" aria-label="Filter by status">
+                    <select class="filter-select search-page-select" id="listingsStatusFilter"
+                        aria-label="Filter by status">
                         <option value="all">All Statuses</option>
                         <option value="lost">Lost Items</option>
                         <option value="found">Found Items</option>
                     </select>
-                    
-                    <select class="filter-select search-page-select" id="listingsCategoryFilter" aria-label="Filter by category">
+
+                    <select class="filter-select search-page-select" id="listingsCategoryFilter"
+                        aria-label="Filter by category">
                         <option value="all">All Categories</option>
                         <option value="electronics">Electronics</option>
                         <option value="documents">IDs & Documents</option>
                         <option value="accessories">Accessories & Keys</option>
                         <option value="clothing">Clothing</option>
                     </select>
-                    
+
                     <button class="btn-search search-page-btn" id="listingsSearchBtn">Search</button>
                 </div>
             </div>
@@ -71,7 +78,7 @@
             <h2 id="resultsCount">Loading Results...</h2>
         </div>
         <div id="listingsNoResults" class="no-results">No items match your search.</div>
-        
+
         <div class="item-grid">
             <!-- Dynamic items will be injected here by search.js -->
         </div>
@@ -96,4 +103,5 @@
     <div id="toast-container"></div>
     <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

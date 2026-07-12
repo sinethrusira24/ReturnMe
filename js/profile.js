@@ -1,10 +1,10 @@
 import { auth, db, storage } from './firebase-config.js';
 import {
-ref,
-uploadBytes,
-getDownloadURL
+    ref,
+    uploadBytes,
+    getDownloadURL
 }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { doc, getDoc, collection, query, where, onSnapshot, deleteDoc, setDoc, updateDoc, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from './toast.js';
@@ -35,32 +35,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                const preview=document.getElementById("profileImagePreview");
-const letter=document.getElementById("profileAvatarLetter");
+                const preview = document.getElementById("profileImagePreview");
+                const letter = document.getElementById("profileAvatarLetter");
 
-if(userData.profileImage){
+                if (userData.profileImage) {
 
-    preview.src=userData.profileImage;
-    preview.style.display="block";
-    letter.style.display="none";
+                    preview.src = userData.profileImage;
+                    preview.style.display = "block";
+                    letter.style.display = "none";
 
-}
+                }
                 document.querySelector('.profile-hero-info h1').textContent = userData.fullName || user.displayName || user.email;
                 const avatarLetter = document.getElementById("profileAvatarLetter");
-const avatarImage = document.getElementById("profileImagePreview");
+                const avatarImage = document.getElementById("profileImagePreview");
 
-if (userData.profileImage) {
+                if (userData.profileImage) {
 
-    avatarImage.src = userData.profileImage;
-    avatarImage.style.display = "block";
-    avatarLetter.style.display = "none";
+                    avatarImage.src = userData.profileImage;
+                    avatarImage.style.display = "block";
+                    avatarLetter.style.display = "none";
 
-} else {
+                } else {
 
-    avatarLetter.textContent =
-        (userData.fullName || user.displayName || user.email)[0].toUpperCase();
+                    avatarLetter.textContent =
+                        (userData.fullName || user.displayName || user.email)[0].toUpperCase();
 
-}
+                }
                 const emailDisplay = document.getElementById('profileEmailDisplay');
                 if (emailDisplay) {
                     emailDisplay.innerHTML = `<i class="fa-solid fa-envelope"></i> ${userData.email || user.email || 'N/A'}`;
@@ -122,14 +122,14 @@ if (userData.profileImage) {
                         window.location.href = `edit-report.html?id=${reportId}`;
                     });
                 });
-                
+
                 reportsGrid.querySelectorAll('.pbtn-resolve').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         if (btn.hasAttribute('disabled')) return;
                         const card = btn.closest('.preport-card');
                         const reportId = card.dataset.id;
                         if (!confirm('Mark this report as resolved? It will be hidden from search results.')) return;
-                        
+
                         try {
                             btn.disabled = true;
                             await updateDoc(doc(db, "reports", reportId), {
@@ -331,51 +331,51 @@ if (userData.profileImage) {
 
             initProfileUI();
 
-const imageInput = document.getElementById("profileImageInput");
-const preview = document.getElementById("profileImagePreview");
-const letter = document.getElementById("profileAvatarLetter");
+            const imageInput = document.getElementById("profileImageInput");
+            const preview = document.getElementById("profileImagePreview");
+            const letter = document.getElementById("profileAvatarLetter");
 
-if (imageInput) {
-    imageInput.addEventListener("change", async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+            if (imageInput) {
+                imageInput.addEventListener("change", async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
 
-        // Show preview immediately
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = "block";
-        letter.style.display = "none";
+                    // Show preview immediately
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = "block";
+                    letter.style.display = "none";
 
-        try {
-            showToast("Uploading image...", "info");
+                    try {
+                        showToast("Uploading image...", "info");
 
-            const storageRef = ref(storage, `profile-images/${user.uid}`);
-            await uploadBytes(storageRef, file);
+                        const storageRef = ref(storage, `profile-images/${user.uid}`);
+                        await uploadBytes(storageRef, file);
 
-            const profileImageUrl = await getDownloadURL(storageRef);
+                        const profileImageUrl = await getDownloadURL(storageRef);
 
-            await updateDoc(doc(db, "users", user.uid), {
-                profileImage: profileImageUrl
-            });
+                        await updateDoc(doc(db, "users", user.uid), {
+                            profileImage: profileImageUrl
+                        });
 
-            // Update preview with Firebase URL
-            preview.src = profileImageUrl;
+                        // Update preview with Firebase URL
+                        preview.src = profileImageUrl;
 
-            // Update navbar avatar immediately
-            const navAvatar = document.querySelector(".user-avatar-btn img");
-            if (navAvatar) {
-                navAvatar.src = profileImageUrl;
+                        // Update navbar avatar immediately
+                        const navAvatar = document.querySelector(".user-avatar-btn img");
+                        if (navAvatar) {
+                            navAvatar.src = profileImageUrl;
+                        }
+
+                        imageInput.value = "";
+
+                        showToast("Profile image updated!", "success");
+
+                    } catch (error) {
+                        console.error("Error uploading image:", error);
+                        showToast("Failed to save profile image", "error");
+                    }
+                });
             }
-
-            imageInput.value = "";
-
-            showToast("Profile image updated!", "success");
-
-        } catch (error) {
-            console.error("Error uploading image:", error);
-            showToast("Failed to save profile image", "error");
-        }
-    });
-}
 
 
 
@@ -405,7 +405,7 @@ if (imageInput) {
                         const otherUserId = chat.users.find(id => id !== user.uid) || user.uid;
                         const otherUserName = chat.userNames ? (chat.userNames[otherUserId] || 'User') : 'User';
                         const timeStr = new Date(chat.updatedAt).toLocaleString();
-                        
+
                         const itemHtml = `
                             <div class="inbox-item-container" style="display: grid; grid-template-columns: 1fr 45px; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
                                 <a href="personal-chat.html?id=${chat.itemId}&user=${otherUserId}" class="inbox-item" style="margin-bottom: 0;">
@@ -463,8 +463,8 @@ if (imageInput) {
                     console.error("Error fetching inbox:", error);
                 });
             }
-            
-            
+
+
             // Fetch Incoming Claims
             const claimsList = document.getElementById('claims-list');
             if (claimsList) {
@@ -485,7 +485,7 @@ if (imageInput) {
                     claims.forEach(claim => {
                         const timeStr = new Date(claim.createdAt).toLocaleString();
                         const evidenceHtml = claim.evidenceUrl ? `<a href="${claim.evidenceUrl}" target="_blank" style="color:var(--color-primary);text-decoration:underline;font-size:0.9rem;"><i class="fa-solid fa-image"></i> View Evidence</a>` : '';
-                        
+
                         const itemHtml = `
                             <div class="inbox-item" style="cursor: default;">
                                 <div class="inbox-avatar" style="background:var(--color-primary);">${claim.claimantName[0].toUpperCase()}</div>
@@ -657,35 +657,35 @@ if (imageInput) {
                 try {
                     // Update Firestore
                     // Upload profile image if user selected one
-let profileImage = "";
+                    let profileImage = "";
 
-const file = document.getElementById("profileImageInput").files[0];
+                    const file = document.getElementById("profileImageInput").files[0];
 
-if (file) {
+                    if (file) {
 
-    const storageRef = ref(storage, `profile-images/${user.uid}`);
+                        const storageRef = ref(storage, `profile-images/${user.uid}`);
 
-    await uploadBytes(storageRef, file);
+                        await uploadBytes(storageRef, file);
 
-    profileImage = await getDownloadURL(storageRef);
+                        profileImage = await getDownloadURL(storageRef);
 
-}
+                    }
 
-// Data to update
-const updateData = {
-    fullName: newName,
-    email: newEmail,
-    phone: newPhone,
-    studentId: newStudentId
-};
+                    // Data to update
+                    const updateData = {
+                        fullName: newName,
+                        email: newEmail,
+                        phone: newPhone,
+                        studentId: newStudentId
+                    };
 
-// Save image URL only if a new image was uploaded
-if (profileImage) {
-    updateData.profileImage = profileImage;
-}
+                    // Save image URL only if a new image was uploaded
+                    if (profileImage) {
+                        updateData.profileImage = profileImage;
+                    }
 
-// Update Firestore
-await updateDoc(doc(db, "users", user.uid), updateData);
+                    // Update Firestore
+                    await updateDoc(doc(db, "users", user.uid), updateData);
 
                     // Update Auth Profile
                     import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").then(({ updateProfile }) => {
@@ -695,19 +695,19 @@ await updateDoc(doc(db, "users", user.uid), updateData);
                     // Update UI visually
                     document.querySelector('.profile-hero-info h1').textContent = newName;
                     const avatarLetter = document.getElementById("profileAvatarLetter");
-const avatarImage = document.getElementById("profileImagePreview");
+                    const avatarImage = document.getElementById("profileImagePreview");
 
-if (profileImage) {
+                    if (profileImage) {
 
-    avatarImage.src = profileImage;
-    avatarImage.style.display = "block";
-    avatarLetter.style.display = "none";
+                        avatarImage.src = profileImage;
+                        avatarImage.style.display = "block";
+                        avatarLetter.style.display = "none";
 
-} else {
+                    } else {
 
-    avatarLetter.textContent = newName[0].toUpperCase();
+                        avatarLetter.textContent = newName[0].toUpperCase();
 
-}
+                    }
 
                     const emailDisplay = document.getElementById('profileEmailDisplay');
                     if (emailDisplay) {
@@ -966,23 +966,23 @@ if (profileImage) {
                     iconType: 'info',
                     confirmText: 'Send Reset Link',
                     confirmClass: 'modal-btn modal-btn-confirm',
-                   onConfirm: async () => {
+                    onConfirm: async () => {
 
-    try {
+                        try {
 
-        await sendPasswordResetEmail(auth, auth.currentUser.email);
+                            await sendPasswordResetEmail(auth, auth.currentUser.email);
 
-        showToast("Password reset email sent!", "success");
+                            showToast("Password reset email sent!", "success");
 
-    } catch (error) {
+                        } catch (error) {
 
-        console.error(error);
+                            console.error(error);
 
-        showToast("Failed to send reset email.", "error");
+                            showToast("Failed to send reset email.", "error");
 
-    }
+                        }
 
-}
+                    }
                 });
             });
         }
