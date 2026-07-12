@@ -495,6 +495,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     claims.sort((a, b) => b.createdAt - a.createdAt);
 
+                    // Add Clear All button
+                    claimsList.innerHTML = `
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem; padding: 0 1.5rem;">
+                            <button id="clear-all-claims-btn" class="pbtn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease;" onmouseover="this.style.background='#ef4444'; this.style.color='white';" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'; this.style.color='#ef4444';">
+                                <i class="fa-solid fa-trash-can"></i> Clear All Claims
+                            </button>
+                        </div>
+                    `;
+
                     claims.forEach(claim => {
                         const timeStr = new Date(claim.createdAt).toLocaleString();
                         const evidenceHtml = claim.evidenceUrl ? `<a href="${claim.evidenceUrl}" target="_blank" style="color:var(--color-primary);text-decoration:underline;font-size:0.9rem;"><i class="fa-solid fa-image"></i> View Evidence</a>` : '';
@@ -512,16 +521,50 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <strong>Claim Details:</strong> ${claim.uniqueDetails}<br>
                                         ${evidenceHtml}
                                     </div>
-                                    <div style="margin-top: 1rem;">
-                                        <a href="personal-chat.html?id=${claim.itemId}&user=${claim.claimantId}" class="pbtn pbtn-update" style="text-decoration:none; display:inline-block; padding: 0.5rem 1rem; border-radius: 5px; color: white;">
+                                    <div style="margin-top: 1rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                                        <a href="personal-chat.html?id=${claim.itemId}&user=${claim.claimantId}" class="pbtn" style="text-decoration:none; display:inline-block; padding: 0.5rem 1rem; border-radius: 6px; color: white; background: var(--color-primary); font-weight: 500; transition: opacity 0.2s ease;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
                                             <i class="fa-solid fa-comment-dots"></i> Message Claimant
                                         </a>
+                                        <button class="delete-claim-btn pbtn" data-id="${claim.id}" style="border:none; cursor:pointer; display:inline-block; padding: 0.5rem 1rem; border-radius: 6px; color: white; background: #ef4444; font-weight: 500; transition: opacity 0.2s ease;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                                            <i class="fa-solid fa-trash"></i> Delete Claim
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         `;
                         claimsList.insertAdjacentHTML('beforeend', itemHtml);
                     });
+
+                    // Attach Event Listeners
+                    document.getElementById('clear-all-claims-btn')?.addEventListener('click', async () => {
+                        if (!confirm("Are you sure you want to delete ALL claims? This cannot be undone.")) return;
+                        try {
+                            const batch = writeBatch(db);
+                            claims.forEach(claim => {
+                                batch.delete(doc(db, "claims", claim.id));
+                            });
+                            await batch.commit();
+                            showToast('All claims cleared successfully.', 'success');
+                        } catch (err) {
+                            console.error("Error clearing claims:", err);
+                            showToast('Failed to clear some claims.', 'error');
+                        }
+                    });
+
+                    document.querySelectorAll('.delete-claim-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            if (!confirm("Delete this claim permanently?")) return;
+                            try {
+                                await deleteDoc(doc(db, "claims", btn.dataset.id));
+                                showToast('Claim deleted', 'success');
+                            } catch (err) {
+                                console.error("Error deleting claim:", err);
+                                showToast('Failed to delete claim', 'error');
+                            }
+                        });
+                    });
+
                 }, (error) => {
                     console.error("Error fetching claims:", error);
                 });
