@@ -8,7 +8,7 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { doc, getDoc, collection, query, where, onSnapshot, deleteDoc, setDoc, updateDoc, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from './toast.js';
-import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ===== Profile Page Interactivity =====
 
@@ -75,6 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (inputs[1]) inputs[1].value = userData.email || user.email || '';
                 if (inputs[2]) inputs[2].value = userData.phone || '';
                 if (inputs[3]) inputs[3].value = userData.studentId || '';
+            } else {
+                // Fallback if userDoc is missing
+                const heroTitle = document.querySelector('.profile-hero-info h1');
+                if (heroTitle) heroTitle.textContent = user.displayName || user.email || 'User';
+                const avatarLetter = document.getElementById("profileAvatarLetter");
+                if (avatarLetter) {
+                    avatarLetter.textContent = (user.displayName || user.email || 'U')[0].toUpperCase();
+                    avatarLetter.style.display = "flex";
+                }
+                const emailDisplay = document.getElementById('profileEmailDisplay');
+                if (emailDisplay) {
+                    emailDisplay.innerHTML = `<i class="fa-solid fa-envelope"></i> ${user.email || 'N/A'}`;
+                }
             }
 
             // Fetch User Reports
@@ -685,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     // Update Firestore
-                    await updateDoc(doc(db, "users", user.uid), updateData);
+                    await setDoc(doc(db, "users", user.uid), updateData, { merge: true });
 
                     // Update Auth Profile
                     import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js").then(({ updateProfile }) => {
@@ -998,8 +1011,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     iconType: 'danger',
                     confirmText: 'Delete Forever',
                     confirmClass: 'modal-btn modal-btn-danger',
-                    onConfirm: () => {
-                        showToast('Account deletion requested. You will receive a confirmation email.', 'warning');
+                    onConfirm: async () => {
+                        try {
+                            const user = auth.currentUser;
+                            if (user) {
+                                const userRef = doc(db, "users", user.uid);
+                                const userSnap = await getDoc(userRef);
+                                const userData = userSnap.exists() ? userSnap.data() : null;
+
+                                try {
+                                    // Delete user document from Firestore
+                                    await deleteDoc(userRef);
+                                    
+                                    // Try to delete user from Firebase Auth
+                                    await deleteUser(user);
+                                    
+                                    showToast('Account deleted successfully.', 'success');
+                                    setTimeout(() => {
+                                        window.location.href = 'login.html';
+                                    }, 1500);
+                                } catch (error) {
+                                    // If deleteUser fails, restore the Firestore document
+                                    if (userData) {
+                                        await setDoc(userRef, userData);
+                                    }
+                                    throw error; // Re-throw to be handled by outer catch
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Error deleting account:", error);
+                            if (error.code === 'auth/requires-recent-login') {
+                                showToast('Please log in again to delete your account.', 'error');
+                                setTimeout(() => {
+                                    auth.signOut().then(() => {
+                                        window.location.href = 'login.html';
+                                    });
+                                }, 2000);
+                            } else {
+                                showToast('Failed to delete account.', 'error');
+                            }
+                        }
                     }
                 });
             });

@@ -1,6 +1,6 @@
 import { showToast } from './toast.js';
 import { db, auth, storage } from './firebase-config.js';
-import { collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, addDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -275,11 +275,22 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                         const lostData = lostDoc.data();
                         const ownerId = lostData.reporterId || null;
                         
-                        if (ownerId && ownerId !== user.uid) {
-                            const chatMessage = `I found your item! Location: ${locationFound}. Details: ${description}${imageUrl ? ` [Image: ${imageUrl}]` : ''}`;
+                        if (ownerId) {
+                            const textMessage = `I found your item! Location: ${locationFound}. Details: ${description} (Contact: ${phone} / ${email})`;
+                            const chatId = [user.uid, ownerId].sort().join('_');
                             
-                            // Send directly to owner's inbox without making it public
-                            await addDoc(collection(db, "inboxChats"), {
+                            const messagesRef = collection(db, "reports", relatedLostId, "privateChats", chatId, "messages");
+                            await addDoc(messagesRef, {
+                                text: textMessage,
+                                imageUrl: imageUrl || null,
+                                senderId: user.uid,
+                                senderName: fullName,
+                                createdAt: Date.now()
+                            });
+
+                            // Update direct inbox message reference
+                            await setDoc(doc(db, "inboxChats", chatId), {
+                                chatId: chatId,
                                 itemId: relatedLostId,
                                 itemName: lostData.itemName || "unknown item",
                                 users: [user.uid, ownerId],
@@ -287,18 +298,24 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                                     [user.uid]: fullName,
                                     [ownerId]: lostData.reporterName || 'Owner'
                                 },
-                                lastMessage: chatMessage,
+                                lastMessage: textMessage + (imageUrl ? ' [Photo]' : ''),
                                 updatedAt: Date.now()
-                            });
+                            }, { merge: true });
 
-                            await addDoc(collection(db, "users", ownerId, "notifications"), {
-                                type: "match",
-                                title: "Good News: Item Found!",
-                                body: `${fullName} (Phone: ${phone}) has found your '${lostData.itemName}'.`,
-                                link: `personal-chat.html?id=${relatedLostId}&user=${user.uid}`,
-                                isRead: false,
-                                createdAt: Date.now()
-                            });
+                            if (ownerId !== user.uid) {
+                                try {
+                                    await addDoc(collection(db, "users", ownerId, "notifications"), {
+                                        type: "match",
+                                        title: "Good News: Item Found!",
+                                        body: `${fullName} (Phone: ${phone}) has found your '${lostData.itemName}'.`,
+                                        link: `personal-chat.html?id=${relatedLostId}&user=${user.uid}`,
+                                        isRead: false,
+                                        createdAt: Date.now()
+                                    });
+                                } catch (notifError) {
+                                    console.warn("Could not send notification (likely Firestore rules restricted), but chat was created.", notifError);
+                                }
+                            }
                         }
                     }
                     
@@ -413,11 +430,22 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                 });
                 
                 // Notify the founder
-                if (founderId && founderId !== user.uid) {
-                    const chatMessage = `I would like to claim this item! Details: ${uniqueDetails} (Contact: ${phone} / ${email})${evidenceUrl ? ` [Evidence: ${evidenceUrl}]` : ''}`;
+                if (founderId) {
+                    const textMessage = `I would like to claim this item! Details: ${uniqueDetails} (Contact: ${phone} / ${email})`;
+                    const chatId = [user.uid, founderId].sort().join('_');
                     
-                    // Create direct inbox message
-                    await addDoc(collection(db, "inboxChats"), {
+                    const messagesRef = collection(db, "reports", itemId, "privateChats", chatId, "messages");
+                    await addDoc(messagesRef, {
+                        text: textMessage,
+                        imageUrl: evidenceUrl || null,
+                        senderId: user.uid,
+                        senderName: fullName,
+                        createdAt: Date.now()
+                    });
+
+                    // Update direct inbox message reference
+                    await setDoc(doc(db, "inboxChats", chatId), {
+                        chatId: chatId,
                         itemId: itemId,
                         itemName: itemName,
                         users: [user.uid, founderId],
@@ -425,18 +453,24 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                             [user.uid]: fullName,
                             [founderId]: 'Finder'
                         },
-                        lastMessage: chatMessage,
+                        lastMessage: textMessage + (evidenceUrl ? ' [Evidence]' : ''),
                         updatedAt: Date.now()
-                    });
+                    }, { merge: true });
 
-                    await addDoc(collection(db, "users", founderId, "notifications"), {
-                        type: "claim",
-                        title: "New Claim Request!",
-                        body: `${fullName} (Phone: ${phone}) has submitted a claim for your found '${itemName}'.`,
-                        link: `personal-chat.html?id=${itemId}&user=${user.uid}`, 
-                        isRead: false,
-                        createdAt: Date.now()
-                    });
+                    if (founderId !== user.uid) {
+                        try {
+                            await addDoc(collection(db, "users", founderId, "notifications"), {
+                                type: "claim",
+                                title: "New Claim Request!",
+                                body: `${fullName} (Phone: ${phone}) has submitted a claim for your found '${itemName}'.`,
+                                link: `personal-chat.html?id=${itemId}&user=${user.uid}`, 
+                                isRead: false,
+                                createdAt: Date.now()
+                            });
+                        } catch (notifError) {
+                            console.warn("Could not send notification (likely Firestore rules restricted), but claim and chat were created.", notifError);
+                        }
+                    }
                 }
 
                 showToast('Claim submitted successfully! The finder will be notified.', 'success');
