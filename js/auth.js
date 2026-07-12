@@ -261,6 +261,7 @@ if (userDoc.exists() && userDoc.data().profileImage) {
             const currentPage = window.location.pathname.split('/').pop();
             
             if (protectedPages.includes(currentPage)) {
+                sessionStorage.setItem('returnUrl', window.location.href);
                 window.location.href = 'login.html';
                 return;
             }
@@ -291,6 +292,7 @@ if (userDoc.exists() && userDoc.data().profileImage) {
                 // Only redirect if auth is fully initialized and user is null
                 if (isProtected && auth.currentUser === null) {
                     e.preventDefault();
+                    sessionStorage.setItem('returnUrl', href);
                     window.location.href = 'login.html';
                 }
             }
@@ -334,7 +336,13 @@ if (userDoc.exists() && userDoc.data().profileImage) {
 
                 showToast('Login successful. Redirecting...', 'success');
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    const returnUrl = sessionStorage.getItem('returnUrl');
+                    if (returnUrl) {
+                        sessionStorage.removeItem('returnUrl');
+                        window.location.href = returnUrl;
+                    } else {
+                        window.location.href = 'index.html';
+                    }
                 }, 800);
             } catch (error) {
                 console.error("Login Error:", error.code, error.message);

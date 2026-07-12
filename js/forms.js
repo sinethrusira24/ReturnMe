@@ -369,14 +369,14 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                     const reportDoc = await getDoc(reportRef);
                     if (reportDoc.exists()) {
                         const reportData = reportDoc.data();
-                        founderId = reportData.reporterId;
-                        itemName = reportData.itemName;
+                        founderId = reportData.reporterId || null;
+                        itemName = reportData.itemName || "unknown item";
                     }
                 }
 
                 await addDoc(collection(db, "claims"), {
                     itemId: itemId || "unknown",
-                    founderId: founderId,
+                    founderId: founderId || null,
                     claimantName: fullName,
                     studentId: studentId,
                     email: email,
@@ -393,7 +393,7 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                     await addDoc(collection(db, "users", founderId, "notifications"), {
                         type: "claim",
                         title: "New Claim Request!",
-                        body: `${fullName} has submitted a claim for your found '${itemName}'.`,
+                        body: `${fullName} (Phone: ${phone}) has submitted a claim for your found '${itemName}'.`,
                         link: `my-profile.html?view=claims`, // UI will handle this
                         isRead: false,
                         createdAt: Date.now()
