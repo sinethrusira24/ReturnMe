@@ -188,7 +188,7 @@ if (userData.profileImage) {
                     }
 
                     if (querySnapshot.empty) {
-                        reportsGrid.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">You haven\'t submitted any reports yet.</p>';
+                        reportsGrid.innerHTML = '<p style="display: block; grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">You haven\'t submitted any reports yet.</p>';
                     } else {
                         querySnapshot.forEach((docSnap) => {
                             const report = docSnap.data();
