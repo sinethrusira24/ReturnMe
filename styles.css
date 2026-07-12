@@ -2982,10 +2982,15 @@ body.login-page .password-field input:focus {
 }
 
 .preport-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     padding: 0 1rem 1rem;
+}
+
+.preport-actions .pbtn {
+    flex: 1 1 calc(50% - 0.5rem);
+    justify-content: center;
 }
 
 .pbtn {
@@ -3351,6 +3356,7 @@ body.login-page .password-field input:focus {
     .profile-hero-content {
         flex-direction: column;
         text-align: center;
+        align-items: center;
     }
 
     .profile-tagline,
@@ -3366,10 +3372,15 @@ body.login-page .password-field input:focus {
         font-size: 1.6rem;
     }
 
+    .profile-avatar-container,
     .profile-avatar-img,
     .profile-avatar-lg {
         width: 90px;
         height: 90px;
+    }
+
+    .profile-avatar-img,
+    .profile-avatar-lg {
         font-size: 2.2rem;
     }
 
@@ -3380,7 +3391,8 @@ body.login-page .password-field input:focus {
 
     .profile-tabs {
         overflow-x: auto;
-        gap: 0;
+        justify-content: flex-start;
+        padding-bottom: 0.5rem;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
     }
@@ -3393,6 +3405,7 @@ body.login-page .password-field input:focus {
         padding: 0.7rem 1rem;
         font-size: 0.85rem;
         white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .profile-reports-grid {
@@ -3400,9 +3413,15 @@ body.login-page .password-field input:focus {
     }
 
     .preport-actions {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 0.4rem;
         padding: 0 0.8rem 0.8rem;
+    }
+
+    .preport-actions .pbtn {
+        flex: 1 1 calc(50% - 0.4rem);
+        justify-content: center;
     }
 
     .pbtn {
@@ -3451,10 +3470,15 @@ body.login-page .password-field input:focus {
         font-size: 0.78rem;
     }
 
+    .profile-avatar-container,
     .profile-avatar-img,
     .profile-avatar-lg {
         width: 75px;
         height: 75px;
+    }
+
+    .profile-avatar-img,
+    .profile-avatar-lg {
         font-size: 1.8rem;
     }
 
@@ -3470,7 +3494,7 @@ body.login-page .password-field input:focus {
     }
 
     .profile-stats-row {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         padding: 0 0.75rem;
         gap: 0.6rem;
     }
