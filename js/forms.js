@@ -207,7 +207,7 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                 }, 1200);
             } catch (error) {
                 console.error("Error adding document: ", error);
-                showToast('Failed to submit report. Please try again.', 'error');
+                showToast(`Failed: ${error.message || 'Unknown error'}`, 'error');
             }
         });
     }
@@ -351,7 +351,7 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                 }, 1200);
             } catch (error) {
                 console.error("Error adding document: ", error);
-                showToast('Failed to submit report. Please try again.', 'error');
+                showToast(`Failed: ${error.message || 'Unknown error'}`, 'error');
             }
         });
     }
