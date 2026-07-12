@@ -1,4 +1,4 @@
-import { showToast } from './toast.js';
+import { showToast, showVerificationModal } from './toast.js';
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
@@ -326,7 +326,9 @@ if (userDoc.exists() && userDoc.data().profileImage) {
                 if (!userCredential.user.emailVerified) {
                     await sendEmailVerification(userCredential.user);
                     await signOut(auth);
-                    showToast('We just sent a new verification link to your email. Please verify before logging in.', 'warning');
+                    showVerificationModal(userCredential.user.email, () => {
+                        window.location.reload();
+                    });
                     return;
                 }
 
@@ -459,10 +461,9 @@ if (userDoc.exists() && userDoc.data().profileImage) {
                 // Sign out immediately so they must verify their email before logging in
                 await signOut(auth);
 
-                showToast('Account created! Please check your email to verify your account.', 'success');
-                setTimeout(() => {
+                showVerificationModal(email, () => {
                     window.location.href = 'login.html';
-                }, 2500);
+                });
 
             } catch (error) {
                 console.error("Registration Error:", error.code, error.message);
