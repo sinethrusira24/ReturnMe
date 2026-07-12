@@ -263,6 +263,53 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                 const createdAt = Date.now();
 const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
 
+                // Check if this is a direct response to a lost item
+                const urlParams = new URLSearchParams(window.location.search);
+                const relatedLostId = urlParams.get('relatedLost');
+
+                if (relatedLostId) {
+                    const lostDocRef = doc(db, "reports", relatedLostId);
+                    const lostDoc = await getDoc(lostDocRef);
+                    
+                    if (lostDoc.exists()) {
+                        const lostData = lostDoc.data();
+                        const ownerId = lostData.reporterId || null;
+                        
+                        if (ownerId && ownerId !== user.uid) {
+                            const chatMessage = `I found your item! Location: ${locationFound}. Details: ${description}${imageUrl ? ` [Image: ${imageUrl}]` : ''}`;
+                            
+                            // Send directly to owner's inbox without making it public
+                            await addDoc(collection(db, "inboxChats"), {
+                                itemId: relatedLostId,
+                                itemName: lostData.itemName || "unknown item",
+                                users: [user.uid, ownerId],
+                                userNames: {
+                                    [user.uid]: fullName,
+                                    [ownerId]: lostData.reporterName || 'Owner'
+                                },
+                                lastMessage: chatMessage,
+                                updatedAt: Date.now()
+                            });
+
+                            await addDoc(collection(db, "users", ownerId, "notifications"), {
+                                type: "match",
+                                title: "Good News: Item Found!",
+                                body: `${fullName} (Phone: ${phone}) has found your '${lostData.itemName}'.`,
+                                link: `personal-chat.html?id=${relatedLostId}&user=${user.uid}`,
+                                isRead: false,
+                                createdAt: Date.now()
+                            });
+                        }
+                    }
+                    
+                    showToast('Details sent to the owner privately!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                    return; // Stop here, do not create a public report
+                }
+
+                // If NOT linked to a lost item, create a normal public found report
                 const newReportRef = await addDoc(collection(db, "reports"), {
                     type: "found",
                     reporterName: fullName,
@@ -276,33 +323,10 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                     description: description,
                     status: "active",
                     imageUrl: imageUrl || null,
-                   createdAt: createdAt,
-                   expireAt: expireAt,
+                    createdAt: createdAt,
+                    expireAt: expireAt,
                     reporterId: user.uid
                 });
-                
-                // If this found report was linked from a lost item, notify the lost item's owner
-                const urlParams = new URLSearchParams(window.location.search);
-                const relatedLostId = urlParams.get('relatedLost');
-                
-                if (relatedLostId) {
-                    const lostDocRef = doc(db, "reports", relatedLostId);
-                    const lostDoc = await getDoc(lostDocRef);
-                    
-                    if (lostDoc.exists()) {
-                        const lostData = lostDoc.data();
-                        if (lostData.reporterId && lostData.reporterId !== user.uid) {
-                            await addDoc(collection(db, "users", lostData.reporterId, "notifications"), {
-                                type: "match",
-                                title: "Someone found your item!",
-                                body: `${fullName} has reported finding an item matching your lost '${lostData.itemName}'.`,
-                                link: `item-detail.html?id=${newReportRef.id}`,
-                                isRead: false,
-                                createdAt: Date.now()
-                            });
-                        }
-                    }
-                }
 
                 showToast('Found item report submitted successfully!', 'success');
                 setTimeout(() => {
@@ -390,11 +414,26 @@ const expireAt = createdAt + (7 * 24 * 60 * 60 * 1000);
                 
                 // Notify the founder
                 if (founderId && founderId !== user.uid) {
+                    const chatMessage = `I would like to claim this item! Details: ${uniqueDetails} (Contact: ${phone} / ${email})${evidenceUrl ? ` [Evidence: ${evidenceUrl}]` : ''}`;
+                    
+                    // Create direct inbox message
+                    await addDoc(collection(db, "inboxChats"), {
+                        itemId: itemId,
+                        itemName: itemName,
+                        users: [user.uid, founderId],
+                        userNames: {
+                            [user.uid]: fullName,
+                            [founderId]: 'Finder'
+                        },
+                        lastMessage: chatMessage,
+                        updatedAt: Date.now()
+                    });
+
                     await addDoc(collection(db, "users", founderId, "notifications"), {
                         type: "claim",
                         title: "New Claim Request!",
                         body: `${fullName} (Phone: ${phone}) has submitted a claim for your found '${itemName}'.`,
-                        link: `my-profile.html?view=claims`, // UI will handle this
+                        link: `personal-chat.html?id=${itemId}&user=${user.uid}`, 
                         isRead: false,
                         createdAt: Date.now()
                     });

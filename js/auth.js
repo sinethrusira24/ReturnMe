@@ -411,13 +411,14 @@ if (userDoc.exists() && userDoc.data().profileImage) {
 
             const fullName = document.getElementById('fullName')?.value.trim();
             const studentId = document.getElementById('studentId')?.value.trim();
+            const phone = document.getElementById('phone')?.value.trim();
             const email = registerForm.email.value.trim();
             const password = registerForm.password.value.trim();
             const confirmPassword = document.getElementById('confirmPassword')?.value.trim();
             const terms = document.getElementById('terms')?.checked;
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (!fullName || !studentId || !email || !password || !confirmPassword) {
+            if (!fullName || !studentId || !phone || !email || !password || !confirmPassword) {
                 showToast('Please fill in all required fields.', 'error');
                 return;
             }
@@ -459,6 +460,7 @@ if (userDoc.exists() && userDoc.data().profileImage) {
                 await setDoc(doc(db, "users", user.uid), {
                     fullName: fullName,
                     studentId: studentId,
+                    phone: phone,
                     email: email,
                     createdAt: new Date()
                 });
